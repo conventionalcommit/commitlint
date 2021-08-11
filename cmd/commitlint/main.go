@@ -89,6 +89,7 @@ func lintCallback(ctx *cli.Context) error {
 	if hasError {
 		return cli.Exit(lintMsg, exitCode)
 	}
+	fmt.Println(lintMsg)
 	return nil
 }
 
