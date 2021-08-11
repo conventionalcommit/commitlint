@@ -26,6 +26,7 @@ func (l *Linter) Lint(commitMsg string) (lintReport string, hasError bool, err e
 	}
 
 	lintReport, hasError = l.LintCommit(msg)
+	lintReport = strings.Trim(lintReport, "\n")
 	return lintReport, hasError, nil
 }
 
