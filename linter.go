@@ -38,10 +38,15 @@ func (l *Linter) LintCommit(msg *parser.Commit) (lintReport string, hasError boo
 	l.checkBody(msg, res)
 	l.checkFooter(msg, res)
 
+	report := l.formReport(msg, res)
+	return report, res.HasErrors()
+}
+
+func (l *Linter) formReport(msg *parser.Commit, res *Result) string {
 	if res.IsOK() {
-		return successMessage(msg, res), false
+		return successMessage(msg, res)
 	}
-	return errorMessage(msg, res), res.HasErrors()
+	return errorMessage(msg, res)
 }
 
 func (l *Linter) checkHeader(msg *parser.Commit, res *Result) {
