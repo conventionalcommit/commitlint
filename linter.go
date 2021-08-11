@@ -22,6 +22,12 @@ func NewLinter(conf *Config) *Linter {
 func (l *Linter) Lint(commitMsg string) (lintReport string, hasError bool, err error) {
 	msg, err := parser.Parse(commitMsg)
 	if err != nil {
+		if parser.IsHeaderErr(err) {
+			res := NewResult()
+			// TODO: show more information
+			res.add(ErrorType, "commit header is not valid")
+			return l.formReport(msg, res), true, nil
+		}
 		return "", false, err
 	}
 
