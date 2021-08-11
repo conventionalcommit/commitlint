@@ -4,6 +4,18 @@ commitlint checks if your commit messages meets the [conventional commit format]
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/conventionalcommit/parser)](https://pkg.go.dev/github.com/conventionalcommit/parser)
 
+#### Table of Contents
+
++ [Installation](#installation)
++ [Enable in Git Repo](#enable-in-git-repo)
++ [Benefits using commitlint](#benefits-using-commitlint)
++ [Commit Types](#commit-types)
++ [Library](#library)
+  - [Config Precedence](#config-precedence)
+  - [Message Precedence](#message-precedence)
+  - [Default Config](#default-config)
++ [License](#license)
+
 ### Installation
 
 ```bash
