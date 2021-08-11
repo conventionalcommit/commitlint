@@ -25,7 +25,11 @@ var (
 //line template.qtpl:7
 func streamerrorMessage(qw422016 *qt422016.Writer, cMsg *parser.Commit, res *Result) {
 //line template.qtpl:7
-	qw422016.N().S(`commitlint
+	qw422016.N().S(`commitlint - `)
+//line template.qtpl:8
+	qw422016.E().S(Version)
+//line template.qtpl:8
+	qw422016.N().S(`
 
   → input: `)
 //line template.qtpl:10

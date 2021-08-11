@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/urfave/cli/v2"
+
+	"github.com/conventionalcommit/commitlint"
 )
 
 func getApp() *cli.App {
@@ -55,7 +57,7 @@ func getApp() *cli.App {
 		Name:  "version",
 		Usage: "prints commitlint version",
 		Action: func(c *cli.Context) error {
-			fmt.Println("commitlint - v0.1.0")
+			fmt.Printf("commitlint - %s\n", commitlint.Version)
 			return nil
 		},
 	}

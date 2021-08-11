@@ -5,7 +5,7 @@
 ) -%}
 
 {%- func errorMessage(cMsg *parser.Commit, res *Result) -%}
-commitlint
+commitlint - {%s Version %}
 
   → input: {%q= cMsg.FullCommit %}
 
