@@ -1,0 +1,37 @@
+{%- package commitlint -%}
+
+{%- import (
+    "github.com/conventionalcommit/parser"
+) -%}
+
+{%- func errorMessage(cMsg *parser.Commit, res *Result) -%}
+commitlint
+
+  → input: {%q= cMsg.FullCommit %}
+
+{%- if res.HasErrors() -%}
+Errors:
+  {%- for _, msg := range res.Errors() -%}
+  ❌ {%s= msg %}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- if res.HasWarns() -%}
+Warnings:
+  {%- for _, msg := range res.Warns() -%}
+  ❌ {%s= msg %}
+  {%- endfor -%}
+{%- endif -%}
+
+Total {%d len(res.Errors()) %} errors, {%d len(res.Warns()) %} warnings
+{%- endfunc -%}
+
+{%- func successMessage(cMsg *parser.Commit, res *Result) -%}
+ ✓ commit message
+{%- endfunc -%}
+
+{%- func CommitMsgHook() -%}
+#!/bin/sh
+
+commitlint lint --msg $1
+{%- endfunc -%}
