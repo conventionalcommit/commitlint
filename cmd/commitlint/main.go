@@ -31,15 +31,7 @@ func main() {
 	}
 }
 
-func initConfCallback(ctx *cli.Context) error {
-	err := commitlint.DefaultConfToFile(defConfFileName)
-	if err != nil {
-		return cli.Exit(err, exitCode)
-	}
-	return nil
-}
-
-func initHookCallback(ctx *cli.Context) (retErr error) {
+func initCallback(ctx *cli.Context) (retErr error) {
 	// get user home dir
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
