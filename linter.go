@@ -25,7 +25,7 @@ func (l *Linter) Lint(commitMsg string) (lintReport string, hasError bool, err e
 		if parser.IsHeaderErr(err) {
 			res := NewResult()
 			// TODO: show more information
-			res.add(ErrorType, "commit header is not valid")
+			res.add(SeverityError, "commit header is not valid")
 			return l.formReport(msg, res), true, nil
 		}
 		return "", false, err
@@ -106,7 +106,7 @@ func (l *Linter) checkBody(msg *parser.Commit, res *Result) {
 
 	if !bodyConf.CanBeEmpty {
 		if msg.Body == "" {
-			res.add(ErrorType, "body: cannot be empty")
+			res.add(SeverityError, "body: cannot be empty")
 			return
 		}
 	}
@@ -130,7 +130,7 @@ func (l *Linter) checkFooter(msg *parser.Commit, res *Result) {
 
 	if !footConf.CanBeEmpty {
 		if foot.FullFooter == "" {
-			res.add(ErrorType, "footer: cannot be empty")
+			res.add(SeverityError, "footer: cannot be empty")
 			return
 		}
 	}

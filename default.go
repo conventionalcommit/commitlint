@@ -2,16 +2,16 @@ package commitlint
 
 var defConf = &Config{
 	Header: Header{
-		MinLength: IntConf{Enabled: true, Type: ErrorType, Value: 10},
-		MaxLength: IntConf{Enabled: true, Type: ErrorType, Value: 50},
+		MinLength: IntConf{Enabled: true, Type: SeverityError, Value: 10},
+		MaxLength: IntConf{Enabled: true, Type: SeverityError, Value: 50},
 		Scopes: EnumConf{
 			Enabled: false,
-			Type:    ErrorType,
+			Type:    SeverityError,
 			Value:   []string{},
 		},
 		Types: EnumConf{
 			Enabled: true,
-			Type:    ErrorType,
+			Type:    SeverityError,
 			Value: []string{
 				"feat",
 				"fix",
@@ -30,11 +30,11 @@ var defConf = &Config{
 	},
 	Body: Body{
 		CanBeEmpty:    true,
-		MaxLineLength: IntConf{Enabled: true, Type: ErrorType, Value: 72},
+		MaxLineLength: IntConf{Enabled: true, Type: SeverityError, Value: 72},
 	},
 	Footer: Footer{
 		CanBeEmpty:    true,
-		MaxLineLength: IntConf{Enabled: true, Type: ErrorType, Value: 72},
+		MaxLineLength: IntConf{Enabled: true, Type: SeverityError, Value: 72},
 	},
 }
 

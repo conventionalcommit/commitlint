@@ -2,8 +2,8 @@ package commitlint
 
 // Rule Type Constants
 const (
-	WarnType  = "warn"
-	ErrorType = "error"
+	SeverityWarn  = "warn"
+	SeverityError = "error"
 )
 
 // Config represent the rules for commit message

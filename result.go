@@ -12,9 +12,9 @@ type Result struct {
 func NewResult() *Result { return &Result{} }
 
 func (res *Result) add(typ, msg string) {
-	if typ == WarnType {
+	if typ == SeverityWarn {
 		res.warns = append(res.warns, msg)
-	} else if typ == ErrorType {
+	} else if typ == SeverityError {
 		res.errs = append(res.errs, msg)
 	} else {
 		// default considered as error
