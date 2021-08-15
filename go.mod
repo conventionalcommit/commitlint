@@ -3,7 +3,7 @@ module github.com/conventionalcommit/commitlint
 go 1.13
 
 require (
-	github.com/conventionalcommit/parser v0.2.0
+	github.com/conventionalcommit/parser v0.3.0
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/valyala/quicktemplate v1.6.3
