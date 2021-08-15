@@ -1,8 +1,18 @@
 {%- package commitlint -%}
 
 {%- import (
+    "github.com/fatih/color"
+
     "github.com/conventionalcommit/parser"
 ) -%}
+
+{%- code
+  var (
+    errorSign = color.RedString("❌")
+    warningSign = color.YellowString("!")
+    successSign = color.GreenString("✔")
+  )
+-%}
 
 {%- func errorMessage(cMsg *parser.Commit, res *Result) -%}
 commitlint - {%s Version %}
@@ -13,7 +23,7 @@ commitlint - {%s Version %}
 Errors:
 
   {%- for _, msg := range res.Errors() -%}
-  ❌ {%s= msg %}
+  {%s errorSign %} {%s= msg %}
   {%- endfor -%}
 {%- endif -%}
 
@@ -21,7 +31,7 @@ Errors:
 Warnings:
 
   {%- for _, msg := range res.Warns() -%}
-  ❌ {%s= msg %}
+  {%s warningSign %} {%s= msg %}
   {%- endfor -%}
 {%- endif -%}
 
@@ -29,7 +39,7 @@ Total {%d len(res.Errors()) %} errors, {%d len(res.Warns()) %} warnings
 {%- endfunc -%}
 
 {%- func successMessage(cMsg *parser.Commit, res *Result) -%}
- ✓ commit message
+ {%s successSign %} commit message
 {%- endfunc -%}
 
 {%- func CommitMsgHook() -%}

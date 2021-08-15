@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/conventionalcommit/parser v0.3.0
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
+	github.com/fatih/color v1.12.0
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/valyala/quicktemplate v1.6.3
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect

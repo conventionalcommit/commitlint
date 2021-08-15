@@ -6,186 +6,207 @@ package commitlint
 
 //line template.qtpl:3
 import (
+	"github.com/fatih/color"
+
 	"github.com/conventionalcommit/parser"
 )
 
-//line template.qtpl:7
+//line template.qtpl:9
 import (
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"
 )
 
-//line template.qtpl:7
+//line template.qtpl:9
 var (
 	_ = qtio422016.Copy
 	_ = qt422016.AcquireByteBuffer
 )
 
-//line template.qtpl:7
+//line template.qtpl:10
+var (
+	errorSign   = color.RedString("❌")
+	warningSign = color.YellowString("!")
+	successSign = color.GreenString("✔")
+)
+
+//line template.qtpl:17
 func streamerrorMessage(qw422016 *qt422016.Writer, cMsg *parser.Commit, res *Result) {
-//line template.qtpl:7
+//line template.qtpl:17
 	qw422016.N().S(`commitlint - `)
-//line template.qtpl:8
+//line template.qtpl:18
 	qw422016.E().S(Version)
-//line template.qtpl:8
+//line template.qtpl:18
 	qw422016.N().S(`
 
   → input: `)
-//line template.qtpl:10
+//line template.qtpl:20
 	qw422016.N().Q(cMsg.FullCommit)
-//line template.qtpl:10
+//line template.qtpl:20
 	qw422016.N().S(`
 
 `)
-//line template.qtpl:12
+//line template.qtpl:22
 	if res.HasErrors() {
-//line template.qtpl:12
+//line template.qtpl:22
 		qw422016.N().S(`Errors:
 
 `)
-//line template.qtpl:15
+//line template.qtpl:25
 		for _, msg := range res.Errors() {
-//line template.qtpl:15
-			qw422016.N().S(`  ❌ `)
-//line template.qtpl:16
+//line template.qtpl:25
+			qw422016.N().S(`  `)
+//line template.qtpl:26
+			qw422016.E().S(errorSign)
+//line template.qtpl:26
+			qw422016.N().S(` `)
+//line template.qtpl:26
 			qw422016.N().S(msg)
-//line template.qtpl:16
+//line template.qtpl:26
 			qw422016.N().S(`
 `)
-//line template.qtpl:17
+//line template.qtpl:27
 		}
-//line template.qtpl:18
+//line template.qtpl:28
 	}
-//line template.qtpl:18
+//line template.qtpl:28
 	qw422016.N().S(`
 `)
-//line template.qtpl:20
+//line template.qtpl:30
 	if res.HasWarns() {
-//line template.qtpl:20
+//line template.qtpl:30
 		qw422016.N().S(`Warnings:
 
 `)
-//line template.qtpl:23
+//line template.qtpl:33
 		for _, msg := range res.Warns() {
-//line template.qtpl:23
-			qw422016.N().S(`  ❌ `)
-//line template.qtpl:24
+//line template.qtpl:33
+			qw422016.N().S(`  `)
+//line template.qtpl:34
+			qw422016.E().S(warningSign)
+//line template.qtpl:34
+			qw422016.N().S(` `)
+//line template.qtpl:34
 			qw422016.N().S(msg)
-//line template.qtpl:24
+//line template.qtpl:34
 			qw422016.N().S(`
 `)
-//line template.qtpl:25
+//line template.qtpl:35
 		}
-//line template.qtpl:26
+//line template.qtpl:36
 	}
-//line template.qtpl:26
+//line template.qtpl:36
 	qw422016.N().S(`
 Total `)
-//line template.qtpl:28
+//line template.qtpl:38
 	qw422016.N().D(len(res.Errors()))
-//line template.qtpl:28
+//line template.qtpl:38
 	qw422016.N().S(` errors, `)
-//line template.qtpl:28
+//line template.qtpl:38
 	qw422016.N().D(len(res.Warns()))
-//line template.qtpl:28
+//line template.qtpl:38
 	qw422016.N().S(` warnings
 `)
-//line template.qtpl:29
+//line template.qtpl:39
 }
 
-//line template.qtpl:29
+//line template.qtpl:39
 func writeerrorMessage(qq422016 qtio422016.Writer, cMsg *parser.Commit, res *Result) {
-//line template.qtpl:29
+//line template.qtpl:39
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line template.qtpl:29
+//line template.qtpl:39
 	streamerrorMessage(qw422016, cMsg, res)
-//line template.qtpl:29
+//line template.qtpl:39
 	qt422016.ReleaseWriter(qw422016)
-//line template.qtpl:29
+//line template.qtpl:39
 }
 
-//line template.qtpl:29
+//line template.qtpl:39
 func errorMessage(cMsg *parser.Commit, res *Result) string {
-//line template.qtpl:29
+//line template.qtpl:39
 	qb422016 := qt422016.AcquireByteBuffer()
-//line template.qtpl:29
+//line template.qtpl:39
 	writeerrorMessage(qb422016, cMsg, res)
-//line template.qtpl:29
+//line template.qtpl:39
 	qs422016 := string(qb422016.B)
-//line template.qtpl:29
+//line template.qtpl:39
 	qt422016.ReleaseByteBuffer(qb422016)
-//line template.qtpl:29
+//line template.qtpl:39
 	return qs422016
-//line template.qtpl:29
+//line template.qtpl:39
 }
 
-//line template.qtpl:31
+//line template.qtpl:41
 func streamsuccessMessage(qw422016 *qt422016.Writer, cMsg *parser.Commit, res *Result) {
-//line template.qtpl:31
-	qw422016.N().S(` ✓ commit message
+//line template.qtpl:41
+	qw422016.N().S(` `)
+//line template.qtpl:42
+	qw422016.E().S(successSign)
+//line template.qtpl:42
+	qw422016.N().S(` commit message
 `)
-//line template.qtpl:33
+//line template.qtpl:43
 }
 
-//line template.qtpl:33
+//line template.qtpl:43
 func writesuccessMessage(qq422016 qtio422016.Writer, cMsg *parser.Commit, res *Result) {
-//line template.qtpl:33
+//line template.qtpl:43
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line template.qtpl:33
+//line template.qtpl:43
 	streamsuccessMessage(qw422016, cMsg, res)
-//line template.qtpl:33
+//line template.qtpl:43
 	qt422016.ReleaseWriter(qw422016)
-//line template.qtpl:33
+//line template.qtpl:43
 }
 
-//line template.qtpl:33
+//line template.qtpl:43
 func successMessage(cMsg *parser.Commit, res *Result) string {
-//line template.qtpl:33
+//line template.qtpl:43
 	qb422016 := qt422016.AcquireByteBuffer()
-//line template.qtpl:33
+//line template.qtpl:43
 	writesuccessMessage(qb422016, cMsg, res)
-//line template.qtpl:33
+//line template.qtpl:43
 	qs422016 := string(qb422016.B)
-//line template.qtpl:33
+//line template.qtpl:43
 	qt422016.ReleaseByteBuffer(qb422016)
-//line template.qtpl:33
+//line template.qtpl:43
 	return qs422016
-//line template.qtpl:33
+//line template.qtpl:43
 }
 
-//line template.qtpl:35
+//line template.qtpl:45
 func StreamCommitMsgHook(qw422016 *qt422016.Writer) {
-//line template.qtpl:35
+//line template.qtpl:45
 	qw422016.N().S(`#!/bin/sh
 
 commitlint lint --msg $1
 `)
-//line template.qtpl:39
+//line template.qtpl:49
 }
 
-//line template.qtpl:39
+//line template.qtpl:49
 func WriteCommitMsgHook(qq422016 qtio422016.Writer) {
-//line template.qtpl:39
+//line template.qtpl:49
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line template.qtpl:39
+//line template.qtpl:49
 	StreamCommitMsgHook(qw422016)
-//line template.qtpl:39
+//line template.qtpl:49
 	qt422016.ReleaseWriter(qw422016)
-//line template.qtpl:39
+//line template.qtpl:49
 }
 
-//line template.qtpl:39
+//line template.qtpl:49
 func CommitMsgHook() string {
-//line template.qtpl:39
+//line template.qtpl:49
 	qb422016 := qt422016.AcquireByteBuffer()
-//line template.qtpl:39
+//line template.qtpl:49
 	WriteCommitMsgHook(qb422016)
-//line template.qtpl:39
+//line template.qtpl:49
 	qs422016 := string(qb422016.B)
-//line template.qtpl:39
+//line template.qtpl:49
 	qt422016.ReleaseByteBuffer(qb422016)
-//line template.qtpl:39
+//line template.qtpl:49
 	return qs422016
-//line template.qtpl:39
+//line template.qtpl:49
 }
