@@ -55,7 +55,7 @@ func initHookCallback(ctx *cli.Context) (retErr error) {
 
 	// create hook file
 	hookFile := filepath.Join(hookDir, commitMsgHook)
-	err = writeHookFile(hookFile)
+	err = commitlint.WriteHookToFile(hookFile)
 	if err != nil {
 		return err
 	}
@@ -104,28 +104,6 @@ func setGitConf(hookDir string, isGlobal bool) error {
 	return cmd.Run()
 }
 
-func writeHookFile(hookFilePath string) (retErr error) {
-	// if commit-msg already exists skip creating or overwriting it
-	if isFileExists(hookFilePath) {
-		return nil
-	}
-	// commit-msg needs to be executable
-	file, err := os.OpenFile(hookFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0700)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		err1 := file.Close()
-		if retErr == nil && err1 != nil {
-			retErr = err1
-		}
-	}()
-
-	commitHook := commitlint.CommitMsgHook()
-	_, err = file.WriteString(commitHook)
-	return err
-}
-
 func getLinter(confFilePath string) (*commitlint.Linter, error) {
 	// Config Precedence
 	// 	1. Check for conf in current directory
@@ -139,7 +117,7 @@ func getLinter(confFilePath string) (*commitlint.Linter, error) {
 
 	// check if conf file exists in current directory
 	currentDirConf := filepath.Join(currentDir, defConfFileName)
-	if isFileExists(currentDirConf) {
+	if commitlint.IsFileExists(currentDirConf) {
 		confFilePath = currentDirConf
 	}
 
@@ -188,9 +166,4 @@ func readStdIn() string {
 	}
 	s := string(readBytes)
 	return strings.TrimSpace(s)
-}
-
-func isFileExists(filename string) bool {
-	_, err := os.Stat(filename)
-	return !os.IsNotExist(err)
 }
