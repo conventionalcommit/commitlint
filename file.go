@@ -50,7 +50,7 @@ func WriteHookToFile(hookFilePath string) (retErr error) {
 		}
 	}()
 
-	commitHook := CommitMsgHook()
+	commitHook := commitMsgHook()
 	_, err = file.WriteString(commitHook)
 	return err
 }

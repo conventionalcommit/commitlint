@@ -176,7 +176,7 @@ func successMessage(cMsg *parser.Commit, res *Result) string {
 }
 
 //line template.qtpl:45
-func StreamCommitMsgHook(qw422016 *qt422016.Writer) {
+func streamcommitMsgHook(qw422016 *qt422016.Writer) {
 //line template.qtpl:45
 	qw422016.N().S(`#!/bin/sh
 
@@ -186,22 +186,22 @@ commitlint lint --msg $1
 }
 
 //line template.qtpl:49
-func WriteCommitMsgHook(qq422016 qtio422016.Writer) {
+func writecommitMsgHook(qq422016 qtio422016.Writer) {
 //line template.qtpl:49
 	qw422016 := qt422016.AcquireWriter(qq422016)
 //line template.qtpl:49
-	StreamCommitMsgHook(qw422016)
+	streamcommitMsgHook(qw422016)
 //line template.qtpl:49
 	qt422016.ReleaseWriter(qw422016)
 //line template.qtpl:49
 }
 
 //line template.qtpl:49
-func CommitMsgHook() string {
+func commitMsgHook() string {
 //line template.qtpl:49
 	qb422016 := qt422016.AcquireByteBuffer()
 //line template.qtpl:49
-	WriteCommitMsgHook(qb422016)
+	writecommitMsgHook(qb422016)
 //line template.qtpl:49
 	qs422016 := string(qb422016.B)
 //line template.qtpl:49

@@ -42,7 +42,7 @@ Total {%d len(res.Errors()) %} errors, {%d len(res.Warns()) %} warnings
  {%s successSign %} commit message
 {%- endfunc -%}
 
-{%- func CommitMsgHook() -%}
+{%- func commitMsgHook() -%}
 #!/bin/sh
 
 commitlint lint --msg $1
