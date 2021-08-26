@@ -1,9 +1,9 @@
-{%- package commitlint -%}
+{%- package formatter -%}
 
 {%- import (
     "github.com/fatih/color"
 
-    "github.com/conventionalcommit/parser"
+    "github.com/conventionalcommit/commitlint/lint"
 ) -%}
 
 {%- code
@@ -14,16 +14,25 @@
   )
 -%}
 
-{%- func errorMessage(cMsg *parser.Commit, res *Result) -%}
-commitlint - {%s Version %}
+{%- func formatResult(res *lint.Result) -%}
+  {%- if res.IsOK() -%}
+    {%-= successResult(res) -%}
+    {%- code return -%}
+  {%- endif -%}
 
-  → input: {%q= cMsg.FullCommit %}
+  {%-= errorResult(res) -%}
+{%- endfunc -%}
+
+{%- func errorResult(res *lint.Result) -%}
+commitlint
+
+  → input: {%q= res.Input() %}
 
 {%- if res.HasErrors() -%}
 Errors:
 
   {%- for _, msg := range res.Errors() -%}
-  {%s errorSign %} {%s= msg %}
+  {%s errorSign %} {%s= msg.Name %}: {%s= msg.Message %}
   {%- endfor -%}
 {%- endif -%}
 
@@ -31,19 +40,13 @@ Errors:
 Warnings:
 
   {%- for _, msg := range res.Warns() -%}
-  {%s warningSign %} {%s= msg %}
+  {%s warningSign %} {%s= msg.Message %}
   {%- endfor -%}
 {%- endif -%}
 
 Total {%d len(res.Errors()) %} errors, {%d len(res.Warns()) %} warnings
 {%- endfunc -%}
 
-{%- func successMessage(cMsg *parser.Commit, res *Result) -%}
+{%- func successResult(res *lint.Result) -%}
  {%s successSign %} commit message
-{%- endfunc -%}
-
-{%- func commitMsgHook() -%}
-#!/bin/sh
-
-commitlint lint --msg $1
 {%- endfunc -%}

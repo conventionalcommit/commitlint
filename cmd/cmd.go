@@ -1,39 +1,33 @@
-package main
+// Package cmd contains commitlint cli
+package cmd
 
 import (
-	"fmt"
-
 	"github.com/urfave/cli/v2"
-
-	"github.com/conventionalcommit/commitlint"
 )
 
-func getApp() *cli.App {
+// GetApp returns commitlint cli.App
+func GetApp() *cli.App {
 	createCmd := &cli.Command{
 		Name:  "create",
-		Usage: "for creating commitlint conf, hooks",
+		Usage: "create commitlint config, hooks files",
 		Subcommands: []*cli.Command{
 			{
-				Name:  "config",
-				Usage: "creates commitlint.yaml in current directory",
-				Action: func(ctx *cli.Context) error {
-					err := commitlint.DefaultConfToFile(defConfFileName)
-					if err != nil {
-						return cli.Exit(err, exitCode)
-					}
-					return nil
+				Name:   "config",
+				Usage:  "creates commitlint.yaml in current directory",
+				Action: configCreateCallback,
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:    "enabled",
+						Aliases: []string{"e"},
+						Usage:   "writes only default enabled rules to file",
+						Value:   false,
+					},
 				},
 			},
 			{
-				Name:  "hook",
-				Usage: "creates commit-msg in current directory",
-				Action: func(ctx *cli.Context) (retErr error) {
-					err := commitlint.WriteHookToFile(commitMsgHook)
-					if err != nil {
-						return cli.Exit(err, exitCode)
-					}
-					return nil
-				},
+				Name:   "hook",
+				Usage:  "creates commit-msg file in current directory",
+				Action: hookCreateCallback,
 			},
 		},
 	}
@@ -46,7 +40,7 @@ func getApp() *cli.App {
 			&cli.BoolFlag{
 				Name:    "global",
 				Aliases: []string{"g"},
-				Usage:   "sets git hook config in global",
+				Usage:   "sets git hook in global config",
 			},
 		},
 	}
@@ -75,8 +69,7 @@ func getApp() *cli.App {
 		Name:  "version",
 		Usage: "prints commitlint version",
 		Action: func(c *cli.Context) error {
-			fmt.Printf("commitlint - %s\n", commitlint.Version)
-			return nil
+			return VersionCallback()
 		},
 	}
 
