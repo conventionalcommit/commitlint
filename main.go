@@ -15,16 +15,8 @@ var (
 	BuildTime = ""
 )
 
-var verTmpl = `commitlint %s-%s %s
-`
-
 func main() {
-	cmd.VersionCallback = func() error {
-		fmt.Printf(verTmpl, Version, Commit, BuildTime)
-		return nil
-	}
-
-	app := cmd.New()
+	app := cmd.New(Version, Commit, BuildTime)
 	err := app.Run(os.Args)
 	if err != nil {
 		fmt.Println("Error: ", err)

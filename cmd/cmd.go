@@ -2,11 +2,16 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
 )
 
+var verTmpl = `commitlint version %s - built from %s on %s
+`
+
 // New returns commitlint cli.App
-func New() *cli.App {
+func New(versionNo, commitHash, builtTime string) *cli.App {
 	createCmd := &cli.Command{
 		Name:  "create",
 		Usage: "create commitlint config, hooks files",
@@ -69,7 +74,8 @@ func New() *cli.App {
 		Name:  "version",
 		Usage: "prints commitlint version",
 		Action: func(c *cli.Context) error {
-			return VersionCallback()
+			fmt.Printf(verTmpl, versionNo, commitHash, builtTime)
+			return nil
 		},
 	}
 

@@ -19,12 +19,6 @@ const (
 	HookDir = ".commitlint/hooks"
 )
 
-// VersionCallback is the version command callback
-var VersionCallback = func() error {
-	fmt.Println("commitlint")
-	return nil
-}
-
 func initCallback(ctx *cli.Context) (retErr error) {
 	// get user home dir
 	homeDir, err := os.UserHomeDir()
