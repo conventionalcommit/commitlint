@@ -1,7 +1,0 @@
-{%- package hook -%}
-
-{%- func commitMsgHook() -%}
-#!/bin/sh
-
-commitlint lint --message $1
-{%- endfunc -%}

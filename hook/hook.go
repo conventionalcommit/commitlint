@@ -9,6 +9,11 @@ import (
 // CommitMsgHook represent commit-msg hook file name
 const CommitMsgHook = "commit-msg"
 
+const hookFile = `#!/bin/sh
+
+commitlint lint --message $1
+`
+
 // WriteToFile util func to write commit-msg hook to given file
 func WriteToFile(hookDir string) (retErr error) {
 	hookFilePath := filepath.Join(hookDir, filepath.Clean(CommitMsgHook))
@@ -28,7 +33,6 @@ func WriteToFile(hookDir string) (retErr error) {
 		}
 	}()
 
-	commitHook := commitMsgHook()
-	_, err = file.WriteString(commitHook)
+	_, err = file.WriteString(hookFile)
 	return err
 }
