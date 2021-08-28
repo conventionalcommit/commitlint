@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	"github.com/conventionalcommit/commitlint/cmd"
 )
@@ -10,10 +11,14 @@ import (
 // Build constants
 // all variables are set during build
 var (
-	Version   = "devel"
-	Commit    = ""
-	BuildTime = ""
+	Version   string
+	Commit    string
+	BuildTime string
 )
+
+func init() {
+	setVersionInfo()
+}
 
 func main() {
 	app := cmd.New(Version, Commit, BuildTime)
@@ -21,5 +26,31 @@ func main() {
 	if err != nil {
 		fmt.Println("Error: ", err)
 		os.Exit(cmd.ErrExitCode)
+	}
+}
+
+func setVersionInfo() {
+	info, ok := debug.ReadBuildInfo()
+	if ok {
+		Version = info.Main.Version
+
+		checkSum := "unknown"
+		if info.Main.Sum != "" {
+			checkSum = info.Main.Sum
+		}
+
+		Commit = "(" + "checksum: " + checkSum + ")"
+	}
+
+	if Version == "" {
+		Version = "master"
+	}
+
+	if Commit == "" {
+		Commit = "unknown"
+	}
+
+	if BuildTime == "" {
+		BuildTime = "unknown"
 	}
 }
