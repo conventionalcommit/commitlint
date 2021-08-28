@@ -2,45 +2,64 @@
 
 commitlint checks if your commit messages meets the [conventional commit format](https://www.conventionalcommits.org/en/v1.0.0/)
 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/conventionalcommit/parser)](https://pkg.go.dev/github.com/conventionalcommit/parser)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/conventionalcommit/commitlint)](https://pkg.go.dev/github.com/conventionalcommit/commitlint)
 
 #### Table of Contents
 
-+ [Installation](#installation)
-+ [Enable in Git Repo](#enable-in-git-repo)
-+ [Benefits using commitlint](#benefits-using-commitlint)
-+ [Commit Types](#commit-types)
-+ [Library](#library)
+- [Installation](#installation)
+  - [Releases](#releases)
+  - [Using go](#using-go)
+- [Enable in Git Repo](#enable-in-git-repo)
+- [Test](#test)
+- [Custom config for each repo](#custom-config-for-each-repo)
+- [Benefits using commitlint](#benefits-using-commitlint)
+- [Commit Types](#commit-types)
+- [Library](#library)
   - [Config Precedence](#config-precedence)
   - [Message Precedence](#message-precedence)
   - [Default Config](#default-config)
-+ [License](#license)
+- [License](#license)
 
 ### Installation
 
+#### Releases
+
+Download binary from [releases](https://github.com/conventionalcommit/commitlint/releases) and add the path to your `PATH`
+
+#### Using go
+
 ```bash
 # Install commitlint
-go install github.com/conventionalcommit/commitlint/cmd/commitlint@latest
-
-# test commitlint - error case
-echo "fear: do not fear for commit message" | commitlint lint
-# will show error message like
-# ❌ type: 'fear' is not allowed, you can use one of [feat fix docs style refactor perf test build ci chore revert merge]
-
-# test commitlint - valid case
-echo "feat: good commit message" | commitlint lint
-#  ✓ commit message
+go install github.com/conventionalcommit/commitlint@latest
 ```
 
 ### Enable in Git Repo
 
 ```bash
 # enable for single repo
-commitlint create hook # from repo directory
+commitlint init # from repo directory
 
 # enable for globally for all repos
-commitlint create hook --global
+commitlint init --global
 ```
+
+### Test
+
+```bash
+# invalid commit message
+echo "fear: do not fear for commit message" | commitlint lint
+# ❌ type-enum: type 'fear' is not allowed, you can use one of [feat fix docs style refactor perf test build ci chore revert merge]
+
+# valid commit message
+echo "feat: good commit message" | commitlint lint
+# ✔ commit message
+```
+
+### Custom config for each repo
+
+- run `commitlint create config` in repo root directory
+- this will create `commitlint.yaml` in that directory
+- you can customise the config to your need
 
 ### Benefits using commitlint
 
@@ -48,7 +67,7 @@ commitlint create hook --global
 
 ### Commit Types
 
-​	Commonly used commit types from [Conventional Commit Types](https://github.com/commitizen/conventional-commit-types)
+Commonly used commit types from [Conventional Commit Types](https://github.com/commitizen/conventional-commit-types)
 
 | Type     | Description                                                                      |
 |:---------|:---------------------------------------------------------------------------------|
@@ -82,19 +101,28 @@ commitlint create hook --global
 #### Default Config
 
 ```yaml
-header:
-    min-length:
+formatter: default
+rules:
+    header-min-length:
         enabled: true
-        type: error
-        value: 10
-    max-length:
+        severity: error
+        argument: 10
+    header-max-length:
         enabled: true
-        type: error
-        value: 50
-    types:
+        severity: error
+        argument: 50
+    body-max-line-length:
         enabled: true
-        type: error
-        value:
+        severity: error
+        argument: 72
+    footer-max-line-length:
+        enabled: true
+        severity: error
+        argument: 72
+    type-enum:
+        enabled: true
+        severity: error
+        argument:
             - feat
             - fix
             - docs
@@ -107,25 +135,8 @@ header:
             - chore
             - revert
             - merge
-    scopes:
-        enabled: false
-        type: error
-        value: []
-body:
-    can-be-empty: true
-    max-line-length:
-        enabled: true
-        type: error
-        value: 72
-footer:
-    can-be-empty: true
-    max-line-length:
-        enabled: true
-        type: error
-        value: 72
 ```
 
 ### License
 
 All packages are licensed under [MIT License](https://github.com/conventionalcommit/commitlint/tree/master/LICENSE.md)
-
