@@ -29,19 +29,22 @@ Download binary from [releases](https://github.com/conventionalcommit/commitlint
 #### Using go
 
 ```bash
-# Install commitlint
 go install github.com/conventionalcommit/commitlint@latest
 ```
 
 ### Enable in Git Repo
 
-```bash
-# enable for single repo
-commitlint init # from repo directory
+- enable for a single repository, `cd` to repository directory
 
-# enable for globally for all repos
-commitlint init --global
-```
+  ```bash
+  commitlint init
+  ```
+
+- enable globally for all repositories
+
+  ```bash
+  commitlint init --global
+  ```
 
 ### Test
 
