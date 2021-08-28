@@ -24,7 +24,7 @@ func main() {
 		return nil
 	}
 
-	app := cmd.GetApp()
+	app := cmd.New()
 	err := app.Run(os.Args)
 	if err != nil {
 		fmt.Println("Error: ", err)

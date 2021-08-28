@@ -5,8 +5,8 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// GetApp returns commitlint cli.App
-func GetApp() *cli.App {
+// New returns commitlint cli.App
+func New() *cli.App {
 	createCmd := &cli.Command{
 		Name:  "create",
 		Usage: "create commitlint config, hooks files",
