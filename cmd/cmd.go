@@ -79,6 +79,20 @@ func New(versionNo, commitHash, builtTime string) *cli.App {
 		},
 	}
 
+	verifyCmd := &cli.Command{
+		Name:  "verify",
+		Usage: "verifies commitlint config",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "config",
+				Aliases: []string{"c", "conf"},
+				Value:   "",
+				Usage:   "optional config file `conf.yaml`",
+			},
+		},
+		Action: verifyCallback,
+	}
+
 	return &cli.App{
 		Name:   "commitlint",
 		Usage:  "linter for conventional commits",
@@ -87,6 +101,7 @@ func New(versionNo, commitHash, builtTime string) *cli.App {
 			createCmd,
 			initCmd,
 			lintCmd,
+			verifyCmd,
 			versionCmd,
 		},
 	}

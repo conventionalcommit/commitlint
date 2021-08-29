@@ -76,3 +76,25 @@ func configCreateCallback(ctx *cli.Context) error {
 	}
 	return nil
 }
+
+func verifyCallback(ctx *cli.Context) error {
+	confFlag := ctx.String("config")
+
+	confPath, useDefault, err := config.GetConfigPath(confFlag)
+	if err != nil {
+		return cli.Exit(err, ErrExitCode)
+	}
+
+	if useDefault {
+		fmt.Println("no config file found, default config will be used")
+		return nil
+	}
+
+	_, _, err = getLinter(confPath)
+	if err != nil {
+		return cli.Exit(err, ErrExitCode)
+	}
+
+	fmt.Printf("%s config is valid\n", confPath)
+	return nil
+}
