@@ -54,8 +54,7 @@ var allRules = []lint.Rule{
 // 	2. check for conf flag
 // 	3. load default conf
 func GetConfig(confFilePath string) (*lint.Config, error) {
-	confFilePath = filepath.Clean(confFilePath)
-
+	// get current directory
 	currentDir, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -67,10 +66,12 @@ func GetConfig(confFilePath string) (*lint.Config, error) {
 		confFilePath = currentDirConf
 	}
 
+	// if confFilePath empty, means no config in current directory or config flag is empty
 	if confFilePath == "" {
 		return defConf, nil
 	}
 
+	confFilePath = filepath.Clean(confFilePath)
 	conf, err := Parse(confFilePath)
 	if err != nil {
 		return nil, err
