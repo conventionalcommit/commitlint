@@ -30,27 +30,22 @@ func main() {
 }
 
 func setVersionInfo() {
-	info, ok := debug.ReadBuildInfo()
-	if ok {
-		Version = info.Main.Version
+	if BuildTime == "" {
+		info, ok := debug.ReadBuildInfo()
+		if ok {
+			checkSum := "unknown"
+			if info.Main.Sum != "" {
+				checkSum = info.Main.Sum
+			}
 
-		checkSum := "unknown"
-		if info.Main.Sum != "" {
-			checkSum = info.Main.Sum
+			Version = info.Main.Version
+			Commit = "(" + "checksum: " + checkSum + ")"
+			BuildTime = "unknown"
+			return
 		}
 
-		Commit = "(" + "checksum: " + checkSum + ")"
-	}
-
-	if Version == "" {
 		Version = "master"
-	}
-
-	if Commit == "" {
 		Commit = "unknown"
-	}
-
-	if BuildTime == "" {
 		BuildTime = "unknown"
 	}
 }
