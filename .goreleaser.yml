@@ -43,7 +43,9 @@ changelog:
       - '^test:'
       - '^style:'
       - '^chore:'
-      - '^refactor'
+      - '^refactor:'
+      - '^build:'
+      - '^ci:'
 
 release:
   draft: true
