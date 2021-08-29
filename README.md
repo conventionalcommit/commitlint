@@ -10,9 +10,9 @@ commitlint checks if your commit messages meets the [conventional commit format]
   - [Releases](#releases)
   - [Using go](#using-go)
 - [Enable in Git Repo](#enable-in-git-repo)
-- [Test](#test)
+- [Quick Test](#quick-test)
 - [Custom config for each repo](#custom-config-for-each-repo)
-- [Benefits using commitlint](#benefits-using-commitlint)
+- [Benefits of using commitlint](#benefits-of-using-commitlint)
 - [Commit Types](#commit-types)
 - [Library](#library)
   - [Config Precedence](#config-precedence)
@@ -24,7 +24,7 @@ commitlint checks if your commit messages meets the [conventional commit format]
 
 #### Releases
 
-Download binary from [releases](https://github.com/conventionalcommit/commitlint/releases) and add the path to your `PATH`
+Download binary from [releases](https://github.com/conventionalcommit/commitlint/releases) and add it to your `PATH`
 
 #### Using go
 
@@ -46,7 +46,7 @@ go install github.com/conventionalcommit/commitlint@latest
   commitlint init --global
   ```
 
-### Test
+### Quick Test
 
 ```bash
 # invalid commit message
@@ -61,10 +61,12 @@ echo "feat: good commit message" | commitlint lint
 ### Custom config for each repo
 
 - run `commitlint create config` in repo root directory
-- this will create `commitlint.yaml` in that directory
-- you can customise the config to your need
 
-### Benefits using commitlint
+  this will create `commitlint.yaml` in that directory, you can customise the config to your need
+
+- run `commitlint verify` to verify if config is valid or not
+
+### Benefits of using commitlint
 
 - [Why Use Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#why-use-conventional-commits)
 
