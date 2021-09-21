@@ -64,7 +64,11 @@ func setGitConf(hookDir string, isGlobal bool) error {
 }
 
 func getCommitMsg(fileInput string) (string, error) {
-	commitMsg := readStdIn()
+	commitMsg, err := readStdInPipe()
+	if err != nil {
+		return "", err
+	}
+
 	if commitMsg != "" {
 		return commitMsg, nil
 	}
@@ -81,12 +85,23 @@ func getCommitMsg(fileInput string) (string, error) {
 	return string(inBytes), nil
 }
 
-func readStdIn() string {
+func readStdInPipe() (string, error) {
+	stat, err := os.Stdin.Stat()
+	if err != nil {
+		return "", err
+	}
+
+	// user input from terminal
+	if (stat.Mode() & os.ModeCharDevice) != 0 {
+		// not handling this case
+		return "", nil
+	}
+
+	// user input from stdin pipe
 	readBytes, err := io.ReadAll(os.Stdin)
 	if err != nil {
-		// TODO: handle error?
-		return ""
+		return "", err
 	}
 	s := string(readBytes)
-	return strings.TrimSpace(s)
+	return strings.TrimSpace(s), nil
 }
