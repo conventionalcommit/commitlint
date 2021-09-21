@@ -64,12 +64,3 @@ func toStringArr(arg interface{}, ruleName string) ([]string, error) {
 	}
 	return nil, fmt.Errorf("%s expects array of string value, but got %#v", ruleName, arg)
 }
-
-func search(arr []string, toFind string) bool {
-	for _, typ := range arr {
-		if typ == toFind {
-			return true
-		}
-	}
-	return false
-}

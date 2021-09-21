@@ -2,6 +2,7 @@ package rule
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/conventionalcommit/commitlint/message"
 )
@@ -26,7 +27,13 @@ func (r *ScopeEnumRule) Validate(msg *message.Commit) (string, bool) {
 
 // SetAndCheckArgument sets the needed argument for the rule
 func (r *ScopeEnumRule) SetAndCheckArgument(arg interface{}) error {
-	return setStringArrArg(&r.Scopes, arg, r.Name())
+	err := setStringArrArg(&r.Scopes, arg, r.Name())
+	if err != nil {
+		return err
+	}
+	// sorting the string elements for binary search
+	sort.Strings(r.Scopes)
+	return nil
 }
 
 // TypeEnumRule to validate types
@@ -49,5 +56,18 @@ func (r *TypeEnumRule) Validate(msg *message.Commit) (string, bool) {
 
 // SetAndCheckArgument sets the needed argument for the rule
 func (r *TypeEnumRule) SetAndCheckArgument(arg interface{}) error {
-	return setStringArrArg(&r.Types, arg, r.Name())
+	err := setStringArrArg(&r.Types, arg, r.Name())
+	if err != nil {
+		return err
+	}
+	// sorting the string elements for binary search
+	sort.Strings(r.Types)
+	return nil
+}
+
+func search(arr []string, toFind string) bool {
+	ind := sort.Search(len(arr), func(i int) bool {
+		return toFind <= arr[i]
+	})
+	return ind < len(arr) && arr[ind] == toFind
 }
