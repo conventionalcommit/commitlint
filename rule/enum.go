@@ -10,6 +10,8 @@ import (
 // ScopeEnumRule to validate max length of header
 type ScopeEnumRule struct {
 	Scopes []string
+
+	AllowEmpty bool
 }
 
 // Name return name of the rule
@@ -17,6 +19,14 @@ func (r *ScopeEnumRule) Name() string { return "scope-enum" }
 
 // Validate validates ScopeEnumRule
 func (r *ScopeEnumRule) Validate(msg *message.Commit) (string, bool) {
+	if msg.Header.Scope == "" {
+		if r.AllowEmpty {
+			return "", true
+		}
+		errMsg := fmt.Sprintf("empty scope is not allowed, you can use one of %v", r.Scopes)
+		return errMsg, false
+	}
+
 	isFound := search(r.Scopes, msg.Header.Scope)
 	if !isFound {
 		errMsg := fmt.Sprintf("scope '%s' is not allowed, you can use one of %v", msg.Header.Scope, r.Scopes)
@@ -31,6 +41,15 @@ func (r *ScopeEnumRule) Apply(arg interface{}, flags map[string]interface{}) err
 	if err != nil {
 		return err
 	}
+
+	allowEmpty, ok := flags["allow-empty"]
+	if ok {
+		err := setBoolArg(&r.AllowEmpty, allowEmpty, r.Name())
+		if err != nil {
+			return err
+		}
+	}
+
 	// sorting the string elements for binary search
 	sort.Strings(r.Scopes)
 	return nil

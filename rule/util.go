@@ -4,6 +4,15 @@ import (
 	"fmt"
 )
 
+func setBoolArg(retVal *bool, arg interface{}, ruleName string) error {
+	boolVal, err := toBool(arg, ruleName)
+	if err != nil {
+		return err
+	}
+	*retVal = boolVal
+	return nil
+}
+
 func setIntArg(retVal *int, arg interface{}, ruleName string) error {
 	intVal, err := toInt(arg, ruleName)
 	if err != nil {
@@ -29,6 +38,14 @@ func setStringArrArg(retVal *[]string, arg interface{}, ruleName string) error {
 	}
 	*retVal = arrVal
 	return nil
+}
+
+func toBool(arg interface{}, ruleName string) (bool, error) {
+	boolVal, ok := arg.(bool)
+	if !ok {
+		return false, fmt.Errorf("%s expects bool value, but got %#v", ruleName, arg)
+	}
+	return boolVal, nil
 }
 
 func toInt(arg interface{}, ruleName string) (int, error) {
