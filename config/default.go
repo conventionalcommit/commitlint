@@ -52,6 +52,9 @@ var defConf = &lint.Config{
 			Enabled:  false,
 			Severity: lint.SeverityError,
 			Argument: []interface{}{},
+			Flags: map[string]interface{}{
+				"allow-empty": true,
+			},
 		},
 
 		// Body Min Len Rule
