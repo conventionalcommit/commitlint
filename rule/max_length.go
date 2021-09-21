@@ -19,8 +19,8 @@ func (r *HeadMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Header.FullHeader)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *HeadMaxLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *HeadMaxLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -37,8 +37,8 @@ func (r *BodyMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Body)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *BodyMaxLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *BodyMaxLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -55,8 +55,8 @@ func (r *FooterMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Footer.FullFooter)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *FooterMaxLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *FooterMaxLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -73,8 +73,8 @@ func (r *TypeMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Header.Type)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *TypeMaxLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *TypeMaxLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -91,8 +91,8 @@ func (r *ScopeMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Header.Scope)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *ScopeMaxLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *ScopeMaxLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -109,8 +109,8 @@ func (r *DescriptionMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Header.Description)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *DescriptionMaxLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *DescriptionMaxLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 

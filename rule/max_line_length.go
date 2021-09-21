@@ -20,8 +20,8 @@ func (r *BodyMaxLineLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMaxLineLength(r.CheckLen, msg.Body)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *BodyMaxLineLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *BodyMaxLineLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -38,8 +38,8 @@ func (r *FooterMaxLineLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMaxLineLength(r.CheckLen, msg.Footer.FullFooter)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *FooterMaxLineLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *FooterMaxLineLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 

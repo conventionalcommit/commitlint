@@ -19,8 +19,8 @@ func (r *HeadMinLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Header.FullHeader)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *HeadMinLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *HeadMinLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -37,8 +37,8 @@ func (r *BodyMinLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Body)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *BodyMinLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *BodyMinLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -55,8 +55,8 @@ func (r *FooterMinLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Footer.FullFooter)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *FooterMinLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *FooterMinLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -73,8 +73,8 @@ func (r *TypeMinLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Header.Type)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *TypeMinLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *TypeMinLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -91,8 +91,8 @@ func (r *ScopeMinLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Header.Scope)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *ScopeMinLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *ScopeMinLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -109,8 +109,8 @@ func (r *DescriptionMinLenRule) Validate(msg *message.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Header.Description)
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *DescriptionMinLenRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *DescriptionMinLenRule) Apply(arg interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 

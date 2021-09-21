@@ -25,8 +25,8 @@ func (r *ScopeEnumRule) Validate(msg *message.Commit) (string, bool) {
 	return "", true
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *ScopeEnumRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *ScopeEnumRule) Apply(arg interface{}) error {
 	err := setStringArrArg(&r.Scopes, arg, r.Name())
 	if err != nil {
 		return err
@@ -54,8 +54,8 @@ func (r *TypeEnumRule) Validate(msg *message.Commit) (string, bool) {
 	return "", true
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *TypeEnumRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *TypeEnumRule) Apply(arg interface{}) error {
 	err := setStringArrArg(&r.Types, arg, r.Name())
 	if err != nil {
 		return err

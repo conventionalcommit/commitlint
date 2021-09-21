@@ -119,7 +119,7 @@ func GetRules(conf *lint.Config) ([]lint.Rule, error) {
 			return nil, fmt.Errorf("unknown rule: %s", ruleName)
 		}
 		if ruleConfig.Enabled {
-			err := r.SetAndCheckArgument(ruleConfig.Argument)
+			err := r.Apply(ruleConfig.Argument)
 			if err != nil {
 				return nil, err
 			}

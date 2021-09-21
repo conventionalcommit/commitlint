@@ -25,8 +25,8 @@ func (r *ScopeCharsetRule) Validate(msg *message.Commit) (string, bool) {
 	return "", true
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *ScopeCharsetRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *ScopeCharsetRule) Apply(arg interface{}) error {
 	return setStringArg(&r.Charset, arg, r.Name())
 }
 
@@ -48,8 +48,8 @@ func (r *TypeCharsetRule) Validate(msg *message.Commit) (string, bool) {
 	return "", true
 }
 
-// SetAndCheckArgument sets the needed argument for the rule
-func (r *TypeCharsetRule) SetAndCheckArgument(arg interface{}) error {
+// Apply sets the needed argument for the rule
+func (r *TypeCharsetRule) Apply(arg interface{}) error {
 	return setStringArg(&r.Charset, arg, r.Name())
 }
 
