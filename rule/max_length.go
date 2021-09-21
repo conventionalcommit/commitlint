@@ -20,7 +20,7 @@ func (r *HeadMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *HeadMaxLenRule) Apply(arg interface{}) error {
+func (r *HeadMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -38,7 +38,7 @@ func (r *BodyMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *BodyMaxLenRule) Apply(arg interface{}) error {
+func (r *BodyMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -56,7 +56,7 @@ func (r *FooterMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *FooterMaxLenRule) Apply(arg interface{}) error {
+func (r *FooterMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -74,7 +74,7 @@ func (r *TypeMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *TypeMaxLenRule) Apply(arg interface{}) error {
+func (r *TypeMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -92,7 +92,7 @@ func (r *ScopeMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *ScopeMaxLenRule) Apply(arg interface{}) error {
+func (r *ScopeMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -110,7 +110,7 @@ func (r *DescriptionMaxLenRule) Validate(msg *message.Commit) (string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *DescriptionMaxLenRule) Apply(arg interface{}) error {
+func (r *DescriptionMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 

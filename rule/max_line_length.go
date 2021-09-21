@@ -21,7 +21,7 @@ func (r *BodyMaxLineLenRule) Validate(msg *message.Commit) (string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *BodyMaxLineLenRule) Apply(arg interface{}) error {
+func (r *BodyMaxLineLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 
@@ -39,7 +39,7 @@ func (r *FooterMaxLineLenRule) Validate(msg *message.Commit) (string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *FooterMaxLineLenRule) Apply(arg interface{}) error {
+func (r *FooterMaxLineLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
 	return setIntArg(&r.CheckLen, arg, r.Name())
 }
 

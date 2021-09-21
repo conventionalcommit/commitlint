@@ -7,10 +7,10 @@ type Rule interface {
 	// Name returns name of the rule, it should be a unique identifier
 	Name() string
 
-	// Apply sets the argument to the rule from config file
-	// if args are invalid or not expected return an error
+	// Apply calls with arguments and flags for the rule from config file
+	// if flags or arguments are invalid or not expected return an error
 	// Apply is called before Validate
-	Apply(arg interface{}) error
+	Apply(arg interface{}, flags map[string]interface{}) error
 
 	// Validate validates the rule for given message
 	Validate(msg *message.Commit) (result string, isValid bool)

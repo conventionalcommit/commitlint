@@ -17,6 +17,9 @@ type RuleConfig struct {
 	Enabled  bool        `yaml:"enabled"`
 	Severity string      `yaml:"severity"`
 	Argument interface{} `yaml:"argument"`
+
+	// Optional flags
+	Flags map[string]interface{} `yaml:"flags"`
 }
 
 // GetRule returns RuleConfig for given ruleName
