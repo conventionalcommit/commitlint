@@ -7,12 +7,58 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var verTmpl = `commitlint version %s - built from %s on %s
+var versionTmpl = `commitlint version %s - built from %s on %s
 `
 
 // New returns commitlint cli.App
 func New(versionNo, commitHash, builtTime string) *cli.App {
-	createCmd := &cli.Command{
+	versionInfo := fmt.Sprintf(versionTmpl, versionNo, commitHash, builtTime)
+
+	cmds := []*cli.Command{
+		createCmd(),
+		initCmd(),
+		lintCmd(),
+		verifyCmd(),
+		versionCmd(versionInfo),
+	}
+
+	app := &cli.App{
+		Name:     "commitlint",
+		Usage:    "linter for conventional commits",
+		Commands: cmds,
+		Action:   nil,
+	}
+	return app
+}
+
+func versionCmd(versionInfo string) *cli.Command {
+	return &cli.Command{
+		Name:  "version",
+		Usage: "prints commitlint version",
+		Action: func(c *cli.Context) error {
+			fmt.Printf(versionInfo)
+			return nil
+		},
+	}
+}
+
+func initCmd() *cli.Command {
+	return &cli.Command{
+		Name:   "init",
+		Usage:  "setup commitlint for git repos",
+		Action: initCallback,
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:    "global",
+				Aliases: []string{"g"},
+				Usage:   "sets git hook in global config",
+			},
+		},
+	}
+}
+
+func createCmd() *cli.Command {
+	return &cli.Command{
 		Name:  "create",
 		Usage: "create commitlint config, hooks files",
 		Subcommands: []*cli.Command{
@@ -36,21 +82,10 @@ func New(versionNo, commitHash, builtTime string) *cli.App {
 			},
 		},
 	}
+}
 
-	initCmd := &cli.Command{
-		Name:   "init",
-		Usage:  "setup commitlint for git repos",
-		Action: initCallback,
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:    "global",
-				Aliases: []string{"g"},
-				Usage:   "sets git hook in global config",
-			},
-		},
-	}
-
-	lintCmd := &cli.Command{
+func lintCmd() *cli.Command {
+	return &cli.Command{
 		Name:   "lint",
 		Usage:  "lints commit message",
 		Action: lintCallback,
@@ -69,17 +104,10 @@ func New(versionNo, commitHash, builtTime string) *cli.App {
 			},
 		},
 	}
+}
 
-	versionCmd := &cli.Command{
-		Name:  "version",
-		Usage: "prints commitlint version",
-		Action: func(c *cli.Context) error {
-			fmt.Printf(verTmpl, versionNo, commitHash, builtTime)
-			return nil
-		},
-	}
-
-	verifyCmd := &cli.Command{
+func verifyCmd() *cli.Command {
+	return &cli.Command{
 		Name:  "verify",
 		Usage: "verifies commitlint config",
 		Flags: []cli.Flag{
@@ -91,18 +119,5 @@ func New(versionNo, commitHash, builtTime string) *cli.App {
 			},
 		},
 		Action: verifyCallback,
-	}
-
-	return &cli.App{
-		Name:   "commitlint",
-		Usage:  "linter for conventional commits",
-		Action: nil,
-		Commands: []*cli.Command{
-			createCmd,
-			initCmd,
-			lintCmd,
-			verifyCmd,
-			versionCmd,
-		},
 	}
 }
