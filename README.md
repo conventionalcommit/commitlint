@@ -11,13 +11,16 @@ commitlint checks if your commit messages meets the [conventional commit format]
   - [Using go](#using-go)
 - [Enable in Git Repo](#enable-in-git-repo)
 - [Quick Test](#quick-test)
-- [Custom config for each repo](#custom-config-for-each-repo)
-- [Benefits of using commitlint](#benefits-of-using-commitlint)
-- [Commit Types](#commit-types)
+- [Benefits of using conventional commit](#benefits-of-using-conventional-commit)
+  - [Commit Types](#commit-types)
+- [Commands](#commands)
+    * [Custom config for each repo](#custom-config-for-each-repo)
+    * [Verify config file](#verify-config-file)
+- [Rules](#rules)
 - [Library](#library)
   - [Config Precedence](#config-precedence)
-  - [Message Precedence](#message-precedence)
-  - [Default Config](#default-config)
+  - [Commit Message Precedence](#commit-message-precedence)
+- [Default Config](#default-config)
 - [License](#license)
 
 ### Installation
@@ -58,19 +61,20 @@ echo "feat: good commit message" | commitlint lint
 # ✔ commit message
 ```
 
-### Custom config for each repo
+### Benefits of using conventional commit
 
-- run `commitlint create config` in repo root directory
+- Conventional Commit format. Read [Full Specification here](https://www.conventionalcommits.org/en/v1.0.0/#specification)
+```
+<type>[optional scope]: <description>
 
-  this will create `commitlint.yaml` in that directory, you can customise the config to your need
+[optional body]
 
-- run `commitlint verify` to verify if config is valid or not
-
-### Benefits of using commitlint
+[optional footer(s)]
+```
 
 - [Why Use Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#why-use-conventional-commits)
 
-### Commit Types
+#### Commit Types
 
 Commonly used commit types from [Conventional Commit Types](https://github.com/commitizen/conventional-commit-types)
 
@@ -89,6 +93,45 @@ Commonly used commit types from [Conventional Commit Types](https://github.com/c
 | revert   | Reverts a previous commit                                                        |
 | merge    | Merges a branch                                                                  |
 
+### Commands
+
+##### Custom config for each repo
+
+- run `commitlint create config` in repo root directory
+
+  this will create `commitlint.yaml` in that directory, you can customise the config to your need
+
+##### Verify config file
+
+- run `commitlint verify` to verify if config is valid or not (according to config precedence)
+
+- run `commitlint verify --config=/path/to/conf.yaml`to verify given config file
+
+### Rules
+
+The list of available lint rules
+
+| name                   | argument | flags             | description                                  |
+| ---------------------- | -------- | ----------------- | -------------------------------------------- |
+| header-min-length      | int      | n/a               | checks the min length of header (first line) |
+| header-max-length      | int      | n/a               | checks the max length of header (first line) |
+| body-max-line-length   | int      | n/a               | checks the max length of each line in body   |
+| footer-max-line-length | int      | n/a               | checks the max length of each line in footer |
+| type-enum              | []string | n/a               | restrict type to given list of string        |
+| scope-enum             | []string | allow-empty: bool | restrict scope to given list of string       |
+| type-min-length        | int      | n/a               | checks the min length of type                |
+| type-max-length        | int      | n/a               | checks the max length of type                |
+| scope-min-length       | int      | n/a               | checks the min length of scope               |
+| scope-max-length       | int      | n/a               | checks the max length of scope               |
+| description-min-length | int      | n/a               | checks the min length of description         |
+| description-max-length | int      | n/a               | checks the max length of description         |
+| body-min-length        | int      | n/a               | checks the min length of body                |
+| body-max-length        | int      | n/a               | checks the max length of body                |
+| footer-min-length      | int      | n/a               | checks the min length of footer              |
+| footer-max-length      | int      | n/a               | checks the max length of footer              |
+| type-charset           | string   | n/a               | restricts type to given charset              |
+| scope-charset          | string   | n/a               | restricts scope to given charset             |
+
 ### Library
 
 #### Config Precedence
@@ -97,13 +140,13 @@ Commonly used commit types from [Conventional Commit Types](https://github.com/c
 - config file passed with `--config` command-line argument
 - [default config](#default-config)
 
-#### Message Precedence
+#### Commit Message Precedence
 
-- `stdin` stream
+- `stdin` pipe stream
 - commit message file passed with `--message` command-line argument
 - `.git/COMMIT_EDITMSG` in current directory
 
-#### Default Config
+### Default Config
 
 ```yaml
 formatter: default
