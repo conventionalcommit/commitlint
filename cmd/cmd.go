@@ -3,16 +3,14 @@ package cmd
 
 import (
 	"fmt"
+	"runtime/debug"
 
 	"github.com/urfave/cli/v2"
 )
 
-var versionTmpl = `commitlint version %s - built from %s on %s
-`
-
 // New returns commitlint cli.App
 func New(versionNo, commitHash, builtTime string) *cli.App {
-	versionInfo := fmt.Sprintf(versionTmpl, versionNo, commitHash, builtTime)
+	versionInfo := formVersionInfo(versionNo, commitHash, builtTime)
 
 	cmds := []*cli.Command{
 		createCmd(),
@@ -120,4 +118,33 @@ func verifyCmd() *cli.Command {
 		},
 		Action: verifyCallback,
 	}
+}
+
+func formVersionInfo(versionInfo, commitInfo, buildTime string) string {
+	versionTmpl := `commitlint version %s - built from %s on %s
+`
+	versionInfo, commitInfo, buildTime = getVersionInfo(versionInfo, commitInfo, buildTime)
+	return fmt.Sprintf(versionTmpl, versionInfo, commitInfo, buildTime)
+}
+
+func getVersionInfo(version, commit, build string) (versionInfo, commitInfo, buildTime string) {
+	if build != "" {
+		return version, commit, build
+	}
+
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "master", "unknown", "unknown"
+	}
+
+	checkSum := "unknown"
+	if info.Main.Sum != "" {
+		checkSum = info.Main.Sum
+	}
+
+	versionInfo = info.Main.Version
+	commitInfo = "(" + "checksum: " + checkSum + ")"
+	buildTime = "unknown"
+
+	return versionInfo, commitInfo, buildTime
 }
