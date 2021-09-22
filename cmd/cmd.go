@@ -2,49 +2,38 @@
 package cmd
 
 import (
-	"fmt"
-	"runtime/debug"
-
 	"github.com/urfave/cli/v2"
 )
 
 // New returns commitlint cli.App
-func New(versionNo, commitHash, builtTime string) *cli.App {
+func New() *cli.App {
+	return NewWith("", "", "")
+}
+
+// NewWith returns commitlint cli.App with version info
+func NewWith(versionNo, commitHash, builtTime string) *cli.App {
 	versionInfo := formVersionInfo(versionNo, commitHash, builtTime)
 
 	cmds := []*cli.Command{
-		createCmd(),
 		initCmd(),
 		lintCmd(),
+		createCmd(),
 		verifyCmd(),
-		versionCmd(versionInfo),
 	}
 
 	app := &cli.App{
 		Name:     "commitlint",
 		Usage:    "linter for conventional commits",
 		Commands: cmds,
-		Action:   nil,
+		Version:  versionInfo,
 	}
 	return app
 }
 
-func versionCmd(versionInfo string) *cli.Command {
-	return &cli.Command{
-		Name:  "version",
-		Usage: "prints commitlint version",
-		Action: func(c *cli.Context) error {
-			fmt.Printf(versionInfo)
-			return nil
-		},
-	}
-}
-
 func initCmd() *cli.Command {
 	return &cli.Command{
-		Name:   "init",
-		Usage:  "setup commitlint for git repos",
-		Action: initCallback,
+		Name:  "init",
+		Usage: "setup commitlint for git repos",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "global",
@@ -52,41 +41,53 @@ func initCmd() *cli.Command {
 				Usage:   "sets git hook in global config",
 			},
 		},
+		Action: func(ctx *cli.Context) error {
+			isGlobal := ctx.Bool("global")
+			return Init(isGlobal)
+		},
 	}
 }
 
 func createCmd() *cli.Command {
+	configCmd := &cli.Command{
+		Name:  "config",
+		Usage: "creates commitlint.yaml in current directory",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:    "enabled",
+				Aliases: []string{"e"},
+				Usage:   "writes only default enabled rules to file",
+				Value:   false,
+			},
+		},
+		Action: func(ctx *cli.Context) error {
+			isOnlyEnabled := ctx.Bool("enabled")
+			return CreateConfig(isOnlyEnabled)
+		},
+	}
+
+	hookCmd := &cli.Command{
+		Name:  "hook",
+		Usage: "creates commit-msg file in current directory",
+		Action: func(ctx *cli.Context) error {
+			return CreateHook()
+		},
+	}
+
 	return &cli.Command{
 		Name:  "create",
 		Usage: "create commitlint config, hooks files",
 		Subcommands: []*cli.Command{
-			{
-				Name:   "config",
-				Usage:  "creates commitlint.yaml in current directory",
-				Action: configCreateCallback,
-				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name:    "enabled",
-						Aliases: []string{"e"},
-						Usage:   "writes only default enabled rules to file",
-						Value:   false,
-					},
-				},
-			},
-			{
-				Name:   "hook",
-				Usage:  "creates commit-msg file in current directory",
-				Action: hookCreateCallback,
-			},
+			configCmd,
+			hookCmd,
 		},
 	}
 }
 
 func lintCmd() *cli.Command {
 	return &cli.Command{
-		Name:   "lint",
-		Usage:  "lints commit message",
-		Action: lintCallback,
+		Name:  "lint",
+		Usage: "lints commit message",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "config",
@@ -100,6 +101,11 @@ func lintCmd() *cli.Command {
 				Value:   "",
 				Usage:   "path to git commit message `FILE`",
 			},
+		},
+		Action: func(ctx *cli.Context) error {
+			confFilePath := ctx.String("config")
+			fileInput := ctx.String("message")
+			return Lint(confFilePath, fileInput)
 		},
 	}
 }
@@ -116,35 +122,9 @@ func verifyCmd() *cli.Command {
 				Usage:   "optional config file `conf.yaml`",
 			},
 		},
-		Action: verifyCallback,
+		Action: func(ctx *cli.Context) error {
+			confFilePath := ctx.String("config")
+			return VerifyConfig(confFilePath)
+		},
 	}
-}
-
-func formVersionInfo(versionInfo, commitInfo, buildTime string) string {
-	versionTmpl := `commitlint version %s - built from %s on %s
-`
-	versionInfo, commitInfo, buildTime = getVersionInfo(versionInfo, commitInfo, buildTime)
-	return fmt.Sprintf(versionTmpl, versionInfo, commitInfo, buildTime)
-}
-
-func getVersionInfo(version, commit, build string) (versionInfo, commitInfo, buildTime string) {
-	if build != "" {
-		return version, commit, build
-	}
-
-	info, ok := debug.ReadBuildInfo()
-	if !ok {
-		return "master", "unknown", "unknown"
-	}
-
-	checkSum := "unknown"
-	if info.Main.Sum != "" {
-		checkSum = info.Main.Sum
-	}
-
-	versionInfo = info.Main.Version
-	commitInfo = "(" + "checksum: " + checkSum + ")"
-	buildTime = "unknown"
-
-	return versionInfo, commitInfo, buildTime
 }

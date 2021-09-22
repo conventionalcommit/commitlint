@@ -16,7 +16,7 @@ var (
 )
 
 func main() {
-	app := cmd.New(Version, Commit, BuildTime)
+	app := cmd.NewWith(Version, Commit, BuildTime)
 	err := app.Run(os.Args)
 	if err != nil {
 		fmt.Println("Error:", err)

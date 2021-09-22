@@ -18,9 +18,8 @@ const (
 	HookDir = ".commitlint/hooks"
 )
 
-func initCallback(ctx *cli.Context) (retErr error) {
-	isGlobal := ctx.Bool("global")
-
+// Init is the callback function for init command
+func Init(isGlobal bool) error {
 	hookDir, err := getHookDir(isGlobal)
 	if err != nil {
 		return err
@@ -46,11 +45,10 @@ func initCallback(ctx *cli.Context) (retErr error) {
 	return nil
 }
 
-func lintCallback(ctx *cli.Context) error {
-	confFilePath := ctx.String("config")
-	fileInput := ctx.String("message")
-
-	resStr, hasError, err := runLint(confFilePath, fileInput)
+// Lint is the callback function for lint command
+func Lint(confPath, msgPath string) error {
+	// NOTE: lint should return with exit code for error case
+	resStr, hasError, err := runLint(confPath, msgPath)
 	if err != nil {
 		return cli.Exit(err, ErrExitCode)
 	}
@@ -59,33 +57,26 @@ func lintCallback(ctx *cli.Context) error {
 		return cli.Exit(resStr, ErrExitCode)
 	}
 
+	// print success message
 	fmt.Println(resStr)
 	return nil
 }
 
-func hookCreateCallback(ctx *cli.Context) (retErr error) {
-	err := hook.WriteToFile(".")
-	if err != nil {
-		return cli.Exit(err, ErrExitCode)
-	}
-	return nil
+// CreateHook is the callback function for create hook command
+func CreateHook() (retErr error) {
+	return hook.WriteToFile(".")
 }
 
-func configCreateCallback(ctx *cli.Context) error {
-	isOnlyEnabled := ctx.Bool("enabled")
-	err := config.DefaultConfToFile(isOnlyEnabled)
-	if err != nil {
-		return cli.Exit(err, ErrExitCode)
-	}
-	return nil
+// CreateConfig is the callback function for create config command
+func CreateConfig(onlyEnabled bool) error {
+	return config.DefaultConfToFile(onlyEnabled)
 }
 
-func verifyCallback(ctx *cli.Context) error {
-	confFlag := ctx.String("config")
-
+// VerifyConfig is the callback function for verify command
+func VerifyConfig(confFlag string) error {
 	confPath, useDefault, err := config.GetConfigPath(confFlag)
 	if err != nil {
-		return cli.Exit(err, ErrExitCode)
+		return err
 	}
 
 	if useDefault {
@@ -95,7 +86,7 @@ func verifyCallback(ctx *cli.Context) error {
 
 	_, _, err = getLinter(confPath)
 	if err != nil {
-		return cli.Exit(err, ErrExitCode)
+		return err
 	}
 
 	fmt.Printf("%s config is valid\n", confPath)
