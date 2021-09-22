@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 
@@ -20,14 +19,13 @@ const (
 )
 
 func initCallback(ctx *cli.Context) (retErr error) {
-	// get user home dir
-	homeDir, err := os.UserHomeDir()
+	isGlobal := ctx.Bool("global")
+
+	hookDir, err := getHookDir(isGlobal)
 	if err != nil {
 		return err
 	}
 
-	// create hooks dir
-	hookDir := filepath.Join(homeDir, filepath.Clean(HookDir))
 	err = os.MkdirAll(hookDir, os.ModePerm)
 	if err != nil {
 		return err
@@ -39,8 +37,13 @@ func initCallback(ctx *cli.Context) (retErr error) {
 		return err
 	}
 
-	isGlobal := ctx.Bool("global")
-	return setGitConf(hookDir, isGlobal)
+	err = setGitConf(hookDir, isGlobal)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("commitlint init successfully")
+	return nil
 }
 
 func lintCallback(ctx *cli.Context) error {

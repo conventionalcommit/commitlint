@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"bytes"
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/conventionalcommit/commitlint/config"
@@ -60,6 +62,7 @@ func setGitConf(hookDir string, isGlobal bool) error {
 	args = append(args, "core.hooksPath", hookDir)
 
 	cmd := exec.Command("git", args...)
+	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
 
@@ -104,4 +107,46 @@ func readStdInPipe() (string, error) {
 	}
 	s := string(readBytes)
 	return strings.TrimSpace(s), nil
+}
+
+func getHookDir(isGlobal bool) (string, error) {
+	baseDir := filepath.Clean(HookDir)
+
+	if isGlobal {
+		// get user home dir
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return "", err
+		}
+
+		// create hooks dir
+		hookDir := filepath.Join(homeDir, baseDir)
+		return hookDir, nil
+	}
+
+	gitDir, err := getRepoRootDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(gitDir, baseDir), nil
+}
+
+func getRepoRootDir() (string, error) {
+	byteOut := &bytes.Buffer{}
+
+	cmd := exec.Command("git", "rev-parse", "--git-dir")
+	cmd.Stdout = byteOut
+	cmd.Stderr = os.Stderr
+
+	err := cmd.Run()
+	if err != nil {
+		return "", err
+	}
+
+	gitDir := filepath.Clean(byteOut.String())
+
+	// remove /.git at last
+	gitDir = filepath.Dir(gitDir)
+
+	return gitDir, nil
 }
