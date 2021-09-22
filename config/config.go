@@ -115,21 +115,21 @@ func Validate(conf *lint.Config) error {
 // DefaultConfToFile writes default config to given file
 func DefaultConfToFile(isOnlyEnabled bool) error {
 	outPath := filepath.Join(".", filepath.Clean(ConfFileName))
-	if isOnlyEnabled {
-		confClone := &lint.Config{
-			Formatter: defConf.Formatter,
-			Rules:     map[string]lint.RuleConfig{},
-		}
-
-		for ruleName, r := range defConf.Rules {
-			if r.Enabled {
-				confClone.Rules[ruleName] = r
-			}
-		}
-
-		return WriteConfToFile(outPath, confClone)
+	if !isOnlyEnabled {
+		return WriteConfToFile(outPath, defConf)
 	}
-	return WriteConfToFile(outPath, defConf)
+
+	confClone := &lint.Config{
+		Formatter: defConf.Formatter,
+		Rules:     map[string]lint.RuleConfig{},
+	}
+
+	for ruleName, r := range defConf.Rules {
+		if r.Enabled {
+			confClone.Rules[ruleName] = r
+		}
+	}
+	return WriteConfToFile(outPath, confClone)
 }
 
 // WriteConfToFile util func to write config object to given file
