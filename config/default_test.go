@@ -12,8 +12,8 @@ func TestDefaultLint(t *testing.T) {
 }
 
 func TestDefaultConf(t *testing.T) {
-	if len(allRules) != len(defConf.Rules) {
-		t.Error("default conf does not have all rules", len(allRules), len(defConf.Rules))
+	if len(defaultRules) != len(defConf.Rules) {
+		t.Error("default conf does not have all rules", len(defaultRules), len(defConf.Rules))
 		return
 	}
 }

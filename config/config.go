@@ -2,52 +2,21 @@
 package config
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/conventionalcommit/commitlint/formatter"
+	"gopkg.in/yaml.v3"
+
 	"github.com/conventionalcommit/commitlint/lint"
-	"github.com/conventionalcommit/commitlint/rule"
 )
 
 const (
 	// ConfFileName represent config file name
 	ConfFileName = "commitlint.yaml"
 )
-
-var allFormatters = []lint.Formatter{
-	&formatter.DefaultFormatter{},
-	&formatter.JSONFormatter{},
-}
-
-var allRules = []lint.Rule{
-	&rule.BodyMinLenRule{},
-	&rule.BodyMaxLenRule{},
-
-	&rule.FooterMinLenRule{},
-	&rule.FooterMaxLenRule{},
-
-	&rule.HeadMaxLenRule{},
-	&rule.HeadMinLenRule{},
-
-	&rule.TypeEnumRule{},
-	&rule.ScopeEnumRule{},
-
-	&rule.BodyMaxLineLenRule{},
-	&rule.FooterMaxLineLenRule{},
-
-	&rule.TypeCharsetRule{},
-	&rule.ScopeCharsetRule{},
-
-	&rule.TypeMaxLenRule{},
-	&rule.ScopeMaxLenRule{},
-	&rule.DescriptionMaxLenRule{},
-
-	&rule.TypeMinLenRule{},
-	&rule.ScopeMinLenRule{},
-	&rule.DescriptionMinLenRule{},
-}
 
 // GetConfig returns conf
 func GetConfig(flagConfPath string) (*lint.Config, error) {
@@ -93,48 +62,86 @@ func GetConfigPath(confFilePath string) (string, bool, error) {
 	return filepath.Clean(confFilePath), false, nil
 }
 
-// GetFormatter returns the formatter as defined in conf
-func GetFormatter(c *lint.Config) (lint.Formatter, error) {
-	for _, f := range allFormatters {
-		if f.Name() == c.Formatter {
-			return f, nil
-		}
-	}
-	return nil, fmt.Errorf("%s formatter not found", c.Formatter)
-}
-
-// GetRules forms Rule object for rules which are enabled in config
-func GetRules(conf *lint.Config) ([]lint.Rule, error) {
-	// rules lookup map
-	rulesMap := map[string]lint.Rule{}
-	for _, r := range allRules {
-		rulesMap[r.Name()] = r
-	}
-
-	enabledRules := make([]lint.Rule, 0, len(conf.Rules))
-
-	for ruleName, ruleConfig := range conf.Rules {
-		r, ok := rulesMap[ruleName]
-		if !ok {
-			return nil, fmt.Errorf("unknown rule: %s", ruleName)
-		}
-		if ruleConfig.Enabled {
-			err := r.Apply(ruleConfig.Argument, ruleConfig.Flags)
-			if err != nil {
-				return nil, err
-			}
-			enabledRules = append(enabledRules, r)
-		}
-	}
-
-	return enabledRules, nil
-}
-
-// GetLinter returns Linter for given confFilePath
-func GetLinter(conf *lint.Config) (*lint.Linter, error) {
-	rules, err := GetRules(conf)
+// Parse parse Config from given file
+func Parse(confPath string) (*lint.Config, error) {
+	confBytes, err := os.ReadFile(confPath)
 	if err != nil {
 		return nil, err
 	}
-	return lint.NewLinter(conf, rules)
+
+	conf := &lint.Config{}
+	err = yaml.Unmarshal(confBytes, conf)
+	if err != nil {
+		return nil, err
+	}
+
+	err = Validate(conf)
+	if err != nil {
+		return nil, fmt.Errorf("config error: %w", err)
+	}
+	return conf, nil
+}
+
+// Validate parses Config from given data
+func Validate(conf *lint.Config) error {
+	if conf.Formatter == "" {
+		return errors.New("formatter is empty")
+	}
+
+	// Check Severity Level of rule config
+	for ruleName, r := range conf.Rules {
+		switch r.Severity {
+		case lint.SeverityError:
+		case lint.SeverityWarn:
+		default:
+			return fmt.Errorf("unknown severity level '%s' for rule '%s'", r.Severity, ruleName)
+		}
+	}
+
+	return nil
+}
+
+// DefaultConfToFile writes default config to given file
+func DefaultConfToFile(isOnlyEnabled bool) error {
+	outPath := filepath.Join(".", filepath.Clean(ConfFileName))
+	if isOnlyEnabled {
+		confClone := &lint.Config{
+			Formatter: defConf.Formatter,
+			Rules:     map[string]lint.RuleConfig{},
+		}
+
+		for ruleName, r := range defConf.Rules {
+			if r.Enabled {
+				confClone.Rules[ruleName] = r
+			}
+		}
+
+		return WriteConfToFile(outPath, confClone)
+	}
+	return WriteConfToFile(outPath, defConf)
+}
+
+// WriteConfToFile util func to write config object to given file
+func WriteConfToFile(outFilePath string, conf *lint.Config) (retErr error) {
+	file, err := os.Create(outFilePath)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err1 := file.Close()
+		if retErr == nil && err1 != nil {
+			retErr = err1
+		}
+	}()
+
+	w := bufio.NewWriter(file)
+	defer func() {
+		err1 := w.Flush()
+		if retErr == nil && err1 != nil {
+			retErr = err1
+		}
+	}()
+
+	enc := yaml.NewEncoder(w)
+	return enc.Encode(conf)
 }

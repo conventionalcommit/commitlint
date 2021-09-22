@@ -142,3 +142,36 @@ var defConf = &lint.Config{
 		},
 	},
 }
+
+var defaultFormatters = []lint.Formatter{
+	&formatter.DefaultFormatter{},
+	&formatter.JSONFormatter{},
+}
+
+var defaultRules = []lint.Rule{
+	&rule.BodyMinLenRule{},
+	&rule.BodyMaxLenRule{},
+
+	&rule.FooterMinLenRule{},
+	&rule.FooterMaxLenRule{},
+
+	&rule.HeadMaxLenRule{},
+	&rule.HeadMinLenRule{},
+
+	&rule.TypeEnumRule{},
+	&rule.ScopeEnumRule{},
+
+	&rule.BodyMaxLineLenRule{},
+	&rule.FooterMaxLineLenRule{},
+
+	&rule.TypeCharsetRule{},
+	&rule.ScopeCharsetRule{},
+
+	&rule.TypeMaxLenRule{},
+	&rule.ScopeMaxLenRule{},
+	&rule.DescriptionMaxLenRule{},
+
+	&rule.TypeMinLenRule{},
+	&rule.ScopeMinLenRule{},
+	&rule.DescriptionMinLenRule{},
+}

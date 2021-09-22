@@ -2,9 +2,9 @@ package config
 
 import "testing"
 
-func TestAllRules(t *testing.T) {
+func TestDefaultRules(t *testing.T) {
 	var m = make(map[string]struct{})
-	for _, r := range allRules {
+	for _, r := range defaultRules {
 		_, ok := m[r.Name()]
 		if ok {
 			t.Errorf("error: %s rule name already exists", r.Name())
@@ -13,9 +13,9 @@ func TestAllRules(t *testing.T) {
 	}
 }
 
-func TestAllFormatters(t *testing.T) {
+func TestDefaultFormatters(t *testing.T) {
 	var m = make(map[string]struct{})
-	for _, r := range allFormatters {
+	for _, r := range defaultFormatters {
 		_, ok := m[r.Name()]
 		if ok {
 			t.Errorf("error: %s formatter name already exists", r.Name())
