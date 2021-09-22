@@ -18,7 +18,7 @@ const (
 	ConfFileName = "commitlint.yaml"
 )
 
-// GetConfig returns conf
+// GetConfig returns parses config file and returns Config instance
 func GetConfig(flagConfPath string) (*lint.Config, error) {
 	confFilePath, useDefault, err := GetConfigPath(flagConfPath)
 	if err != nil {
@@ -77,7 +77,7 @@ func Parse(confPath string) (*lint.Config, error) {
 
 	err = Validate(conf)
 	if err != nil {
-		return nil, fmt.Errorf("config error: %w", err)
+		return nil, fmt.Errorf("config: %w", err)
 	}
 	return conf, nil
 }
@@ -88,13 +88,24 @@ func Validate(conf *lint.Config) error {
 		return errors.New("formatter is empty")
 	}
 
-	// Check Severity Level of rule config
+	_, ok := globalRegistry.GetFormatter(conf.Formatter)
+	if !ok {
+		return fmt.Errorf("unknown formatter '%s'", conf.Formatter)
+	}
+
 	for ruleName, r := range conf.Rules {
+		// Check Severity Level of rule config
 		switch r.Severity {
 		case lint.SeverityError:
 		case lint.SeverityWarn:
 		default:
 			return fmt.Errorf("unknown severity level '%s' for rule '%s'", r.Severity, ruleName)
+		}
+
+		// Check if rule is registered
+		_, ok := globalRegistry.GetRule(ruleName)
+		if !ok {
+			return fmt.Errorf("unknown rule '%s'", ruleName)
 		}
 	}
 
