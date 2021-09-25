@@ -5,13 +5,13 @@ import (
 	"github.com/conventionalcommit/commitlint/message"
 )
 
-// Linter is a simple linter for conventional commits
+// Linter is linter for commit message
 type Linter struct {
 	conf  *Config
 	rules []Rule
 }
 
-// NewLinter returns a new Linter object with given conf
+// NewLinter returns a new Linter instance with given config and rules
 func NewLinter(conf *Config, rules []Rule) (*Linter, error) {
 	return &Linter{conf: conf, rules: rules}, nil
 }
@@ -28,7 +28,7 @@ func (l *Linter) Lint(commitMsg string) (*Result, error) {
 	return l.LintCommit(msg)
 }
 
-// LintCommit checks the given parser.Commit for rules
+// LintCommit checks the given message.Commit against rules
 func (l *Linter) LintCommit(msg *message.Commit) (*Result, error) {
 	res := newResult(msg.FullCommit)
 

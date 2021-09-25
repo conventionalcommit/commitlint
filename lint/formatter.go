@@ -4,5 +4,7 @@ package lint
 type Formatter interface {
 	// Name is a unique identifier for formatter
 	Name() string
-	Format(res *Result) (string, error)
+
+	// Format formats the linter result
+	Format(result *Result) (string, error)
 }

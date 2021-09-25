@@ -13,5 +13,7 @@ type Rule interface {
 	Apply(arg interface{}, flags map[string]interface{}) error
 
 	// Validate validates the rule for given message
+	// if given message is valid, return true and result string is ignored
+	// if invalid, return a error result with false
 	Validate(msg *message.Commit) (result string, isValid bool)
 }
