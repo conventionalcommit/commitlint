@@ -11,7 +11,7 @@ type Result struct {
 // RuleResult holds result of a linter rule
 type RuleResult struct {
 	Name     string
-	Severity string
+	Severity Severity
 	Message  string
 }
 

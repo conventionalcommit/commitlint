@@ -1,11 +1,5 @@
 package lint
 
-// Rule Severity Constants
-const (
-	SeverityWarn  = "warn"
-	SeverityError = "error"
-)
-
 // Config represent linter config
 type Config struct {
 	Formatter string                `yaml:"formatter"`
@@ -15,7 +9,7 @@ type Config struct {
 // RuleConfig represent config for a rule
 type RuleConfig struct {
 	Enabled  bool        `yaml:"enabled"`
-	Severity string      `yaml:"severity"`
+	Severity Severity    `yaml:"severity"`
 	Argument interface{} `yaml:"argument"`
 
 	// Optional flags
