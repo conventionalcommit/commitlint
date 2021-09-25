@@ -3,7 +3,7 @@ package rule
 import (
 	"fmt"
 
-	"github.com/conventionalcommit/commitlint/message"
+	"github.com/conventionalcommit/commitlint/lint"
 )
 
 // HeadMinLenRule to validate min length of header
@@ -15,7 +15,7 @@ type HeadMinLenRule struct {
 func (r *HeadMinLenRule) Name() string { return "header-min-length" }
 
 // Validate validates HeadMinLenRule
-func (r *HeadMinLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *HeadMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Header.FullHeader)
 }
 
@@ -33,7 +33,7 @@ type BodyMinLenRule struct {
 func (r *BodyMinLenRule) Name() string { return "body-min-length" }
 
 // Validate validates BodyMinLenRule
-func (r *BodyMinLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *BodyMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Body)
 }
 
@@ -51,7 +51,7 @@ type FooterMinLenRule struct {
 func (r *FooterMinLenRule) Name() string { return "footer-min-length" }
 
 // Validate validates FooterMinLenRule
-func (r *FooterMinLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *FooterMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Footer.FullFooter)
 }
 
@@ -69,7 +69,7 @@ type TypeMinLenRule struct {
 func (r *TypeMinLenRule) Name() string { return "type-min-length" }
 
 // Validate validates TypeMinLenRule
-func (r *TypeMinLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *TypeMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Header.Type)
 }
 
@@ -87,7 +87,7 @@ type ScopeMinLenRule struct {
 func (r *ScopeMinLenRule) Name() string { return "scope-min-length" }
 
 // Validate validates ScopeMinLenRule
-func (r *ScopeMinLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *ScopeMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Header.Scope)
 }
 
@@ -105,7 +105,7 @@ type DescriptionMinLenRule struct {
 func (r *DescriptionMinLenRule) Name() string { return "description-min-length" }
 
 // Validate validates DescriptionMinLenRule
-func (r *DescriptionMinLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *DescriptionMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMinLen(r.CheckLen, msg.Header.Description)
 }
 

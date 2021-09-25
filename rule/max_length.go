@@ -3,7 +3,7 @@ package rule
 import (
 	"fmt"
 
-	"github.com/conventionalcommit/commitlint/message"
+	"github.com/conventionalcommit/commitlint/lint"
 )
 
 // HeadMaxLenRule to validate max length of header
@@ -15,7 +15,7 @@ type HeadMaxLenRule struct {
 func (r *HeadMaxLenRule) Name() string { return "header-max-length" }
 
 // Validate validates HeadMaxLenRule
-func (r *HeadMaxLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *HeadMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Header.FullHeader)
 }
 
@@ -33,7 +33,7 @@ type BodyMaxLenRule struct {
 func (r *BodyMaxLenRule) Name() string { return "body-max-length" }
 
 // Validate validates BodyMaxLenRule
-func (r *BodyMaxLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *BodyMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Body)
 }
 
@@ -51,7 +51,7 @@ type FooterMaxLenRule struct {
 func (r *FooterMaxLenRule) Name() string { return "footer-max-length" }
 
 // Validate validates FooterMaxLenRule
-func (r *FooterMaxLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *FooterMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Footer.FullFooter)
 }
 
@@ -69,7 +69,7 @@ type TypeMaxLenRule struct {
 func (r *TypeMaxLenRule) Name() string { return "type-max-length" }
 
 // Validate validates TypeMaxLenRule
-func (r *TypeMaxLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *TypeMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Header.Type)
 }
 
@@ -87,7 +87,7 @@ type ScopeMaxLenRule struct {
 func (r *ScopeMaxLenRule) Name() string { return "scope-max-length" }
 
 // Validate validates ScopeMaxLenRule
-func (r *ScopeMaxLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *ScopeMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Header.Scope)
 }
 
@@ -105,7 +105,7 @@ type DescriptionMaxLenRule struct {
 func (r *DescriptionMaxLenRule) Name() string { return "description-max-length" }
 
 // Validate validates DescriptionMaxLenRule
-func (r *DescriptionMaxLenRule) Validate(msg *message.Commit) (string, bool) {
+func (r *DescriptionMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 	return checkMaxLen(r.CheckLen, msg.Header.Description)
 }
 

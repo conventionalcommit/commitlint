@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/conventionalcommit/commitlint/message"
+	"github.com/conventionalcommit/commitlint/lint"
 )
 
 // ScopeEnumRule to validate max length of header
@@ -18,7 +18,7 @@ type ScopeEnumRule struct {
 func (r *ScopeEnumRule) Name() string { return "scope-enum" }
 
 // Validate validates ScopeEnumRule
-func (r *ScopeEnumRule) Validate(msg *message.Commit) (string, bool) {
+func (r *ScopeEnumRule) Validate(msg *lint.Commit) (string, bool) {
 	if msg.Header.Scope == "" {
 		if r.AllowEmpty {
 			return "", true
@@ -64,7 +64,7 @@ type TypeEnumRule struct {
 func (r *TypeEnumRule) Name() string { return "type-enum" }
 
 // Validate validates TypeEnumRule
-func (r *TypeEnumRule) Validate(msg *message.Commit) (string, bool) {
+func (r *TypeEnumRule) Validate(msg *lint.Commit) (string, bool) {
 	isFound := search(r.Types, msg.Header.Type)
 	if !isFound {
 		errMsg := fmt.Sprintf("type '%s' is not allowed, you can use one of %v", msg.Header.Type, r.Types)

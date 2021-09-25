@@ -1,10 +1,8 @@
-// Package message contains commit message
-package message
+package lint
 
-import "github.com/conventionalcommit/parser"
-
-// Commit is alias for parser.Commit
-type Commit = parser.Commit
+import (
+	"github.com/conventionalcommit/parser"
+)
 
 // Parse parses given msg and checks for header error
 func Parse(msg string) (*Commit, bool, error) {
