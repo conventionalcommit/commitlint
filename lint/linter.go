@@ -14,9 +14,9 @@ func NewLinter(conf *Config, rules []Rule) (*Linter, error) {
 
 // Lint checks the given commitMsg string against rules
 func (l *Linter) Lint(commitMsg string) (*Result, error) {
-	msg, isHeaderErr, err := Parse(commitMsg)
+	msg, err := Parse(commitMsg)
 	if err != nil {
-		if isHeaderErr {
+		if isHeaderErr(err) {
 			return l.headerErrorRule(commitMsg), nil
 		}
 		return nil, err

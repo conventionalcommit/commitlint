@@ -4,11 +4,11 @@ import (
 	"github.com/conventionalcommit/parser"
 )
 
-// Parse parses given msg and checks for header error
-func Parse(msg string) (*Commit, bool, error) {
-	commit, err := parser.Parse(msg)
-	if err != nil {
-		return nil, parser.IsHeaderErr(err), err
-	}
-	return commit, false, nil
+// Parse parses given commit message
+func Parse(msg string) (*Commit, error) {
+	return parser.Parse(msg)
+}
+
+func isHeaderErr(err error) bool {
+	return parser.IsHeaderErr(err)
 }
