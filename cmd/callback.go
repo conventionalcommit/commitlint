@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 
@@ -46,7 +47,9 @@ func HookCreate(confPath string, isReplace bool) error {
 
 // ConfigCreate is the callback function for create config command
 func ConfigCreate(onlyEnabled bool) error {
-	return config.DefaultConfToFile(onlyEnabled)
+	defConf := config.GetDefaultConf(onlyEnabled)
+	outPath := filepath.Join(".", config.DefaultFile)
+	return config.WriteConfToFile(outPath, defConf)
 }
 
 // ConfigCheck is the callback function for check/verify command

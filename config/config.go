@@ -14,13 +14,13 @@ import (
 )
 
 const (
-	// ConfFileName represent config file name
-	ConfFileName = "commitlint.yaml"
+	// DefaultFile represent default config file name
+	DefaultFile = "commitlint.yaml"
 )
 
 // GetConfig returns parses config file, validate it and returns config instance
 func GetConfig(confPath string) (*lint.Config, error) {
-	confFilePath, useDefault, err := GetConfigPath(confPath)
+	confFilePath, useDefault, err := getConfigPath(confPath)
 	if err != nil {
 		return nil, err
 	}
@@ -41,11 +41,11 @@ func GetConfig(confPath string) (*lint.Config, error) {
 	return conf, nil
 }
 
-// GetConfigPath returns config file path following below order
+// getConfigPath returns config file path following below order
 // 	1. commitlint.yaml in current directory
 // 	2. confFilePath parameter
 // 	3. use default config
-func GetConfigPath(confFilePath string) (string, bool, error) {
+func getConfigPath(confFilePath string) (confPath string, isDefault bool, retErr error) {
 	// get current directory
 	currentDir, err := os.Getwd()
 	if err != nil {
@@ -53,7 +53,7 @@ func GetConfigPath(confFilePath string) (string, bool, error) {
 	}
 
 	// check if conf file exists in current directory
-	currentDirConf := filepath.Join(currentDir, ConfFileName)
+	currentDirConf := filepath.Join(currentDir, DefaultFile)
 	if _, err1 := os.Stat(currentDirConf); !os.IsNotExist(err1) {
 		return currentDirConf, false, nil
 	}
@@ -110,26 +110,6 @@ func Validate(conf *lint.Config) error {
 	}
 
 	return nil
-}
-
-// DefaultConfToFile writes default config to given file
-func DefaultConfToFile(isOnlyEnabled bool) error {
-	outPath := filepath.Join(".", filepath.Clean(ConfFileName))
-	if !isOnlyEnabled {
-		return WriteConfToFile(outPath, defConf)
-	}
-
-	confClone := &lint.Config{
-		Formatter: defConf.Formatter,
-		Rules:     map[string]lint.RuleConfig{},
-	}
-
-	for ruleName, r := range defConf.Rules {
-		if r.Enabled {
-			confClone.Rules[ruleName] = r
-		}
-	}
-	return WriteConfToFile(outPath, confClone)
 }
 
 // WriteConfToFile util func to write config object to given file

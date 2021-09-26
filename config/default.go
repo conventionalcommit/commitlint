@@ -175,3 +175,22 @@ var defaultRules = []lint.Rule{
 	&rule.ScopeMinLenRule{},
 	&rule.DescriptionMinLenRule{},
 }
+
+// GetDefaultConf writes default config to given file
+func GetDefaultConf(onlyEnabled bool) *lint.Config {
+	if !onlyEnabled {
+		return defConf
+	}
+
+	confClone := &lint.Config{
+		Formatter: defConf.Formatter,
+		Rules:     map[string]lint.RuleConfig{},
+	}
+
+	for ruleName, r := range defConf.Rules {
+		if r.Enabled {
+			confClone.Rules[ruleName] = r
+		}
+	}
+	return confClone
+}
