@@ -59,12 +59,17 @@ func initCmd() *cli.Command {
 			isReplace := ctx.Bool("replace")
 
 			err := Init(confPath, isGlobal, isReplace)
-			if isHookExists(err) {
-				fmt.Println("commitlint init failed")
-				fmt.Println("run with --replace to replace existing files")
-				return nil
+			if err != nil {
+				if isHookExists(err) {
+					fmt.Println("commitlint init failed")
+					fmt.Println("run with --replace to replace existing files")
+					return nil
+				}
+				return err
 			}
-			return err
+
+			fmt.Println("commitlint init successfully")
+			return nil
 		},
 	}
 }

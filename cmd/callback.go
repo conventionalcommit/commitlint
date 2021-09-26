@@ -19,14 +19,7 @@ func Init(confPath string, isGlobal, isReplace bool) error {
 	if err != nil {
 		return err
 	}
-
-	err = setGitConf(hookDir, isGlobal)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("commitlint init successfully")
-	return nil
+	return setGitConf(hookDir, isGlobal)
 }
 
 // Lint is the callback function for lint command
