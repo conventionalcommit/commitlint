@@ -41,10 +41,10 @@ func GetConfig(confPath string) (*lint.Config, error) {
 	return conf, nil
 }
 
-// GetConfigPath returns config file path, follwing below
-// 	1. check for conf in current directory
-// 	2. check for conf flag
-// 	3. load default conf
+// GetConfigPath returns config file path following below order
+// 	1. commitlint.yaml in current directory
+// 	2. confFilePath parameter
+// 	3. use default config
 func GetConfigPath(confFilePath string) (string, bool, error) {
 	// get current directory
 	currentDir, err := os.Getwd()
