@@ -12,7 +12,8 @@ import (
 // commitMsgHook represent commit-msg hook file name
 const commitMsgHook = "commit-msg"
 
-func WriteHooks(outDir string, confPath string) (retErr error) {
+// WriteHooks write git hooks to the given outDir
+func WriteHooks(outDir, confPath string) (retErr error) {
 	hookFilePath := filepath.Join(outDir, commitMsgHook)
 	// commit-msg needs to be executable
 	file, err := os.OpenFile(hookFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0700)
