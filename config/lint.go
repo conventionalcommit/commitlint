@@ -6,18 +6,6 @@ import (
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
-// RegisterRule registers a custom rule
-// if rule already exists, returns error
-func RegisterRule(rule lint.Rule) error {
-	return globalRegistry.RegisterRule(rule)
-}
-
-// RegisterFormatter registers a custom formatter
-// if formatter already exists, returns error
-func RegisterFormatter(format lint.Formatter) error {
-	return globalRegistry.RegisterFormatter(format)
-}
-
 // GetLinter returns Linter for given confFilePath
 func GetLinter(conf *lint.Config) (*lint.Linter, error) {
 	rules, err := GetEnabledRules(conf)

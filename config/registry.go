@@ -9,6 +9,18 @@ import (
 
 var globalRegistry = newRegistry()
 
+// RegisterRule registers a custom rule
+// if rule already exists, returns error
+func RegisterRule(rule lint.Rule) error {
+	return globalRegistry.RegisterRule(rule)
+}
+
+// RegisterFormatter registers a custom formatter
+// if formatter already exists, returns error
+func RegisterFormatter(format lint.Formatter) error {
+	return globalRegistry.RegisterFormatter(format)
+}
+
 type registry struct {
 	mut *sync.Mutex
 
