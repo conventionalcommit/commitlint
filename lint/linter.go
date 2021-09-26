@@ -7,8 +7,8 @@ type Linter struct {
 	rules []Rule
 }
 
-// NewLinter returns a new Linter instance with given config and rules
-func NewLinter(conf *Config, rules []Rule) (*Linter, error) {
+// New returns a new Linter instance with given config and rules
+func New(conf *Config, rules []Rule) (*Linter, error) {
 	return &Linter{conf: conf, rules: rules}, nil
 }
 

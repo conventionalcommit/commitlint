@@ -12,7 +12,7 @@ func GetLinter(conf *lint.Config) (*lint.Linter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return lint.NewLinter(conf, rules)
+	return lint.New(conf, rules)
 }
 
 // GetFormatter returns the formatter as defined in conf
