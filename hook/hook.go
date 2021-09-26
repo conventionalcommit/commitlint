@@ -2,25 +2,18 @@
 package hook
 
 import (
+	"bufio"
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-// CommitMsgHook represent commit-msg hook file name
-const CommitMsgHook = "commit-msg"
+// commitMsgHook represent commit-msg hook file name
+const commitMsgHook = "commit-msg"
 
-const hookFile = `#!/bin/sh
-
-commitlint lint --message $1
-`
-
-// WriteToFile util func to write commit-msg hook to given file
-func WriteToFile(hookDir string) (retErr error) {
-	hookFilePath := filepath.Join(hookDir, filepath.Clean(CommitMsgHook))
-	// if commit-msg already exists skip creating or overwriting it
-	if _, err := os.Stat(hookFilePath); !os.IsNotExist(err) {
-		return nil
-	}
+func WriteHooks(outDir string, confPath string) (retErr error) {
+	hookFilePath := filepath.Join(outDir, commitMsgHook)
 	// commit-msg needs to be executable
 	file, err := os.OpenFile(hookFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0700)
 	if err != nil {
@@ -32,7 +25,24 @@ func WriteToFile(hookDir string) (retErr error) {
 			retErr = err1
 		}
 	}()
+	return writeTo(file, confPath)
+}
 
-	_, err = file.WriteString(hookFile)
-	return err
+// writeTo util func to write commit-msg hook to given io.Writer
+func writeTo(wr io.Writer, confPath string) error {
+	w := bufio.NewWriter(wr)
+
+	w.WriteString("#!/bin/sh")
+	w.WriteString("\n\ncommitlint lint")
+
+	confPath = strings.TrimSpace(confPath)
+	if confPath != "" {
+		confPath = filepath.Clean(confPath)
+		w.WriteString(` --config "` + confPath + `"`)
+	}
+
+	w.WriteString(" --message $1")
+	w.WriteString("\n")
+
+	return w.Flush()
 }

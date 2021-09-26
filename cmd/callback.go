@@ -2,36 +2,20 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/urfave/cli/v2"
 
 	"github.com/conventionalcommit/commitlint/config"
-	"github.com/conventionalcommit/commitlint/hook"
 )
 
 const (
 	// ErrExitCode represent error exit code
 	ErrExitCode = 1
-
-	// HookDir represent default hook directory
-	HookDir = ".commitlint/hooks"
 )
 
 // Init is the callback function for init command
-func Init(isGlobal bool) error {
-	hookDir, err := getHookDir(isGlobal)
-	if err != nil {
-		return err
-	}
-
-	err = os.MkdirAll(hookDir, os.ModePerm)
-	if err != nil {
-		return err
-	}
-
-	// create hook file
-	err = hook.WriteToFile(hookDir)
+func Init(confPath string, isGlobal, isReplace bool) error {
+	hookDir, err := initHooks(confPath, isGlobal, isReplace)
 	if err != nil {
 		return err
 	}
@@ -63,8 +47,8 @@ func Lint(confPath, msgPath string) error {
 }
 
 // CreateHook is the callback function for create hook command
-func CreateHook() (retErr error) {
-	return hook.WriteToFile(".")
+func CreateHook(confPath string, isReplace bool) error {
+	return createHooks(confPath, isReplace)
 }
 
 // CreateConfig is the callback function for create config command

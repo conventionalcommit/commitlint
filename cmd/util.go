@@ -44,28 +44,6 @@ func readStdInPipe() (string, error) {
 	return strings.TrimSpace(s), nil
 }
 
-func getHookDir(isGlobal bool) (string, error) {
-	baseDir := filepath.Clean(HookDir)
-
-	if isGlobal {
-		// get user home dir
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return "", err
-		}
-
-		// create hooks dir
-		hookDir := filepath.Join(homeDir, baseDir)
-		return hookDir, nil
-	}
-
-	gitDir, err := getRepoRootDir()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join(gitDir, baseDir), nil
-}
-
 func getRepoRootDir() (string, error) {
 	byteOut := &bytes.Buffer{}
 

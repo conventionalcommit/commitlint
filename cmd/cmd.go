@@ -2,6 +2,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
 )
 
@@ -40,10 +42,29 @@ func initCmd() *cli.Command {
 				Aliases: []string{"g"},
 				Usage:   "sets git hook in global config",
 			},
+			&cli.StringFlag{
+				Name:    "config",
+				Aliases: []string{"c", "conf"},
+				Value:   "",
+				Usage:   "optional config file `conf.yaml`",
+			},
+			&cli.BoolFlag{
+				Name:  "replace",
+				Usage: "replace files if already exists",
+			},
 		},
 		Action: func(ctx *cli.Context) error {
+			confPath := ctx.String("config")
 			isGlobal := ctx.Bool("global")
-			return Init(isGlobal)
+			isReplace := ctx.Bool("replace")
+
+			err := Init(confPath, isGlobal, isReplace)
+			if isHookExists(err) {
+				fmt.Println("commitlint init failed")
+				fmt.Println("run with --replace to replace existing files")
+				return nil
+			}
+			return err
 		},
 	}
 }
@@ -69,8 +90,32 @@ func createCmd() *cli.Command {
 	hookCmd := &cli.Command{
 		Name:  "hook",
 		Usage: "creates commit-msg file in current directory",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "config",
+				Aliases: []string{"c", "conf"},
+				Value:   "",
+				Usage:   "optional config file `conf.yaml`",
+			},
+			&cli.BoolFlag{
+				Name:  "replace",
+				Usage: "replace hook files if already exists",
+			},
+		},
 		Action: func(ctx *cli.Context) error {
-			return CreateHook()
+			confPath := ctx.String("config")
+			isReplace := ctx.Bool("replace")
+			err := CreateHook(confPath, isReplace)
+			if err != nil {
+				if isHookExists(err) {
+					fmt.Println("create hook failed. files already exists")
+					fmt.Println("run with --replace to replace existing hook files")
+					return nil
+				}
+				return err
+			}
+			fmt.Println("hooks created")
+			return nil
 		},
 	}
 
