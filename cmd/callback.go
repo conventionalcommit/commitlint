@@ -39,33 +39,21 @@ func Lint(confPath, msgPath string) error {
 	return nil
 }
 
-// CreateHook is the callback function for create hook command
-func CreateHook(confPath string, isReplace bool) error {
+// HookCreate is the callback function for create hook command
+func HookCreate(confPath string, isReplace bool) error {
 	return createHooks(confPath, isReplace)
 }
 
-// CreateConfig is the callback function for create config command
-func CreateConfig(onlyEnabled bool) error {
+// ConfigCreate is the callback function for create config command
+func ConfigCreate(onlyEnabled bool) error {
 	return config.DefaultConfToFile(onlyEnabled)
 }
 
-// VerifyConfig is the callback function for verify command
-func VerifyConfig(confFlag string) error {
-	confPath, useDefault, err := config.GetConfigPath(confFlag)
+// ConfigCheck is the callback function for check/verify command
+func ConfigCheck(confPath string) error {
+	conf, err := config.Parse(confPath)
 	if err != nil {
 		return err
 	}
-
-	if useDefault {
-		fmt.Println("no config file found, default config will be used")
-		return nil
-	}
-
-	_, _, err = getLinter(confPath)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("%s config is valid\n", confPath)
-	return nil
+	return config.Validate(conf)
 }

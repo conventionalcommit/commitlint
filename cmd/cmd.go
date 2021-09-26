@@ -19,8 +19,8 @@ func NewWith(versionNo, commitHash, builtTime string) *cli.App {
 	cmds := []*cli.Command{
 		initCmd(),
 		lintCmd(),
-		createCmd(),
-		verifyCmd(),
+		configCmd(),
+		hookCmd(),
 	}
 
 	app := &cli.App{
@@ -32,27 +32,46 @@ func NewWith(versionNo, commitHash, builtTime string) *cli.App {
 	return app
 }
 
-func initCmd() *cli.Command {
+func lintCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "init",
-		Usage: "setup commitlint for git repos",
+		Name:  "lint",
+		Usage: "Check commit message against lint rules",
 		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:    "global",
-				Aliases: []string{"g"},
-				Usage:   "sets git hook in global config",
-			},
 			&cli.StringFlag{
 				Name:    "config",
 				Aliases: []string{"c", "conf"},
 				Value:   "",
 				Usage:   "optional config file `conf.yaml`",
 			},
-			&cli.BoolFlag{
-				Name:  "replace",
-				Usage: "replace files if already exists",
+			&cli.StringFlag{
+				Name:    "message",
+				Aliases: []string{"m", "msg"},
+				Value:   "",
+				Usage:   "path to commit message `FILE`",
 			},
 		},
+		Action: func(ctx *cli.Context) error {
+			confFilePath := ctx.String("config")
+			fileInput := ctx.String("message")
+			return Lint(confFilePath, fileInput)
+		},
+	}
+}
+
+func initCmd() *cli.Command {
+	confFlag := formConfFlag()
+	replaceFlag := formReplaceFlag()
+
+	globalFlag := &cli.BoolFlag{
+		Name:    "global",
+		Aliases: []string{"g"},
+		Usage:   "Sets git hook in global config",
+	}
+
+	return &cli.Command{
+		Name:  "init",
+		Usage: "Setup commitlint for git repos",
+		Flags: []cli.Flag{globalFlag, confFlag, replaceFlag},
 		Action: func(ctx *cli.Context) error {
 			confPath := ctx.String("config")
 			isGlobal := ctx.Bool("global")
@@ -74,46 +93,68 @@ func initCmd() *cli.Command {
 	}
 }
 
-func createCmd() *cli.Command {
-	configCmd := &cli.Command{
-		Name:  "config",
-		Usage: "creates commitlint.yaml in current directory",
+func configCmd() *cli.Command {
+	createCmd := &cli.Command{
+		Name:  "create",
+		Usage: "Creates default config in current directory",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "enabled",
 				Aliases: []string{"e"},
-				Usage:   "writes only default enabled rules to file",
+				Usage:   "writes only default enabled rules",
 				Value:   false,
 			},
 		},
 		Action: func(ctx *cli.Context) error {
 			isOnlyEnabled := ctx.Bool("enabled")
-			return CreateConfig(isOnlyEnabled)
+			return ConfigCreate(isOnlyEnabled)
 		},
 	}
 
-	hookCmd := &cli.Command{
-		Name:  "hook",
-		Usage: "creates commit-msg file in current directory",
+	checkCmd := &cli.Command{
+		Name:  "check",
+		Usage: "Checks if given config is valid",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:    "config",
-				Aliases: []string{"c", "conf"},
-				Value:   "",
-				Usage:   "optional config file `conf.yaml`",
-			},
-			&cli.BoolFlag{
-				Name:  "replace",
-				Usage: "replace hook files if already exists",
+				Name:     "config",
+				Aliases:  []string{"c", "conf"},
+				Usage:    "config file `conf.yaml`",
+				Required: true,
 			},
 		},
 		Action: func(ctx *cli.Context) error {
+			confFile := ctx.String("config")
+			err := ConfigCheck(confFile)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("%s config is valid\n", confFile)
+			return nil
+		},
+	}
+
+	return &cli.Command{
+		Name:        "config",
+		Usage:       "Manage commitlint config",
+		Subcommands: []*cli.Command{createCmd, checkCmd},
+	}
+}
+
+func hookCmd() *cli.Command {
+	confFlag := formConfFlag()
+	replaceFlag := formReplaceFlag()
+
+	createCmd := &cli.Command{
+		Name:  "create",
+		Usage: "Creates git hook files in current directory",
+		Flags: []cli.Flag{confFlag, replaceFlag},
+		Action: func(ctx *cli.Context) error {
 			confPath := ctx.String("config")
 			isReplace := ctx.Bool("replace")
-			err := CreateHook(confPath, isReplace)
+			err := HookCreate(confPath, isReplace)
 			if err != nil {
 				if isHookExists(err) {
-					fmt.Println("create hook failed. files already exists")
+					fmt.Println("create failed. hook files already exists")
 					fmt.Println("run with --replace to replace existing hook files")
 					return nil
 				}
@@ -125,56 +166,24 @@ func createCmd() *cli.Command {
 	}
 
 	return &cli.Command{
-		Name:  "create",
-		Usage: "create commitlint config, hooks files",
-		Subcommands: []*cli.Command{
-			configCmd,
-			hookCmd,
-		},
+		Name:        "hook",
+		Usage:       "Manage commitlint git hooks",
+		Subcommands: []*cli.Command{createCmd},
 	}
 }
 
-func lintCmd() *cli.Command {
-	return &cli.Command{
-		Name:  "lint",
-		Usage: "lints commit message",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "config",
-				Aliases: []string{"c", "conf"},
-				Value:   "",
-				Usage:   "optional config file `conf.yaml`",
-			},
-			&cli.StringFlag{
-				Name:    "message",
-				Aliases: []string{"m", "msg"},
-				Value:   "",
-				Usage:   "path to git commit message `FILE`",
-			},
-		},
-		Action: func(ctx *cli.Context) error {
-			confFilePath := ctx.String("config")
-			fileInput := ctx.String("message")
-			return Lint(confFilePath, fileInput)
-		},
+func formConfFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:    "config",
+		Aliases: []string{"c", "conf"},
+		Value:   "",
+		Usage:   "Optional config file `conf.yaml` which will be passed to 'commitlint lint'. Check config precedence",
 	}
 }
 
-func verifyCmd() *cli.Command {
-	return &cli.Command{
-		Name:  "verify",
-		Usage: "verifies commitlint config",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "config",
-				Aliases: []string{"c", "conf"},
-				Value:   "",
-				Usage:   "optional config file `conf.yaml`",
-			},
-		},
-		Action: func(ctx *cli.Context) error {
-			confFilePath := ctx.String("config")
-			return VerifyConfig(confFilePath)
-		},
+func formReplaceFlag() *cli.BoolFlag {
+	return &cli.BoolFlag{
+		Name:  "replace",
+		Usage: "Replace hook files if already exists",
 	}
 }
