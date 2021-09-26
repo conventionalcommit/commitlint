@@ -18,9 +18,9 @@ const (
 	ConfFileName = "commitlint.yaml"
 )
 
-// GetConfig returns parses config file and returns Config instance
-func GetConfig(flagConfPath string) (*lint.Config, error) {
-	confFilePath, useDefault, err := GetConfigPath(flagConfPath)
+// GetConfig returns parses config file, validate it and returns config instance
+func GetConfig(confPath string) (*lint.Config, error) {
+	confFilePath, useDefault, err := GetConfigPath(confPath)
 	if err != nil {
 		return nil, err
 	}
@@ -32,6 +32,11 @@ func GetConfig(flagConfPath string) (*lint.Config, error) {
 	conf, err := Parse(confFilePath)
 	if err != nil {
 		return nil, err
+	}
+
+	err = Validate(conf)
+	if err != nil {
+		return nil, fmt.Errorf("config: %w", err)
 	}
 	return conf, nil
 }
@@ -73,11 +78,6 @@ func Parse(confPath string) (*lint.Config, error) {
 	err = yaml.Unmarshal(confBytes, conf)
 	if err != nil {
 		return nil, err
-	}
-
-	err = Validate(conf)
-	if err != nil {
-		return nil, fmt.Errorf("config: %w", err)
 	}
 	return conf, nil
 }
