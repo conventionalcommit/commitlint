@@ -2,13 +2,14 @@ package config
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestDefaultLint(t *testing.T) {
 	_, err := GetLinter(defConf)
-	assert.NoError(t, err, "default lint creation failed")
+	if err != nil {
+		t.Error("default lint creation failed", err)
+		return
+	}
 }
 
 func TestDefaultConf(t *testing.T) {
