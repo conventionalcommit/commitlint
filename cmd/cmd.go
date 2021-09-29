@@ -53,7 +53,7 @@ func lintCmd() *cli.Command {
 		Action: func(ctx *cli.Context) error {
 			confFilePath := ctx.String("config")
 			fileInput := ctx.String("message")
-			return Lint(confFilePath, fileInput)
+			return lintMsg(confFilePath, fileInput)
 		},
 	}
 }
@@ -77,7 +77,7 @@ func initCmd() *cli.Command {
 			isGlobal := ctx.Bool("global")
 			isReplace := ctx.Bool("replace")
 
-			err := Init(confPath, isGlobal, isReplace)
+			err := initLint(confPath, isGlobal, isReplace)
 			if err != nil {
 				if isHookExists(err) {
 					fmt.Println("commitlint init failed")
@@ -107,7 +107,7 @@ func configCmd() *cli.Command {
 		},
 		Action: func(ctx *cli.Context) error {
 			isOnlyEnabled := ctx.Bool("enabled")
-			return ConfigCreate(isOnlyEnabled)
+			return configCreate(isOnlyEnabled)
 		},
 	}
 
@@ -124,7 +124,7 @@ func configCmd() *cli.Command {
 		},
 		Action: func(ctx *cli.Context) error {
 			confFile := ctx.String("config")
-			err := ConfigCheck(confFile)
+			err := configCheck(confFile)
 			if err != nil {
 				return err
 			}
@@ -151,7 +151,7 @@ func hookCmd() *cli.Command {
 		Action: func(ctx *cli.Context) error {
 			confPath := ctx.String("config")
 			isReplace := ctx.Bool("replace")
-			err := HookCreate(confPath, isReplace)
+			err := hookCreate(confPath, isReplace)
 			if err != nil {
 				if isHookExists(err) {
 					fmt.Println("create failed. hook files already exists")

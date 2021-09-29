@@ -14,8 +14,8 @@ const (
 	ErrExitCode = 1
 )
 
-// Init is the callback function for init command
-func Init(confPath string, isGlobal, isReplace bool) error {
+// initLint is the callback function for init command
+func initLint(confPath string, isGlobal, isReplace bool) error {
 	hookDir, err := initHooks(confPath, isGlobal, isReplace)
 	if err != nil {
 		return err
@@ -23,8 +23,8 @@ func Init(confPath string, isGlobal, isReplace bool) error {
 	return setGitConf(hookDir, isGlobal)
 }
 
-// Lint is the callback function for lint command
-func Lint(confPath, msgPath string) error {
+// lintMsg is the callback function for lint command
+func lintMsg(confPath, msgPath string) error {
 	// NOTE: lint should return with exit code for error case
 	resStr, hasError, err := runLint(confPath, msgPath)
 	if err != nil {
@@ -40,20 +40,20 @@ func Lint(confPath, msgPath string) error {
 	return nil
 }
 
-// HookCreate is the callback function for create hook command
-func HookCreate(confPath string, isReplace bool) error {
+// hookCreate is the callback function for create hook command
+func hookCreate(confPath string, isReplace bool) error {
 	return createHooks(confPath, isReplace)
 }
 
-// ConfigCreate is the callback function for create config command
-func ConfigCreate(onlyEnabled bool) error {
+// configCreate is the callback function for create config command
+func configCreate(onlyEnabled bool) error {
 	defConf := config.GetDefaultConf(onlyEnabled)
 	outPath := filepath.Join(".", config.DefaultFile)
 	return config.WriteConfToFile(outPath, defConf)
 }
 
-// ConfigCheck is the callback function for check/verify command
-func ConfigCheck(confPath string) error {
+// configCheck is the callback function for check/verify command
+func configCheck(confPath string) error {
 	conf, err := config.Parse(confPath)
 	if err != nil {
 		return err
