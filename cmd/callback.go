@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	// ErrExitCode represent error exit code
-	ErrExitCode = 1
+	// errExitCode represent error exit code
+	errExitCode = 1
 )
 
 // initLint is the callback function for init command
@@ -28,11 +28,11 @@ func lintMsg(confPath, msgPath string) error {
 	// NOTE: lint should return with exit code for error case
 	resStr, hasError, err := runLint(confPath, msgPath)
 	if err != nil {
-		return cli.Exit(err, ErrExitCode)
+		return cli.Exit(err, errExitCode)
 	}
 
 	if hasError {
-		return cli.Exit(resStr, ErrExitCode)
+		return cli.Exit(resStr, errExitCode)
 	}
 
 	// print success message
