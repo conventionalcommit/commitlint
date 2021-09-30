@@ -124,12 +124,16 @@ func configCmd() *cli.Command {
 		},
 		Action: func(ctx *cli.Context) error {
 			confFile := ctx.String("config")
-			err := configCheck(confFile)
-			if err != nil {
-				return err
+			errs := configCheck(confFile)
+			if len(errs) == 0 {
+				fmt.Printf("%s config is valid\n", confFile)
+				return nil
 			}
-			fmt.Printf("%s config is valid\n", confFile)
-			return nil
+			if len(errs) == 1 {
+				return errs[0]
+			}
+			merr := multiError(errs)
+			return &merr
 		},
 	}
 

@@ -83,14 +83,16 @@ func Parse(confPath string) (*lint.Config, error) {
 }
 
 // Validate validates given config
-func Validate(conf *lint.Config) error {
-	if conf.Formatter == "" {
-		return errors.New("formatter is empty")
-	}
+func Validate(conf *lint.Config) []error {
+	var errs []error
 
-	_, ok := globalRegistry.GetFormatter(conf.Formatter)
-	if !ok {
-		return fmt.Errorf("unknown formatter '%s'", conf.Formatter)
+	if conf.Formatter == "" {
+		errs = append(errs, errors.New("formatter is empty"))
+	} else {
+		_, ok := globalRegistry.GetFormatter(conf.Formatter)
+		if !ok {
+			errs = append(errs, fmt.Errorf("unknown formatter '%s'", conf.Formatter))
+		}
 	}
 
 	for ruleName, r := range conf.Rules {
@@ -99,22 +101,22 @@ func Validate(conf *lint.Config) error {
 		case lint.SeverityError:
 		case lint.SeverityWarn:
 		default:
-			return fmt.Errorf("unknown severity level '%s' for rule '%s'", r.Severity, ruleName)
+			errs = append(errs, fmt.Errorf("unknown severity level '%s' for rule '%s'", r.Severity, ruleName))
 		}
 
 		// Check if rule is registered
 		ruleData, ok := globalRegistry.GetRule(ruleName)
 		if !ok {
-			return fmt.Errorf("unknown rule '%s'", ruleName)
+			errs = append(errs, fmt.Errorf("unknown rule '%s'", ruleName))
+			continue
 		}
 
 		err := ruleData.Apply(r.Argument, r.Flags)
 		if err != nil {
-			return err
+			errs = append(errs, err)
 		}
 	}
-
-	return nil
+	return errs
 }
 
 // WriteConfToFile util func to write config object to given file

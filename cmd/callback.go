@@ -53,10 +53,10 @@ func configCreate(onlyEnabled bool) error {
 }
 
 // configCheck is the callback function for check/verify command
-func configCheck(confPath string) error {
+func configCheck(confPath string) []error {
 	conf, err := config.Parse(confPath)
 	if err != nil {
-		return err
+		return []error{err}
 	}
 	return config.Validate(conf)
 }
