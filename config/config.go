@@ -103,9 +103,14 @@ func Validate(conf *lint.Config) error {
 		}
 
 		// Check if rule is registered
-		_, ok := globalRegistry.GetRule(ruleName)
+		ruleData, ok := globalRegistry.GetRule(ruleName)
 		if !ok {
 			return fmt.Errorf("unknown rule '%s'", ruleName)
+		}
+
+		err := ruleData.Apply(r.Argument, r.Flags)
+		if err != nil {
+			return err
 		}
 	}
 
