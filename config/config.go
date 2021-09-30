@@ -18,7 +18,8 @@ const (
 	DefaultFile = "commitlint.yaml"
 )
 
-// GetConfig returns parses config file, validate it and returns config instance
+// GetConfig gets the config according to precedence
+// if needed parses config file and returns config instance
 func GetConfig(confPath string) (*lint.Config, error) {
 	confFilePath, useDefault, err := getConfigPath(confPath)
 	if err != nil {
@@ -34,9 +35,8 @@ func GetConfig(confPath string) (*lint.Config, error) {
 		return nil, err
 	}
 
-	err = Validate(conf)
-	if err != nil {
-		return nil, fmt.Errorf("config: %w", err)
+	if conf.Formatter == "" {
+		return nil, errors.New("conf error: formatter is empty")
 	}
 	return conf, nil
 }
@@ -82,7 +82,7 @@ func Parse(confPath string) (*lint.Config, error) {
 	return conf, nil
 }
 
-// Validate parses Config from given data
+// Validate validates given config
 func Validate(conf *lint.Config) error {
 	if conf.Formatter == "" {
 		return errors.New("formatter is empty")
