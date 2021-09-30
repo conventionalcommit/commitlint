@@ -37,17 +37,18 @@ func (r *ScopeEnumRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *ScopeEnumRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setStringArrArg(&r.Scopes, arg, r.Name())
+	err := setStringArrArg(&r.Scopes, arg)
 	if err != nil {
-		return err
+		return errInvalidArg(r.Name(), err)
 	}
 
 	allowEmpty, ok := flags["allow-empty"]
 	if ok {
-		err := setBoolArg(&r.AllowEmpty, allowEmpty, r.Name())
+		err := setBoolArg(&r.AllowEmpty, allowEmpty)
 		if err != nil {
-			return err
+			return errInvalidFlag(r.Name(), "allow-empty", err)
 		}
+		return nil
 	}
 
 	// sorting the string elements for binary search
@@ -75,9 +76,9 @@ func (r *TypeEnumRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *TypeEnumRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setStringArrArg(&r.Types, arg, r.Name())
+	err := setStringArrArg(&r.Types, arg)
 	if err != nil {
-		return err
+		return errInvalidArg(r.Name(), err)
 	}
 	// sorting the string elements for binary search
 	sort.Strings(r.Types)

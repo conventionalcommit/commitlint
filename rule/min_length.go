@@ -21,7 +21,11 @@ func (r *HeadMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *HeadMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // BodyMinLenRule to validate min length of body
@@ -39,7 +43,11 @@ func (r *BodyMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *BodyMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // FooterMinLenRule to validate min length of footer
@@ -57,7 +65,11 @@ func (r *FooterMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *FooterMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // TypeMinLenRule to validate min length of type
@@ -75,7 +87,11 @@ func (r *TypeMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *TypeMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // ScopeMinLenRule to validate min length of scope
@@ -93,7 +109,11 @@ func (r *ScopeMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *ScopeMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // DescriptionMinLenRule to validate min length of description
@@ -111,7 +131,11 @@ func (r *DescriptionMinLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *DescriptionMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 func checkMinLen(checkLen int, toCheck string) (string, bool) {

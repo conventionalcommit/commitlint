@@ -22,7 +22,11 @@ func (r *BodyMaxLineLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *BodyMaxLineLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // FooterMaxLineLenRule to validate max line length of footer
@@ -40,7 +44,11 @@ func (r *FooterMaxLineLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *FooterMaxLineLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 func checkMaxLineLength(checkLen int, toCheck string) (string, bool) {

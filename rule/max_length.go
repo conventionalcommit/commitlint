@@ -21,7 +21,11 @@ func (r *HeadMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *HeadMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // BodyMaxLenRule to validate max length of body
@@ -39,7 +43,11 @@ func (r *BodyMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *BodyMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // FooterMaxLenRule to validate max length of footer
@@ -57,7 +65,11 @@ func (r *FooterMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *FooterMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // TypeMaxLenRule to validate max length of type
@@ -75,7 +87,11 @@ func (r *TypeMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *TypeMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // ScopeMaxLenRule to validate max length of type
@@ -93,7 +109,11 @@ func (r *ScopeMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *ScopeMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // DescriptionMaxLenRule to validate max length of type
@@ -111,7 +131,11 @@ func (r *DescriptionMaxLenRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *DescriptionMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setIntArg(&r.CheckLen, arg, r.Name())
+	err := setIntArg(&r.CheckLen, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 func checkMaxLen(checkLen int, toCheck string) (string, bool) {

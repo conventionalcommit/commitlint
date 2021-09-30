@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-func setBoolArg(retVal *bool, arg interface{}, ruleName string) error {
-	boolVal, err := toBool(arg, ruleName)
+func setBoolArg(retVal *bool, arg interface{}) error {
+	boolVal, err := toBool(arg)
 	if err != nil {
 		return err
 	}
@@ -13,8 +13,8 @@ func setBoolArg(retVal *bool, arg interface{}, ruleName string) error {
 	return nil
 }
 
-func setIntArg(retVal *int, arg interface{}, ruleName string) error {
-	intVal, err := toInt(arg, ruleName)
+func setIntArg(retVal *int, arg interface{}) error {
+	intVal, err := toInt(arg)
 	if err != nil {
 		return err
 	}
@@ -22,8 +22,8 @@ func setIntArg(retVal *int, arg interface{}, ruleName string) error {
 	return nil
 }
 
-func setStringArg(retVal *string, arg interface{}, ruleName string) error {
-	strVal, err := toString(arg, ruleName)
+func setStringArg(retVal *string, arg interface{}) error {
+	strVal, err := toString(arg)
 	if err != nil {
 		return err
 	}
@@ -31,8 +31,8 @@ func setStringArg(retVal *string, arg interface{}, ruleName string) error {
 	return nil
 }
 
-func setStringArrArg(retVal *[]string, arg interface{}, ruleName string) error {
-	arrVal, err := toStringArr(arg, ruleName)
+func setStringArrArg(retVal *[]string, arg interface{}) error {
+	arrVal, err := toStringArr(arg)
 	if err != nil {
 		return err
 	}
@@ -40,38 +40,38 @@ func setStringArrArg(retVal *[]string, arg interface{}, ruleName string) error {
 	return nil
 }
 
-func toBool(arg interface{}, ruleName string) (bool, error) {
+func toBool(arg interface{}) (bool, error) {
 	boolVal, ok := arg.(bool)
 	if !ok {
-		return false, fmt.Errorf("%s expects bool value, but got %#v", ruleName, arg)
+		return false, fmt.Errorf("expects bool value, but got %#v", arg)
 	}
 	return boolVal, nil
 }
 
-func toInt(arg interface{}, ruleName string) (int, error) {
+func toInt(arg interface{}) (int, error) {
 	intVal, ok := arg.(int)
 	if !ok {
-		return 0, fmt.Errorf("%s expects int value, but got %#v", ruleName, arg)
+		return 0, fmt.Errorf("expects int value, but got %#v", arg)
 	}
 	return intVal, nil
 }
 
-func toString(arg interface{}, ruleName string) (string, error) {
+func toString(arg interface{}) (string, error) {
 	strVal, ok := arg.(string)
 	if !ok {
-		return "", fmt.Errorf("%s expects string value, but got %#v", ruleName, arg)
+		return "", fmt.Errorf("expects string value, but got %#v", arg)
 	}
 	return strVal, nil
 }
 
-func toStringArr(arg interface{}, ruleName string) ([]string, error) {
+func toStringArr(arg interface{}) ([]string, error) {
 	switch argVal := arg.(type) {
 	case []interface{}:
 		strArr := make([]string, len(argVal))
 		for index, a := range argVal {
 			strVal, ok := a.(string)
 			if !ok {
-				return nil, fmt.Errorf("%s expects array of string value, but got %#v", ruleName, arg)
+				return nil, fmt.Errorf("expects array of string value, but got %#v", arg)
 			}
 			strArr[index] = strVal
 		}
@@ -79,5 +79,5 @@ func toStringArr(arg interface{}, ruleName string) ([]string, error) {
 	case []string:
 		return argVal, nil
 	}
-	return nil, fmt.Errorf("%s expects array of string value, but got %#v", ruleName, arg)
+	return nil, fmt.Errorf("expects array of string value, but got %#v", arg)
 }

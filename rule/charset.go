@@ -27,7 +27,11 @@ func (r *ScopeCharsetRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *ScopeCharsetRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setStringArg(&r.Charset, arg, r.Name())
+	err := setStringArg(&r.Charset, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 // TypeCharsetRule to validate max length of header
@@ -50,7 +54,11 @@ func (r *TypeCharsetRule) Validate(msg *lint.Commit) (string, bool) {
 
 // Apply sets the needed argument for the rule
 func (r *TypeCharsetRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	return setStringArg(&r.Charset, arg, r.Name())
+	err := setStringArg(&r.Charset, arg)
+	if err != nil {
+		return errInvalidArg(r.Name(), err)
+	}
+	return nil
 }
 
 func checkCharset(charset, toCheck string) (string, bool) {
