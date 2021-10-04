@@ -2,7 +2,7 @@
 
 # commitlint
 
-commitlint checks if your commit messages meets the [conventional commit format](https://www.conventionalcommits.org/en/v1.0.0/)
+commitlint checks if your commit message meets the [conventional commit format](https://www.conventionalcommits.org/en/v1.0.0/)
 
 ```
 <type>[optional scope]: <description>
@@ -116,6 +116,10 @@ To lint a message, you can use any one of the following
 - `stdin` pipe stream
 - commit message file passed to `--message` command-line argument
 - `.git/COMMIT_EDITMSG` in current directory
+
+#### hook
+
+- To create hook files, run `commitlint hook create`
 
 ### Default Config
 
@@ -231,6 +235,10 @@ Total 1 errors, 0 warnings
   Place `commitlint.yaml` file in repo root directory. linter follows [config precedence](#precedence).
 
   To create a sample config, run `commitlint config create`
+
+- How can I skip lint check for a commit?
+
+  use `--no-verify` flag with `git commit` which skips commit hooks
 
 ## License
 
