@@ -29,18 +29,28 @@ func (l *Linter) LintCommit(msg *Commit) (*Result, error) {
 	res := newResult(msg.FullCommit)
 
 	for _, rule := range l.rules {
-		result, isOK := rule.Validate(msg)
-		if !isOK {
-			ruleConf := l.conf.GetRule(rule.Name())
-			res.add(RuleResult{
-				Name:     rule.Name(),
-				Severity: ruleConf.Severity,
-				Message:  result,
-			})
+		currentRule := rule
+		ruleConf := l.conf.GetRule(currentRule.Name())
+		ruleRes, isValid := l.runRule(currentRule, ruleConf.Severity, msg)
+		if !isValid {
+			res.add(ruleRes)
 		}
 	}
 
 	return res, nil
+}
+
+func (l *Linter) runRule(rule Rule, severity Severity, msg *Commit) (RuleResult, bool) {
+	ruleMsg, isOK := rule.Validate(msg)
+	if isOK {
+		return RuleResult{}, true
+	}
+	res := RuleResult{
+		Name:     rule.Name(),
+		Severity: severity,
+		Message:  ruleMsg,
+	}
+	return res, false
 }
 
 func (l *Linter) headerErrorRule(commitMsg string) *Result {
