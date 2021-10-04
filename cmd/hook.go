@@ -34,16 +34,16 @@ func createHooks(confPath string, isReplace bool) error {
 }
 
 func writeHooks(hookDir, confPath string, isReplace bool) error {
-	err := os.MkdirAll(hookDir, os.ModePerm)
-	if err != nil {
-		return err
-	}
-
 	// if commit-msg already exists skip creating or overwriting it
 	if _, err := os.Stat(hookDir); !os.IsNotExist(err) {
 		if !isReplace {
 			return errHooksExist
 		}
+	}
+
+	err := os.MkdirAll(hookDir, os.ModePerm)
+	if err != nil {
+		return err
 	}
 
 	// create hook file
