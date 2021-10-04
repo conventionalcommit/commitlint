@@ -104,10 +104,27 @@ func configCmd() *cli.Command {
 				Usage:   "writes only default enabled rules",
 				Value:   false,
 			},
+			&cli.BoolFlag{
+				Name:    "replace",
+				Aliases: []string{"r"},
+				Usage:   "Replace conf file if already exists",
+				Value:   false,
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			isOnlyEnabled := ctx.Bool("enabled")
-			return configCreate(isOnlyEnabled)
+			isReplace := ctx.Bool("replace")
+			err := configCreate(isOnlyEnabled, isReplace)
+			if err != nil {
+				if isConfExists(err) {
+					fmt.Println("config create failed")
+					fmt.Println("run with --replace to replace existing file")
+					return nil
+				}
+				return err
+			}
+			fmt.Println("config file created")
+			return nil
 		},
 	}
 

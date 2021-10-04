@@ -14,6 +14,7 @@ const (
 )
 
 var errHooksExist = errors.New("hooks already exists")
+var errConfigExist = errors.New("config file already exists")
 
 func initHooks(confPath string, isGlobal, isReplace bool) (string, error) {
 	hookDir, err := getHookDir(hookBaseDir, isGlobal)
@@ -73,4 +74,8 @@ func getHookDir(baseDir string, isGlobal bool) (string, error) {
 
 func isHookExists(err error) bool {
 	return err == errHooksExist
+}
+
+func isConfExists(err error) bool {
+	return err == errConfigExist
 }

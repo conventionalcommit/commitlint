@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/urfave/cli/v2"
@@ -46,9 +47,15 @@ func hookCreate(confPath string, isReplace bool) error {
 }
 
 // configCreate is the callback function for create config command
-func configCreate(onlyEnabled bool) error {
+func configCreate(onlyEnabled, isReplace bool) error {
 	defConf := config.GetDefaultConf(onlyEnabled)
 	outPath := filepath.Join(".", config.DefaultFile)
+	// if config file already exists skip creating or overwriting it
+	if _, err := os.Stat(outPath); !os.IsNotExist(err) {
+		if !isReplace {
+			return errConfigExist
+		}
+	}
 	return config.WriteConfToFile(outPath, defConf)
 }
 
