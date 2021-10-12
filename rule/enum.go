@@ -48,7 +48,6 @@ func (r *ScopeEnumRule) Apply(arg interface{}, flags map[string]interface{}) err
 		if err != nil {
 			return errInvalidFlag(r.Name(), "allow-empty", err)
 		}
-		return nil
 	}
 
 	// sorting the string elements for binary search
