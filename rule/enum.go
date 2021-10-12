@@ -86,7 +86,7 @@ func (r *TypeEnumRule) Apply(arg interface{}, flags map[string]interface{}) erro
 
 func search(arr []string, toFind string) bool {
 	ind := sort.Search(len(arr), func(i int) bool {
-		return toFind <= arr[i]
+		return arr[i] >= toFind
 	})
 	return ind < len(arr) && arr[ind] == toFind
 }
