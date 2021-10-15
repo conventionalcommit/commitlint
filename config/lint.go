@@ -19,7 +19,7 @@ func GetLinter(conf *lint.Config) (*lint.Linter, error) {
 func GetFormatter(conf *lint.Config) (lint.Formatter, error) {
 	format, ok := globalRegistry.GetFormatter(conf.Formatter)
 	if !ok {
-		return nil, fmt.Errorf("Config Error: '%s' formatter not found", conf.Formatter)
+		return nil, fmt.Errorf("config error: '%s' formatter not found", conf.Formatter)
 	}
 	return format, nil
 }
@@ -33,7 +33,7 @@ func GetEnabledRules(conf *lint.Config) ([]lint.Rule, error) {
 		// before checking if rule is enabled
 		r, ok := globalRegistry.GetRule(ruleName)
 		if !ok {
-			return nil, fmt.Errorf("Config Error: '%s' rule not found", ruleName)
+			return nil, fmt.Errorf("config error: '%s' rule not found", ruleName)
 		}
 
 		if !ruleConfig.Enabled {
@@ -42,7 +42,7 @@ func GetEnabledRules(conf *lint.Config) ([]lint.Rule, error) {
 
 		err := r.Apply(ruleConfig.Argument, ruleConfig.Flags)
 		if err != nil {
-			return nil, fmt.Errorf("Config Error: %v", err)
+			return nil, fmt.Errorf("config error: %v", err)
 		}
 		enabledRules = append(enabledRules, r)
 	}
