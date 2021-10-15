@@ -4,18 +4,11 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/conventionalcommit/commitlint/config"
 	"github.com/urfave/cli/v2"
 )
 
-// New returns commitlint cli.App
 func New() *cli.App {
-	return NewWith("", "", "")
-}
-
-// NewWith returns commitlint cli.App with version info
-func NewWith(versionNo, commitHash, builtTime string) *cli.App {
-	versionInfo := formVersionInfo(versionNo, commitHash, builtTime)
-
 	cmds := []*cli.Command{
 		initCmd(),
 		lintCmd(),
@@ -27,7 +20,7 @@ func NewWith(versionNo, commitHash, builtTime string) *cli.App {
 		Name:     "commitlint",
 		Usage:    "linter for conventional commits",
 		Commands: cmds,
-		Version:  versionInfo,
+		Version:  config.FullVersion(),
 	}
 	return app
 }

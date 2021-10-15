@@ -7,22 +7,13 @@ import (
 	"github.com/conventionalcommit/commitlint/cmd"
 )
 
-// Build constants
-// all variables are set during build
-var (
-	Version   string
-	Commit    string
-	BuildTime string
-)
-
 var errExitCode = 1
 
 func main() {
-	app := cmd.NewWith(Version, Commit, BuildTime)
+	app := cmd.New()
 	err := app.Run(os.Args)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(errExitCode)
 	}
-
 }

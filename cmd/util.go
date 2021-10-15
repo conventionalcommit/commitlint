@@ -2,12 +2,10 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime/debug"
 	"strings"
 )
 
@@ -62,26 +60,4 @@ func getRepoRootDir() (string, error) {
 	gitDir = filepath.Dir(gitDir)
 
 	return gitDir, nil
-}
-
-func formVersionInfo(version, commit, build string) string {
-	versionTmpl := "%s - built from %s on %s"
-
-	if build != "" {
-		return fmt.Sprintf(versionTmpl, version, commit, build)
-	}
-
-	info, ok := debug.ReadBuildInfo()
-	if !ok {
-		return fmt.Sprintf(versionTmpl, "master", "unknown", "unknown")
-	}
-
-	var commitInfo string
-	if info.Main.Sum == "" {
-		commitInfo = "(" + "checksum: unknown)"
-	} else {
-		commitInfo = "(" + "checksum: " + info.Main.Sum + ")"
-	}
-
-	return fmt.Sprintf(versionTmpl, info.Main.Version, commitInfo, "unknown")
 }
