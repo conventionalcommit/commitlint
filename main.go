@@ -10,8 +10,7 @@ import (
 var errExitCode = 1
 
 func main() {
-	app := cmd.New()
-	err := app.Run(os.Args)
+	err := cmd.Run()
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(errExitCode)

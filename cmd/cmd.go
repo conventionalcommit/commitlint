@@ -3,11 +3,18 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/conventionalcommit/commitlint/config"
 	"github.com/urfave/cli/v2"
 )
 
+// Run is shorthand for New and calling cmd.Run with os.Args
+func Run() error {
+	return New().Run(os.Args)
+}
+
+// New returns commitlint cli.App
 func New() *cli.App {
 	cmds := []*cli.Command{
 		initCmd(),
