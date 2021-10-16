@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"runtime/debug"
+
+	"golang.org/x/mod/semver"
 )
 
 // Build constants
@@ -32,7 +34,11 @@ func formShortVersion() string {
 	if !ok {
 		return "v0"
 	}
-	return info.Main.Version
+
+	if semver.IsValid(info.Main.Version) {
+		return info.Main.Version
+	}
+	return "v0"
 }
 
 func formFullVersion() string {
@@ -53,5 +59,12 @@ func formFullVersion() string {
 	} else {
 		commitInfo = "(" + "checksum: " + info.Main.Sum + ")"
 	}
-	return fmt.Sprintf(versionTmpl, info.Main.Version, commitInfo, "unknown")
+
+	var versionInfo string
+	if semver.IsValid(info.Main.Version) {
+		versionInfo = info.Main.Version
+	} else {
+		versionInfo = "v0"
+	}
+	return fmt.Sprintf(versionTmpl, versionInfo, commitInfo, "unknown")
 }
