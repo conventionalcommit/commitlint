@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"golang.org/x/mod/semver"
 	"gopkg.in/yaml.v3"
 
 	"github.com/conventionalcommit/commitlint/lint"
@@ -37,6 +38,11 @@ func GetConfig(confPath string) (*lint.Config, error) {
 
 	if conf.Formatter == "" {
 		return nil, errors.New("conf error: formatter is empty")
+	}
+
+	err = checkVersion(conf.Version)
+	if err != nil {
+		return nil, err
 	}
 	return conf, nil
 }
@@ -95,6 +101,11 @@ func Validate(conf *lint.Config) []error {
 		}
 	}
 
+	err := checkVersion(conf.Version)
+	if err != nil {
+		errs = append(errs, err)
+	}
+
 	for ruleName, r := range conf.Rules {
 		// Check Severity Level of rule config
 		switch r.Severity {
@@ -142,4 +153,14 @@ func WriteConfToFile(outFilePath string, conf *lint.Config) (retErr error) {
 
 	enc := yaml.NewEncoder(w)
 	return enc.Encode(conf)
+}
+
+func checkVersion(verInfo string) error {
+	if verInfo == "" {
+		return errors.New("version is empty")
+	}
+	if !semver.IsValid(verInfo) {
+		return errors.New("invalid version should be in semver format")
+	}
+	return nil
 }
