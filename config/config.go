@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	// DefaultFile represent default config file name
-	DefaultFile = "commitlint.yaml"
+	// ConfigFile represent default config file name
+	ConfigFile = "commitlint.yaml"
 )
 
 // GetConfig gets the config according to precedence
@@ -59,7 +59,7 @@ func getConfigPath(confFilePath string) (confPath string, isDefault bool, retErr
 	}
 
 	// check if conf file exists in current directory
-	currentDirConf := filepath.Join(currentDir, DefaultFile)
+	currentDirConf := filepath.Join(currentDir, ConfigFile)
 	if _, err1 := os.Stat(currentDirConf); !os.IsNotExist(err1) {
 		return currentDirConf, false, nil
 	}
@@ -130,8 +130,8 @@ func Validate(conf *lint.Config) []error {
 	return errs
 }
 
-// WriteConfToFile util func to write config object to given file
-func WriteConfToFile(outFilePath string, conf *lint.Config) (retErr error) {
+// WriteToFile util func to write config object to given file
+func WriteToFile(outFilePath string, conf *lint.Config) (retErr error) {
 	file, err := os.Create(outFilePath)
 	if err != nil {
 		return err

@@ -48,15 +48,15 @@ func hookCreate(confPath string, isReplace bool) error {
 
 // configCreate is the callback function for create config command
 func configCreate(onlyEnabled, isReplace bool) error {
-	defConf := config.GetDefaultConf(onlyEnabled)
-	outPath := filepath.Join(".", config.DefaultFile)
+	defConf := config.DefaultConfig(onlyEnabled)
+	outPath := filepath.Join(".", config.ConfigFile)
 	// if config file already exists skip creating or overwriting it
 	if _, err := os.Stat(outPath); !os.IsNotExist(err) {
 		if !isReplace {
 			return errConfigExist
 		}
 	}
-	return config.WriteConfToFile(outPath, defConf)
+	return config.WriteToFile(outPath, defConf)
 }
 
 // configCheck is the callback function for check/verify command

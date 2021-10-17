@@ -179,8 +179,8 @@ var defaultRules = []lint.Rule{
 	&rule.DescriptionMinLenRule{},
 }
 
-// GetDefaultConf writes default config to given file
-func GetDefaultConf(onlyEnabled bool) *lint.Config {
+// DefaultConfig writes default config to given file
+func DefaultConfig(onlyEnabled bool) *lint.Config {
 	if !onlyEnabled {
 		return defConf
 	}
