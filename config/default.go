@@ -7,7 +7,10 @@ import (
 )
 
 var defConf = &lint.Config{
+	Version: Version(),
+
 	Formatter: (&formatter.DefaultFormatter{}).Name(),
+
 	Rules: map[string]lint.RuleConfig{
 		// Header Min Len Rule
 		(&rule.HeadMinLenRule{}).Name(): {
