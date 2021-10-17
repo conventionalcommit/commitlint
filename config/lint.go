@@ -3,15 +3,14 @@ package config
 import (
 	"fmt"
 
-	"golang.org/x/mod/semver"
-
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
 // GetLinter returns Linter for given confFilePath
 func GetLinter(conf *lint.Config) (*lint.Linter, error) {
-	if !checkIfMinVersion(conf) {
-		return nil, fmt.Errorf("min version required is %s. you have %s. \nupgrade commitlint", conf.Version, Version())
+	err := checkIfMinVersion(conf.Version)
+	if err != nil {
+		return nil, err
 	}
 
 	rules, err := GetEnabledRules(conf)
@@ -23,6 +22,11 @@ func GetLinter(conf *lint.Config) (*lint.Linter, error) {
 
 // GetFormatter returns the formatter as defined in conf
 func GetFormatter(conf *lint.Config) (lint.Formatter, error) {
+	err := checkIfMinVersion(conf.Version)
+	if err != nil {
+		return nil, err
+	}
+
 	format, ok := globalRegistry.GetFormatter(conf.Formatter)
 	if !ok {
 		return nil, fmt.Errorf("config error: '%s' formatter not found", conf.Formatter)
@@ -54,8 +58,4 @@ func GetEnabledRules(conf *lint.Config) ([]lint.Rule, error) {
 	}
 
 	return enabledRules, nil
-}
-
-func checkIfMinVersion(conf *lint.Config) bool {
-	return semver.Compare(Version(), conf.Version) != -1
 }

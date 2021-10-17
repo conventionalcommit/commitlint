@@ -155,12 +155,20 @@ func WriteConfToFile(outFilePath string, conf *lint.Config) (retErr error) {
 	return enc.Encode(conf)
 }
 
-func checkVersion(verInfo string) error {
-	if verInfo == "" {
+func checkVersion(versionNo string) error {
+	if versionNo == "" {
 		return errors.New("version is empty")
 	}
-	if !semver.IsValid(verInfo) {
+	if !semver.IsValid(versionNo) {
 		return errors.New("invalid version should be in semver format")
 	}
-	return nil
+	return checkIfMinVersion(versionNo)
+}
+
+func checkIfMinVersion(versionNo string) error {
+	cmp := semver.Compare(Version(), versionNo)
+	if cmp != -1 {
+		return nil
+	}
+	return fmt.Errorf("min version required is %s. you have %s.\nupgrade commitlint", versionNo, Version())
 }
