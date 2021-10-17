@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/conventionalcommit/commitlint/formatter"
 	"github.com/conventionalcommit/commitlint/lint"
+	"github.com/conventionalcommit/commitlint/rule"
 )
 
 var globalRegistry = newRegistry()
@@ -29,6 +31,24 @@ type registry struct {
 }
 
 func newRegistry() *registry {
+	defaultRules := []lint.Rule{
+		&rule.BodyMinLenRule{}, &rule.BodyMaxLenRule{},
+		&rule.FooterMinLenRule{}, &rule.FooterMaxLenRule{},
+		&rule.HeadMaxLenRule{}, &rule.HeadMinLenRule{},
+		&rule.TypeEnumRule{}, &rule.ScopeEnumRule{},
+
+		&rule.BodyMaxLineLenRule{}, &rule.FooterMaxLineLenRule{},
+		&rule.TypeCharsetRule{}, &rule.ScopeCharsetRule{},
+
+		&rule.TypeMaxLenRule{}, &rule.ScopeMaxLenRule{}, &rule.DescriptionMaxLenRule{},
+		&rule.TypeMinLenRule{}, &rule.ScopeMinLenRule{}, &rule.DescriptionMinLenRule{},
+	}
+
+	defaultFormatters := []lint.Formatter{
+		&formatter.DefaultFormatter{},
+		&formatter.JSONFormatter{},
+	}
+
 	reg := &registry{
 		mut: &sync.Mutex{},
 
