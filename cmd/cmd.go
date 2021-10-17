@@ -9,13 +9,13 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// Run is shorthand for New and calling cmd.Run with os.Args
+// Run runs the commandline with os.Args
 func Run() error {
-	return New().Run(os.Args)
+	return new().Run(os.Args)
 }
 
-// New returns commitlint cli.App
-func New() *cli.App {
+// new returns commitlint cli.App
+func new() *cli.App {
 	cmds := []*cli.Command{
 		initCmd(),
 		lintCmd(),
