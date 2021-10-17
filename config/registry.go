@@ -100,3 +100,25 @@ func (r *registry) GetFormatter(name string) (lint.Formatter, bool) {
 	format, ok := r.allFormatters[name]
 	return format, ok
 }
+
+func (r *registry) Formatters() []lint.Formatter {
+	r.mut.Lock()
+	defer r.mut.Unlock()
+
+	allFormats := make([]lint.Formatter, 0, len(r.allFormatters))
+	for _, f := range r.allFormatters {
+		allFormats = append(allFormats, f)
+	}
+	return allFormats
+}
+
+func (r *registry) Rules() []lint.Rule {
+	r.mut.Lock()
+	defer r.mut.Unlock()
+
+	allRules := make([]lint.Rule, 0, len(r.allRules))
+	for _, r := range r.allRules {
+		allRules = append(allRules, r)
+	}
+	return allRules
+}
