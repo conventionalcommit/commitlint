@@ -19,8 +19,8 @@ const (
 	ConfigFile = "commitlint.yaml"
 )
 
-// GetConfig gets the config according to precedence
-// if needed parses config file and returns config instance
+// GetConfig gets the config path according to the precedence
+// if needed parses given config file and returns config instance
 func GetConfig(confPath string) (*lint.Config, error) {
 	confFilePath, useDefault, err := getConfigPath(confPath)
 	if err != nil {
@@ -73,7 +73,7 @@ func getConfigPath(confFilePath string) (confPath string, isDefault bool, retErr
 	return filepath.Clean(confFilePath), false, nil
 }
 
-// Parse parse Config from given file
+// Parse parse given file in confPath, and return Config instance, error if any
 func Parse(confPath string) (*lint.Config, error) {
 	confBytes, err := os.ReadFile(confPath)
 	if err != nil {
@@ -88,7 +88,10 @@ func Parse(confPath string) (*lint.Config, error) {
 	return conf, nil
 }
 
-// Validate validates given config
+// Validate validates given config instance, it checks the following
+// If formatters, rules are registered/known
+// If arguments to rules are valid
+// If version is valid and atleast minimum than commitlint version used
 func Validate(conf *lint.Config) []error {
 	var errs []error
 
