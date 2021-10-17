@@ -186,6 +186,7 @@ func DefaultConfig(onlyEnabled bool) *lint.Config {
 	}
 
 	confClone := &lint.Config{
+		Version:   defConf.Version,
 		Formatter: defConf.Formatter,
 		Rules:     map[string]lint.RuleConfig{},
 	}
