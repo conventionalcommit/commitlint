@@ -242,5 +242,5 @@ Total 1 errors, 0 warnings
 
 ## License
 
-All packages are licensed under [MIT License](https://github.com/conventionalcommit/commitlint/tree/master/LICENSE.md)
+All packages are licensed under [MIT License](LICENSE.md)
 
