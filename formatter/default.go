@@ -51,3 +51,10 @@ func writeLintResult(w *strings.Builder, title string, resArr []lint.RuleResult,
 		fmt.Fprintf(w, "\n    %s %s: %s", sign, msg.Name, msg.Message)
 	}
 }
+
+func truncate(maxSize int, input string) string {
+	if len(input) < maxSize {
+		return input
+	}
+	return input[:maxSize-3] + "..."
+}
