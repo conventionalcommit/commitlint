@@ -13,7 +13,7 @@ func New(conf *Config, rules []Rule) (*Linter, error) {
 }
 
 // Lint checks the given commitMsg string against rules
-func (l *Linter) Lint(commitMsg string) (*Result, error) {
+func (l *Linter) Lint(commitMsg string) (*Failure, error) {
 	msg, err := Parse(commitMsg)
 	if err != nil {
 		if isHeaderErr(err) {
@@ -25,8 +25,8 @@ func (l *Linter) Lint(commitMsg string) (*Result, error) {
 }
 
 // LintCommit checks the given Commit against rules
-func (l *Linter) LintCommit(msg *Commit) (*Result, error) {
-	res := newResult(msg.FullCommit)
+func (l *Linter) LintCommit(msg *Commit) (*Failure, error) {
+	res := newFailure(msg.FullCommit)
 
 	for _, rule := range l.rules {
 		currentRule := rule
@@ -40,26 +40,19 @@ func (l *Linter) LintCommit(msg *Commit) (*Result, error) {
 	return res, nil
 }
 
-func (l *Linter) runRule(rule Rule, severity Severity, msg *Commit) (RuleResult, bool) {
-	ruleMsg, isOK := rule.Validate(msg)
+func (l *Linter) runRule(rule Rule, severity Severity, msg *Commit) (*RuleFailure, bool) {
+	failMsg, isOK := rule.Validate(msg)
 	if isOK {
-		return RuleResult{}, true
+		return nil, true
 	}
-	res := RuleResult{
-		Name:     rule.Name(),
-		Severity: severity,
-		Message:  ruleMsg,
-	}
+	res := newRuleFailure(rule.Name(), failMsg, severity)
 	return res, false
 }
 
-func (l *Linter) headerErrorRule(commitMsg string) *Result {
+func (l *Linter) headerErrorRule(commitMsg string) *Failure {
 	// TODO: show more information
-	res := newResult(commitMsg)
-	res.add(RuleResult{
-		Name:     "parser",
-		Severity: SeverityError,
-		Message:  "commit header is not valid",
-	})
+	res := newFailure(commitMsg)
+	ruleFail := newRuleFailure("parser", "commit header is not valid", SeverityError)
+	res.add(ruleFail)
 	return res
 }

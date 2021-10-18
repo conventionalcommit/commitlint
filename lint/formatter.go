@@ -6,5 +6,5 @@ type Formatter interface {
 	Name() string
 
 	// Format formats the linter result
-	Format(result *Result) (string, error)
+	Format(result *Failure) (string, error)
 }

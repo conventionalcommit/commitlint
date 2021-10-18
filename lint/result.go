@@ -1,50 +1,52 @@
 package lint
 
-// Result holds result of linter
-type Result struct {
+// Failure holds Failure of linter
+type Failure struct {
 	inputMsg string
 
-	errResults  []RuleResult
-	warnResults []RuleResult
+	failures []*RuleFailure
 }
 
-// RuleResult holds result of a linter rule
-type RuleResult struct {
-	Name     string
-	Severity Severity
-	Message  string
-}
-
-func newResult(inputMsg string) *Result {
-	return &Result{inputMsg: inputMsg}
-}
-
-// AddError adds
-func (res *Result) add(r RuleResult) {
-	if r.Severity == SeverityError {
-		res.errResults = append(res.errResults, r)
-	} else if r.Severity == SeverityWarn {
-		res.warnResults = append(res.warnResults, r)
-	} else {
-		// should not come here
-		res.errResults = append(res.errResults, r)
+func newFailure(inputMsg string) *Failure {
+	return &Failure{
+		inputMsg: inputMsg,
 	}
 }
 
-// Input returns input commit message
-func (res *Result) Input() string { return res.inputMsg }
-
-// Errors returns all error messages
-func (res *Result) Errors() []RuleResult { return res.errResults }
-
-// Warns returns all warning messages
-func (res *Result) Warns() []RuleResult { return res.warnResults }
-
-// HasErrors returns true if errors found by linter
-func (res *Result) HasErrors() bool { return len(res.errResults) != 0 }
-
-// HasWarns returns true if warnings found by linter
-func (res *Result) HasWarns() bool { return len(res.warnResults) != 0 }
+// AddError adds
+func (res *Failure) add(r *RuleFailure) {
+	res.failures = append(res.failures, r)
+}
 
 // IsOK returns true if commit message passed all the rules
-func (res *Result) IsOK() bool { return !res.HasErrors() && !res.HasWarns() }
+func (res *Failure) IsOK() bool { return len(res.failures) == 0 }
+
+// Input returns input commit message
+func (res *Failure) Input() string { return res.inputMsg }
+
+// RuleFailures returns rule Failures
+func (res *Failure) RuleFailures() []*RuleFailure { return res.failures }
+
+// RuleFailure holds Failure of a linter rule
+type RuleFailure struct {
+	name     string
+	severity Severity
+	message  string
+}
+
+func newRuleFailure(name, msg string, severity Severity) *RuleFailure {
+	return &RuleFailure{
+		name:     name,
+		message:  msg,
+		severity: severity,
+	}
+}
+
+// RuleName returns rule name
+func (r *RuleFailure) RuleName() string { return r.name }
+
+// Severity returns severity of the Rule Failure
+func (r *RuleFailure) Severity() Severity { return r.severity }
+
+// Message returns the error message of failed rule
+func (r *RuleFailure) Message() string { return r.message }

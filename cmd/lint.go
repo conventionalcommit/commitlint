@@ -27,7 +27,7 @@ func runLint(confFilePath, fileInput string) (lintResult string, hasError bool, 
 	if err != nil {
 		return "", false, err
 	}
-	return resStr, res.HasErrors(), nil
+	return resStr, hasErrorSeverity(res), nil
 }
 
 func getLinter(confFilePath string) (*lint.Linter, lint.Formatter, error) {
@@ -69,4 +69,13 @@ func getCommitMsg(fileInput string) (string, error) {
 		return "", err
 	}
 	return string(inBytes), nil
+}
+
+func hasErrorSeverity(res *lint.Failure) bool {
+	for _, r := range res.RuleFailures() {
+		if r.Severity() == lint.SeverityError {
+			return true
+		}
+	}
+	return false
 }
