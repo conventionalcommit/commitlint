@@ -13,8 +13,8 @@ var globalRegistry = newRegistry()
 
 // RegisterRule registers a custom rule
 // if rule already exists, returns error
-func RegisterRule(rule lint.Rule) error {
-	return globalRegistry.RegisterRule(rule)
+func RegisterRule(r lint.Rule) error {
+	return globalRegistry.RegisterRule(r)
 }
 
 // RegisterFormatter registers a custom formatter
@@ -57,8 +57,8 @@ func newRegistry() *registry {
 	}
 
 	// Register Default Rules
-	for _, rule := range defaultRules {
-		err := reg.RegisterRule(rule)
+	for _, cRule := range defaultRules {
+		err := reg.RegisterRule(cRule)
 		if err != nil {
 			// default rules should not throw error
 			panic(err)
@@ -77,67 +77,67 @@ func newRegistry() *registry {
 	return reg
 }
 
-func (r *registry) RegisterRule(rule lint.Rule) error {
-	r.mut.Lock()
-	defer r.mut.Unlock()
+func (reg *registry) RegisterRule(cRule lint.Rule) error {
+	reg.mut.Lock()
+	defer reg.mut.Unlock()
 
-	_, ok := r.allRules[rule.Name()]
+	_, ok := reg.allRules[cRule.Name()]
 	if ok {
-		return fmt.Errorf("'%s' rule already registered", rule.Name())
+		return fmt.Errorf("'%s' rule already registered", cRule.Name())
 	}
 
-	r.allRules[rule.Name()] = rule
+	reg.allRules[cRule.Name()] = cRule
 
 	return nil
 }
 
-func (r *registry) RegisterFormatter(format lint.Formatter) error {
-	r.mut.Lock()
-	defer r.mut.Unlock()
+func (reg *registry) RegisterFormatter(format lint.Formatter) error {
+	reg.mut.Lock()
+	defer reg.mut.Unlock()
 
-	_, ok := r.allFormatters[format.Name()]
+	_, ok := reg.allFormatters[format.Name()]
 	if ok {
 		return fmt.Errorf("'%s' formatter already registered", format.Name())
 	}
 
-	r.allFormatters[format.Name()] = format
+	reg.allFormatters[format.Name()] = format
 
 	return nil
 }
 
-func (r *registry) GetRule(name string) (lint.Rule, bool) {
-	r.mut.Lock()
-	defer r.mut.Unlock()
+func (reg *registry) GetRule(name string) (lint.Rule, bool) {
+	reg.mut.Lock()
+	defer reg.mut.Unlock()
 
-	rule, ok := r.allRules[name]
-	return rule, ok
+	cRule, ok := reg.allRules[name]
+	return cRule, ok
 }
 
-func (r *registry) GetFormatter(name string) (lint.Formatter, bool) {
-	r.mut.Lock()
-	defer r.mut.Unlock()
+func (reg *registry) GetFormatter(name string) (lint.Formatter, bool) {
+	reg.mut.Lock()
+	defer reg.mut.Unlock()
 
-	format, ok := r.allFormatters[name]
+	format, ok := reg.allFormatters[name]
 	return format, ok
 }
 
-func (r *registry) Formatters() []lint.Formatter {
-	r.mut.Lock()
-	defer r.mut.Unlock()
+func (reg *registry) Formatters() []lint.Formatter {
+	reg.mut.Lock()
+	defer reg.mut.Unlock()
 
-	allFormats := make([]lint.Formatter, 0, len(r.allFormatters))
-	for _, f := range r.allFormatters {
+	allFormats := make([]lint.Formatter, 0, len(reg.allFormatters))
+	for _, f := range reg.allFormatters {
 		allFormats = append(allFormats, f)
 	}
 	return allFormats
 }
 
-func (r *registry) Rules() []lint.Rule {
-	r.mut.Lock()
-	defer r.mut.Unlock()
+func (reg *registry) Rules() []lint.Rule {
+	reg.mut.Lock()
+	defer reg.mut.Unlock()
 
-	allRules := make([]lint.Rule, 0, len(r.allRules))
-	for _, r := range r.allRules {
+	allRules := make([]lint.Rule, 0, len(reg.allRules))
+	for _, r := range reg.allRules {
 		allRules = append(allRules, r)
 	}
 	return allRules
