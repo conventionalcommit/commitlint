@@ -11,11 +11,11 @@ import (
 
 // Run runs the commandline with os.Args
 func Run() error {
-	return new().Run(os.Args)
+	return newCmd().Run(os.Args)
 }
 
-// new returns commitlint cli.App
-func new() *cli.App {
+// newCmd returns commitlint cli.App
+func newCmd() *cli.App {
 	cmds := []*cli.Command{
 		initCmd(),
 		lintCmd(),
