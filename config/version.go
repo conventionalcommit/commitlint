@@ -15,6 +15,12 @@ var (
 	buildTime string
 )
 
+const (
+	unknownVersion   = "v0"
+	unknownBuildTime = "unknown"
+	unknownHash      = "unknown"
+)
+
 // Version returns short version number of the commitlint
 func Version() string {
 	return formShortVersion()
@@ -32,13 +38,13 @@ func formShortVersion() string {
 
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
-		return "v0"
+		return unknownVersion
 	}
 
 	if semver.IsValid(info.Main.Version) {
 		return info.Main.Version
 	}
-	return "v0"
+	return unknownVersion
 }
 
 func formFullVersion() string {
@@ -50,12 +56,12 @@ func formFullVersion() string {
 
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
-		return fmt.Sprintf(versionTmpl, "master", "unknown", "unknown")
+		return fmt.Sprintf(versionTmpl, unknownVersion, unknownHash, unknownBuildTime)
 	}
 
 	var commitInfo string
 	if info.Main.Sum == "" {
-		commitInfo = "(" + "checksum: unknown)"
+		commitInfo = "(" + "checksum: " + unknownHash + ")"
 	} else {
 		commitInfo = "(" + "checksum: " + info.Main.Sum + ")"
 	}
@@ -64,7 +70,7 @@ func formFullVersion() string {
 	if semver.IsValid(info.Main.Version) {
 		versionInfo = info.Main.Version
 	} else {
-		versionInfo = "v0"
+		versionInfo = unknownVersion
 	}
-	return fmt.Sprintf(versionTmpl, versionInfo, commitInfo, "unknown")
+	return fmt.Sprintf(versionTmpl, versionInfo, commitInfo, unknownBuildTime)
 }
