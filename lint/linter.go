@@ -16,10 +16,7 @@ func New(conf *Config, rules []Rule) (*Linter, error) {
 func (l *Linter) Lint(commitMsg string) (*Failure, error) {
 	msg, err := Parse(commitMsg)
 	if err != nil {
-		if isHeaderErr(err) {
-			return l.headerErrorRule(commitMsg), nil
-		}
-		return nil, err
+		return l.parserErrorRule(commitMsg, err)
 	}
 	return l.LintCommit(msg)
 }
@@ -49,10 +46,19 @@ func (l *Linter) runRule(rule Rule, severity Severity, msg *Commit) (*RuleFailur
 	return res, false
 }
 
-func (l *Linter) headerErrorRule(commitMsg string) *Failure {
-	// TODO: show more information
+func (l *Linter) parserErrorRule(commitMsg string, err error) (*Failure, error) {
 	res := newFailure(commitMsg)
-	ruleFail := newRuleFailure("parser", "commit header is not valid", SeverityError)
+
+	var errMsg string
+	if isHeaderErr(err) {
+		// TODO: show more information
+		errMsg = "commit header is not in valid format"
+	} else {
+		errMsg = err.Error()
+	}
+
+	ruleFail := newRuleFailure("parser", errMsg, SeverityError)
 	res.add(ruleFail)
-	return res
+
+	return res, nil
 }
