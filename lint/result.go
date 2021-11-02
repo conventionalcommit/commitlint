@@ -31,13 +31,13 @@ func (res *Failure) RuleFailures() []*RuleFailure { return res.failures }
 type RuleFailure struct {
 	name     string
 	severity Severity
-	message  string
+	messages []string
 }
 
-func newRuleFailure(name, msg string, severity Severity) *RuleFailure {
+func newRuleFailure(name string, msgs []string, severity Severity) *RuleFailure {
 	return &RuleFailure{
 		name:     name,
-		message:  msg,
+		messages: msgs,
 		severity: severity,
 	}
 }
@@ -48,5 +48,5 @@ func (r *RuleFailure) RuleName() string { return r.name }
 // Severity returns severity of the Rule Failure
 func (r *RuleFailure) Severity() Severity { return r.severity }
 
-// Message returns the error message of failed rule
-func (r *RuleFailure) Message() string { return r.message }
+// Messages returns the error message of failed rule
+func (r *RuleFailure) Messages() []string { return r.messages }

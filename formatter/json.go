@@ -40,7 +40,7 @@ func (f *JSONFormatter) formRuleFailure(res []*lint.RuleFailure, includeSev bool
 		output := make(map[string]interface{})
 
 		output["name"] = r.RuleName()
-		output["message"] = r.Message()
+		output["messages"] = r.Messages()
 
 		if includeSev {
 			output["severity"] = r.Severity()

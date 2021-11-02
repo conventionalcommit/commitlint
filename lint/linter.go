@@ -38,11 +38,11 @@ func (l *Linter) LintCommit(msg *Commit) (*Failure, error) {
 }
 
 func (l *Linter) runRule(rule Rule, severity Severity, msg *Commit) (*RuleFailure, bool) {
-	failMsg, isOK := rule.Validate(msg)
+	failMsgs, isOK := rule.Validate(msg)
 	if isOK {
 		return nil, true
 	}
-	res := newRuleFailure(rule.Name(), failMsg, severity)
+	res := newRuleFailure(rule.Name(), failMsgs, severity)
 	return res, false
 }
 
@@ -57,7 +57,7 @@ func (l *Linter) parserErrorRule(commitMsg string, err error) (*Failure, error) 
 		errMsg = err.Error()
 	}
 
-	ruleFail := newRuleFailure("parser", errMsg, SeverityError)
+	ruleFail := newRuleFailure("parser", []string{errMsg}, SeverityError)
 	res.add(ruleFail)
 
 	return res, nil

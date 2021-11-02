@@ -16,7 +16,7 @@ type BodyMaxLineLenRule struct {
 func (r *BodyMaxLineLenRule) Name() string { return "body-max-line-length" }
 
 // Validate validates BodyMaxLineLenRule rule
-func (r *BodyMaxLineLenRule) Validate(msg *lint.Commit) (string, bool) {
+func (r *BodyMaxLineLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 	return checkMaxLineLength(r.CheckLen, msg.Body)
 }
 
@@ -38,7 +38,7 @@ type FooterMaxLineLenRule struct {
 func (r *FooterMaxLineLenRule) Name() string { return "footer-max-line-length" }
 
 // Validate validates FooterMaxLineLenRule rule
-func (r *FooterMaxLineLenRule) Validate(msg *lint.Commit) (string, bool) {
+func (r *FooterMaxLineLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 	return checkMaxLineLength(r.CheckLen, msg.Footer.FullFooter)
 }
 
@@ -51,14 +51,20 @@ func (r *FooterMaxLineLenRule) Apply(arg interface{}, flags map[string]interface
 	return nil
 }
 
-func checkMaxLineLength(checkLen int, toCheck string) (string, bool) {
+func checkMaxLineLength(checkLen int, toCheck string) ([]string, bool) {
 	lines := strings.Split(toCheck, "\n")
+
+	msgs := []string{}
 	for index, line := range lines {
 		actualLen := len(line)
 		if actualLen > checkLen {
 			errMsg := fmt.Sprintf("in line %d, length is %d, should have less than %d chars", index+1, actualLen, checkLen)
-			return errMsg, false
+			msgs = append(msgs, errMsg)
 		}
 	}
-	return "", true
+
+	if len(msgs) == 0 {
+		return nil, true
+	}
+	return msgs, false
 }
