@@ -37,15 +37,15 @@ func writeFailure(res *lint.Failure) string {
 
 	errs, warns, others := bySeverity(res)
 
-	writeRuleFailure(str, "Errors", errs, "❌")
-	writeRuleFailure(str, "Warnings", warns, "!")
-	writeRuleFailure(str, "Other Severities", others, "?")
+	writeRuleFailure(str, "❌", "Errors", errs)
+	writeRuleFailure(str, "!", "Warnings", warns)
+	writeRuleFailure(str, "?", "Other Severities", others)
 
 	fmt.Fprintf(str, "\n\nTotal %d errors, %d warnings, %d other severities", len(errs), len(warns), len(others))
 	return strings.Trim(str.String(), "\n")
 }
 
-func writeRuleFailure(w *strings.Builder, title string, resArr []*lint.RuleFailure, sign string) {
+func writeRuleFailure(w *strings.Builder, sign, title string, resArr []*lint.RuleFailure) {
 	if len(resArr) == 0 {
 		return
 	}
