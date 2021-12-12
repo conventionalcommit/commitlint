@@ -5,16 +5,23 @@ package lint
 type Linter struct {
 	conf  *Config
 	rules []Rule
+
+	parser Parser
 }
 
 // New returns a new Linter instance with given config and rules
 func New(conf *Config, rules []Rule) (*Linter, error) {
-	return &Linter{conf: conf, rules: rules}, nil
+	l := &Linter{
+		conf:   conf,
+		rules:  rules,
+		parser: &defaultParser{},
+	}
+	return l, nil
 }
 
 // Lint checks the given commitMsg string against rules
 func (l *Linter) Lint(commitMsg string) (*Failure, error) {
-	msg, err := Parse(commitMsg)
+	msg, err := l.parser.Parse(commitMsg)
 	if err != nil {
 		return l.parserErrorRule(commitMsg, err)
 	}
@@ -49,13 +56,7 @@ func (l *Linter) runRule(rule Rule, severity Severity, msg *Commit) (*RuleFailur
 func (l *Linter) parserErrorRule(commitMsg string, err error) (*Failure, error) {
 	res := newFailure(commitMsg)
 
-	var errMsg string
-	if isHeaderErr(err) {
-		// TODO: show more information
-		errMsg = "commit header is not in valid format"
-	} else {
-		errMsg = err.Error()
-	}
+	errMsg := err.Error()
 
 	ruleFail := newRuleFailure("parser", []string{errMsg}, SeverityError)
 	res.add(ruleFail)
