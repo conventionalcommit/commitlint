@@ -19,7 +19,7 @@ func (r *ScopeEnumRule) Name() string { return "scope-enum" }
 
 // Validate validates ScopeEnumRule
 func (r *ScopeEnumRule) Validate(msg *lint.Commit) ([]string, bool) {
-	if msg.Header.Scope == "" {
+	if msg.Scope() == "" {
 		if r.AllowEmpty {
 			return nil, true
 		}
@@ -27,9 +27,9 @@ func (r *ScopeEnumRule) Validate(msg *lint.Commit) ([]string, bool) {
 		return []string{errMsg}, false
 	}
 
-	isFound := search(r.Scopes, msg.Header.Scope)
+	isFound := search(r.Scopes, msg.Scope())
 	if !isFound {
-		errMsg := fmt.Sprintf("scope '%s' is not allowed, you can use one of %v", msg.Header.Scope, r.Scopes)
+		errMsg := fmt.Sprintf("scope '%s' is not allowed, you can use one of %v", msg.Scope(), r.Scopes)
 		return []string{errMsg}, false
 	}
 	return nil, true
@@ -65,9 +65,9 @@ func (r *TypeEnumRule) Name() string { return "type-enum" }
 
 // Validate validates TypeEnumRule
 func (r *TypeEnumRule) Validate(msg *lint.Commit) ([]string, bool) {
-	isFound := search(r.Types, msg.Header.Type)
+	isFound := search(r.Types, msg.Type())
 	if !isFound {
-		errMsg := fmt.Sprintf("type '%s' is not allowed, you can use one of %v", msg.Header.Type, r.Types)
+		errMsg := fmt.Sprintf("type '%s' is not allowed, you can use one of %v", msg.Type(), r.Types)
 		return []string{errMsg}, false
 	}
 	return nil, true

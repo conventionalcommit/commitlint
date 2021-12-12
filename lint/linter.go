@@ -1,6 +1,10 @@
 // Package lint provides a simple linter for conventional commits
 package lint
 
+import (
+	"github.com/conventionalcommit/parser"
+)
+
 // Linter is linter for commit message
 type Linter struct {
 	conf  *Config
@@ -14,7 +18,7 @@ func New(conf *Config, rules []Rule) (*Linter, error) {
 	l := &Linter{
 		conf:   conf,
 		rules:  rules,
-		parser: &defaultParser{},
+		parser: parser.New(),
 	}
 	return l, nil
 }
@@ -30,7 +34,7 @@ func (l *Linter) Lint(commitMsg string) (*Failure, error) {
 
 // LintCommit checks the given Commit against rules
 func (l *Linter) LintCommit(msg *Commit) (*Failure, error) {
-	res := newFailure(msg.FullCommit)
+	res := newFailure(msg.Message())
 
 	for _, rule := range l.rules {
 		currentRule := rule

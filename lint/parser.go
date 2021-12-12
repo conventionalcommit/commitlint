@@ -10,9 +10,3 @@ type Commit = parser.Commit
 type Parser interface {
 	Parse(msg string) (*Commit, error)
 }
-
-type defaultParser struct{}
-
-func (d *defaultParser) Parse(msg string) (*Commit, error) {
-	return parser.Parse(msg)
-}

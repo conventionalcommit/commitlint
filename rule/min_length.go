@@ -16,7 +16,7 @@ func (r *HeadMinLenRule) Name() string { return "header-min-length" }
 
 // Validate validates HeadMinLenRule
 func (r *HeadMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Header.FullHeader)
+	return checkMinLen(r.CheckLen, msg.Header())
 }
 
 // Apply sets the needed argument for the rule
@@ -38,7 +38,7 @@ func (r *BodyMinLenRule) Name() string { return "body-min-length" }
 
 // Validate validates BodyMinLenRule
 func (r *BodyMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Body)
+	return checkMinLen(r.CheckLen, msg.Body())
 }
 
 // Apply sets the needed argument for the rule
@@ -60,7 +60,7 @@ func (r *FooterMinLenRule) Name() string { return "footer-min-length" }
 
 // Validate validates FooterMinLenRule
 func (r *FooterMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Footer.FullFooter)
+	return checkMinLen(r.CheckLen, msg.Footer())
 }
 
 // Apply sets the needed argument for the rule
@@ -82,7 +82,7 @@ func (r *TypeMinLenRule) Name() string { return "type-min-length" }
 
 // Validate validates TypeMinLenRule
 func (r *TypeMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Header.Type)
+	return checkMinLen(r.CheckLen, msg.Type())
 }
 
 // Apply sets the needed argument for the rule
@@ -104,7 +104,7 @@ func (r *ScopeMinLenRule) Name() string { return "scope-min-length" }
 
 // Validate validates ScopeMinLenRule
 func (r *ScopeMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Header.Scope)
+	return checkMinLen(r.CheckLen, msg.Scope())
 }
 
 // Apply sets the needed argument for the rule
@@ -126,7 +126,7 @@ func (r *DescriptionMinLenRule) Name() string { return "description-min-length" 
 
 // Validate validates DescriptionMinLenRule
 func (r *DescriptionMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Header.Description)
+	return checkMinLen(r.CheckLen, msg.Description())
 }
 
 // Apply sets the needed argument for the rule
