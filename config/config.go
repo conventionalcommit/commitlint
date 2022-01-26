@@ -9,8 +9,10 @@ import (
 	"path/filepath"
 
 	"golang.org/x/mod/semver"
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 
+	"github.com/conventionalcommit/commitlint/internal"
+	"github.com/conventionalcommit/commitlint/internal/registry"
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
@@ -75,6 +77,7 @@ func getConfigPath(confFilePath string) (confPath string, isDefault bool, retErr
 
 // Parse parse given file in confPath, and return Config instance, error if any
 func Parse(confPath string) (*lint.Config, error) {
+	confPath = filepath.Clean(confPath)
 	confBytes, err := os.ReadFile(confPath)
 	if err != nil {
 		return nil, err
@@ -98,7 +101,7 @@ func Validate(conf *lint.Config) []error {
 	if conf.Formatter == "" {
 		errs = append(errs, errors.New("formatter is empty"))
 	} else {
-		_, ok := globalRegistry.GetFormatter(conf.Formatter)
+		_, ok := registry.GetFormatter(conf.Formatter)
 		if !ok {
 			errs = append(errs, fmt.Errorf("unknown formatter '%s'", conf.Formatter))
 		}
@@ -119,7 +122,7 @@ func Validate(conf *lint.Config) []error {
 		}
 
 		// Check if rule is registered
-		ruleData, ok := globalRegistry.GetRule(ruleName)
+		ruleData, ok := registry.GetRule(ruleName)
 		if !ok {
 			errs = append(errs, fmt.Errorf("unknown rule '%s'", ruleName))
 			continue
@@ -135,22 +138,22 @@ func Validate(conf *lint.Config) []error {
 
 // WriteToFile util func to write config object to given file
 func WriteToFile(outFilePath string, conf *lint.Config) (retErr error) {
-	file, err := os.Create(outFilePath)
+	f, err := os.Create(outFilePath)
 	if err != nil {
 		return err
 	}
 	defer func() {
-		err1 := file.Close()
-		if retErr == nil && err1 != nil {
-			retErr = err1
+		err := f.Close()
+		if retErr == nil && err != nil {
+			retErr = err
 		}
 	}()
 
-	w := bufio.NewWriter(file)
+	w := bufio.NewWriter(f)
 	defer func() {
-		err1 := w.Flush()
-		if retErr == nil && err1 != nil {
-			retErr = err1
+		err := w.Flush()
+		if retErr == nil && err != nil {
+			retErr = err
 		}
 	}()
 
@@ -169,9 +172,9 @@ func checkVersion(versionNo string) error {
 }
 
 func checkIfMinVersion(versionNo string) error {
-	cmp := semver.Compare(Version(), versionNo)
+	cmp := semver.Compare(internal.Version(), versionNo)
 	if cmp != -1 {
 		return nil
 	}
-	return fmt.Errorf("min version required is %s. you have %s.\nupgrade commitlint", versionNo, Version())
+	return fmt.Errorf("min version required is %s. you have %s.\nupgrade commitlint", versionNo, internal.Version())
 }

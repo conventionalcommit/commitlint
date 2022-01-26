@@ -1,4 +1,5 @@
-package config
+// Package registry contains registered rules and formatters
+package registry
 
 import (
 	"fmt"
@@ -21,6 +22,21 @@ func RegisterRule(r lint.Rule) error {
 // if formatter already exists, returns error
 func RegisterFormatter(format lint.Formatter) error {
 	return globalRegistry.RegisterFormatter(format)
+}
+
+// GetRule returns Rule with given name
+func GetRule(name string) (lint.Rule, bool) {
+	return globalRegistry.GetRule(name)
+}
+
+// GetFormatter returns Formatter with given name
+func GetFormatter(name string) (lint.Formatter, bool) {
+	return globalRegistry.GetFormatter(name)
+}
+
+// Rules returns all registered rules
+func Rules() []lint.Rule {
+	return globalRegistry.Rules()
 }
 
 type registry struct {

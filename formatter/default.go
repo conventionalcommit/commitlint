@@ -57,7 +57,7 @@ func writeRuleFailure(w *strings.Builder, sign, title string, resArr []*lint.Rul
 }
 
 func writeMessages(w *strings.Builder, ruleRes *lint.RuleFailure, sign string) {
-	msgs := ruleRes.Messages()
+	msgs := ruleRes.Message()
 
 	if len(msgs) == 0 {
 		return
@@ -68,15 +68,15 @@ func writeMessages(w *strings.Builder, ruleRes *lint.RuleFailure, sign string) {
 	if len(msgs) == 1 {
 		msg := msgs[0]
 		// ❌ rule-name: message
-		fmt.Fprintf(w, "\n%s %s: %s", space+sign, ruleRes.RuleName(), msg)
+		fmt.Fprintf(w, "\n%s %s: %s", space+sign, ruleRes.Name(), msg)
 		return
 	}
 
 	// ❌ rule-name:
 	//    - message1
 	//    - message2
-	fmt.Fprintf(w, "\n%s %s:", space+sign, ruleRes.RuleName())
-	for _, msg := range ruleRes.Messages() {
+	fmt.Fprintf(w, "\n%s %s:", space+sign, ruleRes.Name())
+	for _, msg := range ruleRes.Message() {
 		fmt.Fprintf(w, "\n%s - %s", space+space, msg)
 	}
 }

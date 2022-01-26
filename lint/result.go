@@ -24,8 +24,8 @@ func (res *Failure) IsOK() bool { return len(res.failures) == 0 }
 // Input returns input commit message
 func (res *Failure) Input() string { return res.inputMsg }
 
-// RuleFailures returns rule Failures
-func (res *Failure) RuleFailures() []*RuleFailure { return res.failures }
+// Failures returns rule Failures
+func (res *Failure) Failures() []*RuleFailure { return res.failures }
 
 // RuleFailure holds Failure of a linter rule
 type RuleFailure struct {
@@ -42,11 +42,11 @@ func newRuleFailure(name string, msgs []string, severity Severity) *RuleFailure 
 	}
 }
 
-// RuleName returns rule name
-func (r *RuleFailure) RuleName() string { return r.name }
+// Name returns rule name
+func (r *RuleFailure) Name() string { return r.name }
 
 // Severity returns severity of the Rule Failure
 func (r *RuleFailure) Severity() Severity { return r.severity }
 
-// Messages returns the error message of failed rule
-func (r *RuleFailure) Messages() []string { return r.messages }
+// Message returns the error messages of failed rule
+func (r *RuleFailure) Message() []string { return r.messages }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/conventionalcommit/commitlint/cmd"
+	"github.com/conventionalcommit/commitlint/internal/cmd"
 )
 
 var errExitCode = 1

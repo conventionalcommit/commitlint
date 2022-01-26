@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/urfave/cli/v2"
+	cli "github.com/urfave/cli/v2"
 
 	"github.com/conventionalcommit/commitlint/config"
 )
@@ -48,7 +48,7 @@ func hookCreate(confPath string, isReplace bool) error {
 
 // configCreate is the callback function for create config command
 func configCreate(onlyEnabled, isReplace bool) error {
-	defConf := config.DefaultConfig(onlyEnabled)
+	defConf := config.GetDefaultConfig(onlyEnabled)
 	outPath := filepath.Join(".", config.ConfigFile)
 	// if config file already exists skip creating or overwriting it
 	if _, err := os.Stat(outPath); !os.IsNotExist(err) {

@@ -2,12 +2,13 @@ package config
 
 import (
 	"github.com/conventionalcommit/commitlint/formatter"
+	"github.com/conventionalcommit/commitlint/internal"
 	"github.com/conventionalcommit/commitlint/lint"
 	"github.com/conventionalcommit/commitlint/rule"
 )
 
 var defConf = &lint.Config{
-	Version: Version(),
+	Version: internal.Version(),
 
 	Formatter: (&formatter.DefaultFormatter{}).Name(),
 
@@ -148,8 +149,8 @@ var defRuleConf = map[string]lint.RuleConfig{
 	},
 }
 
-// DefaultConfig writes default config to given file
-func DefaultConfig(onlyEnabled bool) *lint.Config {
+// GetDefaultConfig writes default config to given file
+func GetDefaultConfig(onlyEnabled bool) *lint.Config {
 	if !onlyEnabled {
 		return defConf
 	}

@@ -1,4 +1,4 @@
-package config
+package internal
 
 import (
 	"fmt"
@@ -72,5 +72,6 @@ func formFullVersion() string {
 	} else {
 		versionInfo = unknownVersion
 	}
+
 	return fmt.Sprintf(versionTmpl, versionInfo, commitInfo, unknownBuildTime)
 }

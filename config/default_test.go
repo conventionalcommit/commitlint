@@ -2,6 +2,8 @@ package config
 
 import (
 	"testing"
+
+	"github.com/conventionalcommit/commitlint/internal/registry"
 )
 
 func TestDefaultLint(t *testing.T) {
@@ -13,7 +15,7 @@ func TestDefaultLint(t *testing.T) {
 }
 
 func TestDefaultConf(t *testing.T) {
-	rules := globalRegistry.Rules()
+	rules := registry.Rules()
 	if len(rules) != len(defConf.Rules) {
 		t.Error("default conf does not have all rules", len(rules), len(defConf.Rules))
 		return

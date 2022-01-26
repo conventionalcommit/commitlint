@@ -72,7 +72,7 @@ func getCommitMsg(fileInput string) (string, error) {
 }
 
 func hasErrorSeverity(res *lint.Failure) bool {
-	for _, r := range res.RuleFailures() {
+	for _, r := range res.Failures() {
 		if r.Severity() == lint.SeverityError {
 			return true
 		}

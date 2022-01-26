@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/conventionalcommit/commitlint/config"
-	"github.com/urfave/cli/v2"
+	cli "github.com/urfave/cli/v2"
+
+	"github.com/conventionalcommit/commitlint/internal"
 )
 
-// Run runs the commandline with os.Args
+// Run runs commitlint cli with os.Args
 func Run() error {
 	return newCmd().Run(os.Args)
 }
@@ -27,7 +28,7 @@ func newCmd() *cli.App {
 		Name:     "commitlint",
 		Usage:    "linter for conventional commits",
 		Commands: cmds,
-		Version:  config.FullVersion(),
+		Version:  internal.FullVersion(),
 	}
 	return app
 }

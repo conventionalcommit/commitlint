@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 
+	"github.com/conventionalcommit/commitlint/internal/registry"
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
@@ -27,7 +28,7 @@ func GetFormatter(conf *lint.Config) (lint.Formatter, error) {
 		return nil, err
 	}
 
-	format, ok := globalRegistry.GetFormatter(conf.Formatter)
+	format, ok := registry.GetFormatter(conf.Formatter)
 	if !ok {
 		return nil, fmt.Errorf("config error: '%s' formatter not found", conf.Formatter)
 	}
@@ -41,7 +42,7 @@ func GetEnabledRules(conf *lint.Config) ([]lint.Rule, error) {
 	for ruleName, ruleConfig := range conf.Rules {
 		// Checking if rule is registered
 		// before checking if rule is enabled
-		r, ok := globalRegistry.GetRule(ruleName)
+		r, ok := registry.GetRule(ruleName)
 		if !ok {
 			return nil, fmt.Errorf("config error: '%s' rule not found", ruleName)
 		}
