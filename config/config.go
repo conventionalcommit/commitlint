@@ -42,7 +42,7 @@ func GetConfig(confPath string) (*lint.Config, error) {
 		return nil, errors.New("conf error: formatter is empty")
 	}
 
-	err = checkVersion(conf.Version)
+	err = isValidVersion(conf.MinVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func Validate(conf *lint.Config) []error {
 		}
 	}
 
-	err := checkVersion(conf.Version)
+	err := isValidVersion(conf.MinVersion)
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -161,14 +161,14 @@ func WriteToFile(outFilePath string, conf *lint.Config) (retErr error) {
 	return enc.Encode(conf)
 }
 
-func checkVersion(versionNo string) error {
+func isValidVersion(versionNo string) error {
 	if versionNo == "" {
 		return errors.New("version is empty")
 	}
 	if !semver.IsValid(versionNo) {
 		return errors.New("invalid version should be in semver format")
 	}
-	return checkIfMinVersion(versionNo)
+	return nil
 }
 
 func checkIfMinVersion(versionNo string) error {

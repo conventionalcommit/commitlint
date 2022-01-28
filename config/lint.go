@@ -9,7 +9,7 @@ import (
 
 // GetLinter returns Linter for given confFilePath
 func GetLinter(conf *lint.Config) (*lint.Linter, error) {
-	err := checkIfMinVersion(conf.Version)
+	err := checkIfMinVersion(conf.MinVersion)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func GetLinter(conf *lint.Config) (*lint.Linter, error) {
 
 // GetFormatter returns the formatter as defined in conf
 func GetFormatter(conf *lint.Config) (lint.Formatter, error) {
-	err := checkIfMinVersion(conf.Version)
+	err := checkIfMinVersion(conf.MinVersion)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 var defConf = &lint.Config{
-	Version: internal.Version(),
+	MinVersion: internal.Version(),
 
 	Formatter: (&formatter.DefaultFormatter{}).Name(),
 
@@ -156,9 +156,9 @@ func GetDefaultConfig(onlyEnabled bool) *lint.Config {
 	}
 
 	confClone := &lint.Config{
-		Version:   defConf.Version,
-		Formatter: defConf.Formatter,
-		Rules:     map[string]lint.RuleConfig{},
+		MinVersion: defConf.MinVersion,
+		Formatter:  defConf.Formatter,
+		Rules:      map[string]lint.RuleConfig{},
 	}
 
 	for ruleName, r := range defConf.Rules {

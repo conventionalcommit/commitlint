@@ -14,9 +14,9 @@ type RuleConfig struct {
 
 // Config represent linter config
 type Config struct {
-	// Version is the minimum version required
+	// MinVersion is the minimum version of commitlint required
 	// should be in semver format
-	Version string `yaml:"version"`
+	MinVersion string `yaml:"version"`
 
 	// Formatter of the lint result
 	Formatter string `yaml:"formatter"`
