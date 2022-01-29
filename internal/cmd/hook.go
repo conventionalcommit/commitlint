@@ -22,18 +22,18 @@ func initHooks(confPath string, isGlobal, isReplace bool) (string, error) {
 		return "", err
 	}
 
-	err = writeHooks(hookDir, confPath, isReplace)
+	err = writeHooks(hookDir, isReplace)
 	if err != nil {
 		return "", err
 	}
 	return hookDir, nil
 }
 
-func createHooks(confPath string, isReplace bool) error {
-	return writeHooks(hookBaseDir, confPath, isReplace)
+func createHooks(isReplace bool) error {
+	return writeHooks(hookBaseDir, isReplace)
 }
 
-func writeHooks(hookDir, confPath string, isReplace bool) error {
+func writeHooks(hookDir string, isReplace bool) error {
 	// if commit-msg already exists skip creating or overwriting it
 	if _, err := os.Stat(hookDir); !os.IsNotExist(err) {
 		if !isReplace {
@@ -47,7 +47,7 @@ func writeHooks(hookDir, confPath string, isReplace bool) error {
 	}
 
 	// create hook file
-	return hook.WriteHooks(hookDir, confPath)
+	return hook.WriteHooks(hookDir)
 }
 
 func getHookDir(baseDir string, isGlobal bool) (string, error) {

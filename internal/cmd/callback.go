@@ -42,8 +42,8 @@ func lintMsg(confPath, msgPath string) error {
 }
 
 // hookCreate is the callback function for create hook command
-func hookCreate(confPath string, isReplace bool) error {
-	return createHooks(confPath, isReplace)
+func hookCreate(isReplace bool) error {
+	return createHooks(isReplace)
 }
 
 // configCreate is the callback function for create config command

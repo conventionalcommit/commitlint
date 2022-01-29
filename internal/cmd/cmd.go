@@ -162,17 +162,15 @@ func configCmd() *cli.Command {
 }
 
 func hookCmd() *cli.Command {
-	confFlag := formConfFlag()
 	replaceFlag := formReplaceFlag()
 
 	createCmd := &cli.Command{
 		Name:  "create",
 		Usage: "Creates git hook files in current directory",
-		Flags: []cli.Flag{confFlag, replaceFlag},
+		Flags: []cli.Flag{replaceFlag},
 		Action: func(ctx *cli.Context) error {
-			confPath := ctx.String("config")
 			isReplace := ctx.Bool("replace")
-			err := hookCreate(confPath, isReplace)
+			err := hookCreate(isReplace)
 			if err != nil {
 				if isHookExists(err) {
 					fmt.Println("create failed. hook files already exists")
