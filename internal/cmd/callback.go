@@ -47,9 +47,9 @@ func hookCreate(confPath string, isReplace bool) error {
 }
 
 // configCreate is the callback function for create config command
-func configCreate(isReplace bool) error {
+func configCreate(fileName string, isReplace bool) error {
 	defConf := config.Default()
-	outPath := filepath.Join(".", config.ConfigFile)
+	outPath := filepath.Join(".", fileName)
 	// if config file already exists skip creating or overwriting it
 	if _, err := os.Stat(outPath); !os.IsNotExist(err) {
 		if !isReplace {

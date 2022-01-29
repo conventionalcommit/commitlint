@@ -105,10 +105,16 @@ func configCmd() *cli.Command {
 				Usage:   "Replace conf file if already exists",
 				Value:   false,
 			},
+			&cli.StringFlag{
+				Name:  "file",
+				Usage: "Config file name",
+				Value: ".commitlint.yaml",
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			isReplace := ctx.Bool("replace")
-			err := configCreate(isReplace)
+			fileName := ctx.String("file")
+			err := configCreate(fileName, isReplace)
 			if err != nil {
 				if isConfExists(err) {
 					fmt.Println("config create failed")
