@@ -16,7 +16,7 @@ var (
 )
 
 const (
-	unknownVersion   = "v0"
+	unknownVersion   = "v0.8.0-unknown"
 	unknownBuildTime = "unknown"
 	unknownHash      = "unknown"
 )
