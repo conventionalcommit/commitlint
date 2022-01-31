@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/conventionalcommit/commitlint/config"
 	"github.com/conventionalcommit/commitlint/lint"
@@ -30,8 +31,8 @@ func runLint(confFilePath, fileInput string) (lintResult string, hasError bool, 
 	return resStr, hasErrorSeverity(res), nil
 }
 
-func getLinter(confFilePath string) (*lint.Linter, lint.Formatter, error) {
-	conf, err := config.GetConfig(confFilePath)
+func getLinter(confParam string) (*lint.Linter, lint.Formatter, error) {
+	conf, err := getConfig(confParam)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -49,6 +50,21 @@ func getLinter(confFilePath string) (*lint.Linter, lint.Formatter, error) {
 	return linter, format, nil
 }
 
+func getConfig(confParam string) (*lint.Config, error) {
+	if confParam != "" {
+		confParam = filepath.Clean(confParam)
+		return config.Parse(confParam)
+	}
+
+	// If config param is empty, lookup for defaults
+	conf, err := config.LookupAndParse()
+	if err != nil {
+		return nil, err
+	}
+
+	return conf, nil
+}
+
 func getCommitMsg(fileInput string) (string, error) {
 	commitMsg, err := readStdInPipe()
 	if err != nil {
@@ -64,6 +80,7 @@ func getCommitMsg(fileInput string) (string, error) {
 		fileInput = "./.git/COMMIT_EDITMSG"
 	}
 
+	fileInput = filepath.Clean(fileInput)
 	inBytes, err := os.ReadFile(fileInput)
 	if err != nil {
 		return "", err

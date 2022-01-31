@@ -9,31 +9,32 @@ import (
 	"path/filepath"
 
 	"golang.org/x/mod/semver"
-	yaml "gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v2"
 
 	"github.com/conventionalcommit/commitlint/internal"
 	"github.com/conventionalcommit/commitlint/internal/registry"
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
-const (
-	// ConfigFile represent default config file name
-	ConfigFile = "commitlint.yaml"
-)
+const commitlintConfig = "COMMITLINT_CONFIG"
 
-// GetConfig gets the config path according to the precedence
-// if needed parses given config file and returns config instance
-func GetConfig(confPath string) (*lint.Config, error) {
-	confFilePath, useDefault, err := getConfigPath(confPath)
+var configFiles = []string{
+	".commitlint.yml",
+	".commitlint.yaml",
+	"commitlint.yml",
+	"commitlint.yaml",
+}
+
+// Parse parse given file in confPath, and return Config instance, error if any
+func Parse(confPath string) (*lint.Config, error) {
+	confPath = filepath.Clean(confPath)
+	confBytes, err := os.ReadFile(confPath)
 	if err != nil {
 		return nil, err
 	}
 
-	if useDefault {
-		return defConf, nil
-	}
-
-	conf, err := Parse(confFilePath)
+	conf := &lint.Config{}
+	err = yaml.UnmarshalStrict(confBytes, conf)
 	if err != nil {
 		return nil, err
 	}
@@ -49,54 +50,17 @@ func GetConfig(confPath string) (*lint.Config, error) {
 	return conf, nil
 }
 
-// getConfigPath returns config file path following below order
-// 	1. commitlint.yaml in current directory
-// 	2. confFilePath parameter
-// 	3. use default config
-func getConfigPath(confFilePath string) (confPath string, isDefault bool, retErr error) {
-	// get current directory
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return "", false, err
-	}
-
-	// check if conf file exists in current directory
-	currentDirConf := filepath.Join(currentDir, ConfigFile)
-	if _, err1 := os.Stat(currentDirConf); !os.IsNotExist(err1) {
-		return currentDirConf, false, nil
-	}
-
-	// if confFilePath empty,
-	// means no config in current directory or config flag is empty
-	// use default config
-	if confFilePath == "" {
-		return "", true, nil
-	}
-	return filepath.Clean(confFilePath), false, nil
-}
-
-// Parse parse given file in confPath, and return Config instance, error if any
-func Parse(confPath string) (*lint.Config, error) {
-	confPath = filepath.Clean(confPath)
-	confBytes, err := os.ReadFile(confPath)
-	if err != nil {
-		return nil, err
-	}
-
-	conf := &lint.Config{}
-	err = yaml.Unmarshal(confBytes, conf)
-	if err != nil {
-		return nil, err
-	}
-	return conf, nil
-}
-
 // Validate validates given config instance, it checks the following
 // If formatters, rules are registered/known
 // If arguments to rules are valid
 // If version is valid and atleast minimum than commitlint version used
 func Validate(conf *lint.Config) []error {
 	var errs []error
+
+	err := isValidVersion(conf.MinVersion)
+	if err != nil {
+		errs = append(errs, err)
+	}
 
 	if conf.Formatter == "" {
 		errs = append(errs, errors.New("formatter is empty"))
@@ -107,16 +71,10 @@ func Validate(conf *lint.Config) []error {
 		}
 	}
 
-	err := isValidVersion(conf.MinVersion)
-	if err != nil {
-		errs = append(errs, err)
-	}
-
 	for ruleName, r := range conf.Rules {
 		// Check Severity Level of rule config
 		switch r.Severity {
-		case lint.SeverityError:
-		case lint.SeverityWarn:
+		case lint.SeverityError, lint.SeverityWarn:
 		default:
 			errs = append(errs, fmt.Errorf("unknown severity level '%s' for rule '%s'", r.Severity, ruleName))
 		}
@@ -134,6 +92,56 @@ func Validate(conf *lint.Config) []error {
 		}
 	}
 	return errs
+}
+
+// LookupAndParse gets the config path according to the precedence
+// if exists, parses the config file and returns config instance
+func LookupAndParse() (*lint.Config, error) {
+	confFilePath, useDefault, err := lookupConfigPath()
+	if err != nil {
+		return nil, err
+	}
+
+	if useDefault {
+		return defConf, nil
+	}
+
+	conf, err := Parse(confFilePath)
+	if err != nil {
+		return nil, err
+	}
+	return conf, nil
+}
+
+// lookupConfigPath returns config file path following below order
+//  1. env path
+// 	2. commitlint.yaml in current directory
+// 	3. use default config
+func lookupConfigPath() (confPath string, isDefault bool, retErr error) {
+	envConf := os.Getenv(commitlintConfig)
+	if envConf != "" {
+		envConf = filepath.Clean(envConf)
+		if _, err1 := os.Stat(envConf); !os.IsNotExist(err1) {
+			return envConf, false, nil
+		}
+	}
+
+	// get current directory
+	currentDir, err := os.Getwd()
+	if err != nil {
+		return "", false, err
+	}
+
+	// check if conf file exists in current directory
+	for _, confFile := range configFiles {
+		currentDirConf := filepath.Join(currentDir, confFile)
+		if _, err1 := os.Stat(currentDirConf); !os.IsNotExist(err1) {
+			return currentDirConf, false, nil
+		}
+	}
+
+	// default config
+	return "", true, nil
 }
 
 // WriteToFile util func to write config object to given file
@@ -158,6 +166,12 @@ func WriteToFile(outFilePath string, conf *lint.Config) (retErr error) {
 	}()
 
 	enc := yaml.NewEncoder(w)
+	defer func() {
+		err := enc.Close()
+		if retErr == nil && err != nil {
+			retErr = err
+		}
+	}()
 	return enc.Encode(conf)
 }
 
