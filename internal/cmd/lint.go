@@ -42,7 +42,7 @@ func getLinter(confParam string) (*lint.Linter, lint.Formatter, error) {
 		return nil, nil, err
 	}
 
-	linter, err := config.GetLinter(conf)
+	linter, err := config.NewLinter(conf)
 	if err != nil {
 		return nil, nil, err
 	}

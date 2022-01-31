@@ -7,7 +7,7 @@ import (
 )
 
 func TestDefaultLint(t *testing.T) {
-	_, err := GetLinter(defConf)
+	_, err := NewLinter(defConf)
 	if err != nil {
 		t.Error("default lint creation failed", err)
 		return

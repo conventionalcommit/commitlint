@@ -7,8 +7,8 @@ import (
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
-// GetLinter returns Linter for given confFilePath
-func GetLinter(conf *lint.Config) (*lint.Linter, error) {
+// NewLinter returns Linter for given confFilePath
+func NewLinter(conf *lint.Config) (*lint.Linter, error) {
 	err := checkIfMinVersion(conf.MinVersion)
 	if err != nil {
 		return nil, err
