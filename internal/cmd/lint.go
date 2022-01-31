@@ -1,12 +1,39 @@
 package cmd
 
 import (
+	"fmt"
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
+
+	cli "github.com/urfave/cli/v2"
 
 	"github.com/conventionalcommit/commitlint/config"
 	"github.com/conventionalcommit/commitlint/lint"
 )
+
+const (
+	// errExitCode represent error exit code
+	errExitCode = 1
+)
+
+// lintMsg is the callback function for lint command
+func lintMsg(confPath, msgPath string) error {
+	// NOTE: lint should return with exit code for error case
+	resStr, hasError, err := runLint(confPath, msgPath)
+	if err != nil {
+		return cli.Exit(err, errExitCode)
+	}
+
+	if hasError {
+		return cli.Exit(resStr, errExitCode)
+	}
+
+	// print success message
+	fmt.Println(resStr)
+	return nil
+}
 
 func runLint(confFilePath, fileInput string) (lintResult string, hasError bool, err error) {
 	linter, format, err := getLinter(confFilePath)
@@ -86,6 +113,27 @@ func getCommitMsg(fileInput string) (string, error) {
 		return "", err
 	}
 	return string(inBytes), nil
+}
+
+func readStdInPipe() (string, error) {
+	stat, err := os.Stdin.Stat()
+	if err != nil {
+		return "", err
+	}
+
+	// user input from terminal
+	if (stat.Mode() & os.ModeCharDevice) != 0 {
+		// not handling this case
+		return "", nil
+	}
+
+	// user input from stdin pipe
+	readBytes, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		return "", err
+	}
+	s := string(readBytes)
+	return strings.TrimSpace(s), nil
 }
 
 func hasErrorSeverity(res *lint.Failure) bool {

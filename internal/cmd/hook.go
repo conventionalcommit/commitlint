@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"bytes"
 	"errors"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/conventionalcommit/commitlint/internal/hook"
@@ -15,6 +17,11 @@ const (
 
 var errHooksExist = errors.New("hooks already exists")
 var errConfigExist = errors.New("config file already exists")
+
+// hookCreate is the callback function for create hook command
+func hookCreate(isReplace bool) error {
+	return createHooks(isReplace)
+}
 
 func initHooks(confPath string, isGlobal, isReplace bool) (string, error) {
 	hookDir, err := getHookDir(hookBaseDir, isGlobal)
@@ -70,6 +77,26 @@ func getHookDir(baseDir string, isGlobal bool) (string, error) {
 		return "", err
 	}
 	return filepath.Join(gitDir, baseDir), nil
+}
+
+func getRepoRootDir() (string, error) {
+	byteOut := &bytes.Buffer{}
+
+	cmd := exec.Command("git", "rev-parse", "--git-dir")
+	cmd.Stdout = byteOut
+	cmd.Stderr = os.Stderr
+
+	err := cmd.Run()
+	if err != nil {
+		return "", err
+	}
+
+	gitDir := filepath.Clean(byteOut.String())
+
+	// remove /.git at last
+	gitDir = filepath.Dir(gitDir)
+
+	return gitDir, nil
 }
 
 func isHookExists(err error) bool {
