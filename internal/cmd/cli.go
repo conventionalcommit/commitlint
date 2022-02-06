@@ -9,14 +9,14 @@ import (
 	"github.com/conventionalcommit/commitlint/internal"
 )
 
-// newCmd returns commitlint cli.App
-func newCmd() *cli.App {
+// newCliApp returns commitlint cli.App
+func newCliApp() *cli.App {
 	cmds := []*cli.Command{
-		initCmd(),
-		lintCmd(),
-		configCmd(),
-		hookCmd(),
-		debugCmd(),
+		newInitCmd(),
+		newLintCmd(),
+		newConfigCmd(),
+		newHookCmd(),
+		newDebugCmd(),
 	}
 
 	app := &cli.App{
@@ -28,14 +28,14 @@ func newCmd() *cli.App {
 	return app
 }
 
-func lintCmd() *cli.Command {
+func newLintCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "lint",
 		Usage: "Check commit message against lint rules",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "config",
-				Aliases: []string{"c", "conf"},
+				Aliases: []string{"c"},
 				Value:   "",
 				Usage:   "optional config file `conf.yaml`",
 			},
@@ -54,9 +54,9 @@ func lintCmd() *cli.Command {
 	}
 }
 
-func initCmd() *cli.Command {
-	confFlag := formConfFlag()
-	replaceFlag := formReplaceFlag()
+func newInitCmd() *cli.Command {
+	confFlag := newConfFlag()
+	replaceFlag := newReplaceFlag()
 
 	globalFlag := &cli.BoolFlag{
 		Name:    "global",
@@ -89,7 +89,7 @@ func initCmd() *cli.Command {
 	}
 }
 
-func configCmd() *cli.Command {
+func newConfigCmd() *cli.Command {
 	createCmd := &cli.Command{
 		Name:  "create",
 		Usage: "Creates default config in current directory",
@@ -129,7 +129,7 @@ func configCmd() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "config",
-				Aliases:  []string{"c", "conf"},
+				Aliases:  []string{"c"},
 				Usage:    "config file `conf.yaml`",
 				Required: true,
 			},
@@ -156,8 +156,8 @@ func configCmd() *cli.Command {
 	}
 }
 
-func hookCmd() *cli.Command {
-	replaceFlag := formReplaceFlag()
+func newHookCmd() *cli.Command {
+	replaceFlag := newReplaceFlag()
 
 	createCmd := &cli.Command{
 		Name:  "create",
@@ -186,7 +186,7 @@ func hookCmd() *cli.Command {
 	}
 }
 
-func debugCmd() *cli.Command {
+func newDebugCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "debug",
 		Usage: "prints usable information for debugging",
@@ -196,16 +196,16 @@ func debugCmd() *cli.Command {
 	}
 }
 
-func formConfFlag() *cli.StringFlag {
+func newConfFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:    "config",
-		Aliases: []string{"c", "conf"},
+		Aliases: []string{"c"},
 		Value:   "",
 		Usage:   "Optional config file `conf.yaml` which will be passed to 'commitlint lint'. Check config precedence",
 	}
 }
 
-func formReplaceFlag() *cli.BoolFlag {
+func newReplaceFlag() *cli.BoolFlag {
 	return &cli.BoolFlag{
 		Name:  "replace",
 		Usage: "Replace hook files if already exists",

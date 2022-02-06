@@ -7,7 +7,7 @@ import (
 
 // Run runs commitlint cli with os.Args
 func Run() error {
-	return newCmd().Run(os.Args)
+	return newCliApp().Run(os.Args)
 }
 
 type multiError []error
