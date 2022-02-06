@@ -2,9 +2,9 @@
 package config
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -104,28 +104,8 @@ func LookupAndParse() (*lint.Config, error) {
 	return conf, nil
 }
 
-// WriteToFile util func to write config object to given file
-func WriteToFile(outFilePath string, conf *lint.Config) (retErr error) {
-	outFilePath = filepath.Clean(outFilePath)
-	f, err := os.Create(outFilePath)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		err := f.Close()
-		if retErr == nil && err != nil {
-			retErr = err
-		}
-	}()
-
-	w := bufio.NewWriter(f)
-	defer func() {
-		err := w.Flush()
-		if retErr == nil && err != nil {
-			retErr = err
-		}
-	}()
-
+// WriteTo writes config in yaml format to given io.Writer
+func WriteTo(w io.Writer, conf *lint.Config) (retErr error) {
 	enc := yaml.NewEncoder(w)
 	defer func() {
 		err := enc.Close()
