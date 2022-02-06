@@ -16,15 +16,6 @@ import (
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
-const commitlintConfig = "COMMITLINT_CONFIG"
-
-var configFiles = []string{
-	".commitlint.yml",
-	".commitlint.yaml",
-	"commitlint.yml",
-	"commitlint.yaml",
-}
-
 // Parse parse given file in confPath, and return Config instance, error if any
 func Parse(confPath string) (*lint.Config, error) {
 	confPath = filepath.Clean(confPath)
@@ -97,12 +88,12 @@ func Validate(conf *lint.Config) []error {
 // LookupAndParse gets the config path according to the precedence
 // if exists, parses the config file and returns config instance
 func LookupAndParse() (*lint.Config, error) {
-	confFilePath, useDefault, err := lookupConfigPath()
+	confFilePath, confType, err := internal.LookupConfigPath()
 	if err != nil {
 		return nil, err
 	}
 
-	if useDefault {
+	if confType == internal.DefaultConfig {
 		return defConf, nil
 	}
 
@@ -113,39 +104,9 @@ func LookupAndParse() (*lint.Config, error) {
 	return conf, nil
 }
 
-// lookupConfigPath returns config file path following below order
-//  1. env path
-// 	2. commitlint.yaml in current directory
-// 	3. use default config
-func lookupConfigPath() (confPath string, isDefault bool, retErr error) {
-	envConf := os.Getenv(commitlintConfig)
-	if envConf != "" {
-		envConf = filepath.Clean(envConf)
-		if _, err1 := os.Stat(envConf); !os.IsNotExist(err1) {
-			return envConf, false, nil
-		}
-	}
-
-	// get current directory
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return "", false, err
-	}
-
-	// check if conf file exists in current directory
-	for _, confFile := range configFiles {
-		currentDirConf := filepath.Join(currentDir, confFile)
-		if _, err1 := os.Stat(currentDirConf); !os.IsNotExist(err1) {
-			return currentDirConf, false, nil
-		}
-	}
-
-	// default config
-	return "", true, nil
-}
-
 // WriteToFile util func to write config object to given file
 func WriteToFile(outFilePath string, conf *lint.Config) (retErr error) {
+	outFilePath = filepath.Clean(outFilePath)
 	f, err := os.Create(outFilePath)
 	if err != nil {
 		return err

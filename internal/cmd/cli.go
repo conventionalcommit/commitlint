@@ -16,6 +16,7 @@ func newCmd() *cli.App {
 		lintCmd(),
 		configCmd(),
 		hookCmd(),
+		debugCmd(),
 	}
 
 	app := &cli.App{
@@ -182,6 +183,16 @@ func hookCmd() *cli.Command {
 		Name:        "hook",
 		Usage:       "Manage commitlint git hooks",
 		Subcommands: []*cli.Command{createCmd},
+	}
+}
+
+func debugCmd() *cli.Command {
+	return &cli.Command{
+		Name:  "debug",
+		Usage: "prints usable information for debugging",
+		Action: func(ctx *cli.Context) error {
+			return printDebug()
+		},
 	}
 }
 
