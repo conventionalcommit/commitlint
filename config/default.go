@@ -49,7 +49,7 @@ func Default() *lint.Config {
 				Severity: lint.SeverityError,
 				Argument: []interface{}{
 					"feat", "fix", "docs", "style", "refactor", "perf",
-					"test", "build", "ci", "chore", "revert", "merge",
+					"test", "build", "ci", "chore", "revert",
 				},
 			},
 
