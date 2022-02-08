@@ -146,6 +146,13 @@ func Default() *lint.Config {
 				Severity: lint.SeverityError,
 				Argument: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/,",
 			},
+
+			// Footer Enum Rule
+			(&rule.FooterEnumRule{}).Name(): {
+				Enabled:  false,
+				Severity: lint.SeverityError,
+				Argument: []interface{}{},
+			},
 		},
 	}
 	return def

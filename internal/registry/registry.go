@@ -51,9 +51,9 @@ func newRegistry() *registry {
 		&rule.BodyMinLenRule{}, &rule.BodyMaxLenRule{},
 		&rule.FooterMinLenRule{}, &rule.FooterMaxLenRule{},
 		&rule.HeadMaxLenRule{}, &rule.HeadMinLenRule{},
-		&rule.TypeEnumRule{}, &rule.ScopeEnumRule{},
-
 		&rule.BodyMaxLineLenRule{}, &rule.FooterMaxLineLenRule{},
+
+		&rule.TypeEnumRule{}, &rule.ScopeEnumRule{}, &rule.FooterEnumRule{},
 		&rule.TypeCharsetRule{}, &rule.ScopeCharsetRule{},
 
 		&rule.TypeMaxLenRule{}, &rule.ScopeMaxLenRule{}, &rule.DescriptionMaxLenRule{},
