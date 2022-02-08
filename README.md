@@ -16,23 +16,29 @@ commitlint checks if your commit message meets the [conventional commit format](
 
 ### Table of Contents
 
-- [Installation](#installation)
-  - [Releases](#releases)
-  - [Using go](#using-go)
-- [Setup](#setup)
-  - [Manual](#manual)
-- [Quick Test](#quick-test)
-- [Usage](#usage)
-  - [Commands](#commands)
-    - [config](#config)
-    - [lint](#lint)
-  - [Default Config](#default-config)
-    - [Commit Types](#commit-types)
-- [Available Rules](#available-rules)
-- [Available Formatters](#available-formatters)
-- [Extensibility](#extensibility)
-- [FAQ](#faq)
-- [License](#license)
+- [commitlint](#commitlint)
+    - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+    - [Releases](#releases)
+    - [Using go](#using-go)
+  - [Setup](#setup)
+    - [Manual](#manual)
+  - [Quick Test](#quick-test)
+  - [Usage](#usage)
+    - [Commands](#commands)
+      - [config](#config)
+      - [lint](#lint)
+        - [Precedence](#precedence)
+          - [Config](#config-1)
+          - [Message](#message)
+      - [hook](#hook)
+    - [Default Config](#default-config)
+      - [Commit Types](#commit-types)
+  - [Available Rules](#available-rules)
+  - [Available Formatters](#available-formatters)
+  - [Extensibility](#extensibility)
+  - [FAQ](#faq)
+  - [License](#license)
 
 ## Installation
 
@@ -107,8 +113,13 @@ To lint a message, you can use any one of the following
 
 ###### Config
 
-- `commitlint.yaml` config file in current directory
 - config file passed to `--config` command-line argument
+- `COMMITLINT_CONFIG` env variable
+- config file in current directory or git repo root in the below order
+  - .commitlint.yml
+  - .commitlint.yaml
+  - commitlint.yml
+  - commitlint.yaml
 - [default config](#default-config)
 
 ###### Message
@@ -124,6 +135,7 @@ To lint a message, you can use any one of the following
 ### Default Config
 
 ```yaml
+version: v0.7.0
 formatter: default
 rules:
     header-min-length:
@@ -157,7 +169,6 @@ rules:
             - ci
             - chore
             - revert
-            - merge
 ```
 
 #### Commit Types
@@ -165,7 +176,7 @@ rules:
 Commonly used commit types from [Conventional Commit Types](https://github.com/commitizen/conventional-commit-types)
 
 | Type     | Description                                                                      |
-|:---------|:---------------------------------------------------------------------------------|
+| :------- | :------------------------------------------------------------------------------- |
 | feat     | A new feature                                                                    |
 | fix      | A bug fix                                                                        |
 | docs     | Documentation only changes                                                       |
@@ -177,33 +188,32 @@ Commonly used commit types from [Conventional Commit Types](https://github.com/c
 | ci       | Changes to our CI configuration files and scripts                                |
 | chore    | Other changes that don't modify src or test files                                |
 | revert   | Reverts a previous commit                                                        |
-| merge    | Merges a branch                                                                  |
 
 ## Available Rules
 
 The list of available lint rules
 
-| name                   | argument | flags             | description                                  |
-| ---------------------- | -------- | ----------------- | -------------------------------------------- |
-| header-min-length      | int      | n/a               | checks the min length of header (first line) |
-| header-max-length      | int      | n/a               | checks the max length of header (first line) |
-| body-max-line-length   | int      | n/a               | checks the max length of each line in body   |
-| footer-max-line-length | int      | n/a               | checks the max length of each line in footer |
-| type-enum              | []string | n/a               | restrict type to given list of string        |
-| scope-enum             | []string | allow-empty: bool | restrict scope to given list of string       |
-| type-min-length        | int      | n/a               | checks the min length of type                |
-| type-max-length        | int      | n/a               | checks the max length of type                |
-| scope-min-length       | int      | n/a               | checks the min length of scope               |
-| scope-max-length       | int      | n/a               | checks the max length of scope               |
-| description-min-length | int      | n/a               | checks the min length of description         |
-| description-max-length | int      | n/a               | checks the max length of description         |
-| body-min-length        | int      | n/a               | checks the min length of body                |
-| body-max-length        | int      | n/a               | checks the max length of body                |
-| footer-min-length      | int      | n/a               | checks the min length of footer              |
-| footer-max-length      | int      | n/a               | checks the max length of footer              |
-| type-charset           | string   | n/a               | restricts type to given charset              |
-| scope-charset          | string   | n/a               | restricts scope to given charset             |
-
+| name                   | argument | flags             | description                                   |
+| ---------------------- | -------- | ----------------- | --------------------------------------------- |
+| header-min-length      | int      | n/a               | checks the min length of header (first line)  |
+| header-max-length      | int      | n/a               | checks the max length of header (first line)  |
+| body-max-line-length   | int      | n/a               | checks the max length of each line in body    |
+| footer-max-line-length | int      | n/a               | checks the max length of each line in footer  |
+| type-enum              | []string | n/a               | restrict type to given list of string         |
+| scope-enum             | []string | allow-empty: bool | restrict scope to given list of string        |
+| footer-enum            | []string | n/a               | restrict footer token to given list of string |
+| type-min-length        | int      | n/a               | checks the min length of type                 |
+| type-max-length        | int      | n/a               | checks the max length of type                 |
+| scope-min-length       | int      | n/a               | checks the min length of scope                |
+| scope-max-length       | int      | n/a               | checks the max length of scope                |
+| description-min-length | int      | n/a               | checks the min length of description          |
+| description-max-length | int      | n/a               | checks the max length of description          |
+| body-min-length        | int      | n/a               | checks the min length of body                 |
+| body-max-length        | int      | n/a               | checks the max length of body                 |
+| footer-min-length      | int      | n/a               | checks the min length of footer               |
+| footer-max-length      | int      | n/a               | checks the max length of footer               |
+| type-charset           | string   | n/a               | restricts type to given charset               |
+| scope-charset          | string   | n/a               | restricts scope to given charset              |
 
 ## Available Formatters
 
@@ -215,15 +225,15 @@ commitlint
 → input: "fear: do not fear for ..."
 
 Errors:
-    ❌ type-enum: type 'fear' is not allowed, you can use one of [build chore ci docs feat fix merge perf refactor revert style test]
+  ❌ type-enum: type 'fear' is not allowed, you can use one of [build chore ci docs feat fix merge perf refactor revert style test]
 
-Total 1 errors, 0 warnings
+Total 1 errors, 0 warnings, 0 other severities
 ```
 
 - JSON
 
 ```json
-{"errors":[{"message":"type 'fear' is not allowed, you can use one of [build chore ci docs feat fix merge perf refactor revert style test]","name":"type-enum"}],"input":"fear: do not fear for commit","status":false,"warnings":[]}
+{"errors":[{"messages":["type 'fear' is not allowed, you can use one of [build chore ci docs feat fix merge perf refactor revert style test]"],"name":"type-enum"}],"input":"fear: do not fear for commit message","others":[],"status":false,"warnings":[]}
 ```
 
 ## Extensibility
@@ -232,7 +242,7 @@ Total 1 errors, 0 warnings
 
 - How to have custom config for each repository?
 
-  Place `commitlint.yaml` file in repo root directory. linter follows [config precedence](#precedence).
+  Place `.commitlint.yaml` file in repo root directory. linter follows [config precedence](#precedence).
 
   To create a sample config, run `commitlint config create`
 
@@ -243,4 +253,3 @@ Total 1 errors, 0 warnings
 ## License
 
 All packages are licensed under [MIT License](LICENSE.md)
-
