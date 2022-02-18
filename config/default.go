@@ -9,151 +9,130 @@ import (
 
 // Default returns default config
 func Default() *lint.Config {
-	def := &lint.Config{
-		MinVersion: internal.Version(),
+	// Enabled Rules
+	rules := []string{
+		(&rule.HeadMinLenRule{}).Name(),
+		(&rule.HeadMaxLenRule{}).Name(),
+		(&rule.BodyMaxLineLenRule{}).Name(),
+		(&rule.FooterMaxLineLenRule{}).Name(),
+		(&rule.TypeEnumRule{}).Name(),
+	}
 
-		Formatter: (&formatter.DefaultFormatter{}).Name(),
+	// Severity Levels
+	severity := lint.SeverityConfig{
+		Default: lint.SeverityError,
+	}
 
-		Rules: map[string]lint.RuleConfig{
-			// Header Min Len Rule
-			(&rule.HeadMinLenRule{}).Name(): {
-				Enabled:  true,
-				Severity: lint.SeverityError,
-				Argument: 10,
-			},
+	// Default Rule Settings
+	settings := map[string]lint.RuleSetting{
+		// Header Min Len Rule
+		(&rule.HeadMinLenRule{}).Name(): {
+			Argument: 10,
+		},
 
-			// Header Max Len Rule
-			(&rule.HeadMaxLenRule{}).Name(): {
-				Enabled:  true,
-				Severity: lint.SeverityError,
-				Argument: 50,
-			},
+		// Header Max Len Rule
+		(&rule.HeadMaxLenRule{}).Name(): {
+			Argument: 50,
+		},
 
-			// Body Max Line Rule
-			(&rule.BodyMaxLineLenRule{}).Name(): {
-				Enabled:  true,
-				Severity: lint.SeverityError,
-				Argument: 72,
-			},
+		// Body Max Line Rule
+		(&rule.BodyMaxLineLenRule{}).Name(): {
+			Argument: 72,
+		},
 
-			// Footer Max Line Rule
-			(&rule.FooterMaxLineLenRule{}).Name(): {
-				Enabled:  true,
-				Severity: lint.SeverityError,
-				Argument: 72,
-			},
+		// Footer Max Line Rule
+		(&rule.FooterMaxLineLenRule{}).Name(): {
+			Argument: 72,
+		},
 
-			// Types Enum Rule
-			(&rule.TypeEnumRule{}).Name(): {
-				Enabled:  true,
-				Severity: lint.SeverityError,
-				Argument: []interface{}{
-					"feat", "fix", "docs", "style", "refactor", "perf",
-					"test", "build", "ci", "chore", "revert",
-				},
-			},
-
-			// Scope Enum Rule
-			(&rule.ScopeEnumRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: []interface{}{},
-				Flags: map[string]interface{}{
-					"allow-empty": true,
-				},
-			},
-
-			// Body Min Len Rule
-			(&rule.BodyMinLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: 0,
-			},
-
-			// Body Max Len Rule
-			(&rule.BodyMaxLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: -1,
-			},
-
-			// Footer Min Len Rule
-			(&rule.FooterMinLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: 0,
-			},
-
-			// Footer Max Len Rule
-			(&rule.FooterMaxLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: -1,
-			},
-
-			// Type Min Len Rule
-			(&rule.TypeMinLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: 0,
-			},
-
-			// Type Max Len Rule
-			(&rule.TypeMaxLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: -1,
-			},
-
-			// Scope Min Len Rule
-			(&rule.ScopeMinLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: 0,
-			},
-
-			// Scope Max Len Rule
-			(&rule.ScopeMaxLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: -1,
-			},
-
-			// Description Min Len Rule
-			(&rule.DescriptionMinLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: 0,
-			},
-
-			// Description Max Len Rule
-			(&rule.DescriptionMaxLenRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: -1,
-			},
-
-			// Type Charset Rule
-			(&rule.TypeCharsetRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-			},
-
-			// Scope Charset Rule
-			(&rule.ScopeCharsetRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/,",
-			},
-
-			// Footer Enum Rule
-			(&rule.FooterEnumRule{}).Name(): {
-				Enabled:  false,
-				Severity: lint.SeverityError,
-				Argument: []interface{}{},
+		// Types Enum Rule
+		(&rule.TypeEnumRule{}).Name(): {
+			Argument: []interface{}{
+				"feat", "fix", "docs", "style", "refactor", "perf",
+				"test", "build", "ci", "chore", "revert",
 			},
 		},
+
+		// Scope Enum Rule
+		(&rule.ScopeEnumRule{}).Name(): {
+			Argument: []interface{}{},
+			Flags: map[string]interface{}{
+				"allow-empty": true,
+			},
+		},
+
+		// Body Min Len Rule
+		(&rule.BodyMinLenRule{}).Name(): {
+			Argument: 0,
+		},
+
+		// Body Max Len Rule
+		(&rule.BodyMaxLenRule{}).Name(): {
+			Argument: -1,
+		},
+
+		// Footer Min Len Rule
+		(&rule.FooterMinLenRule{}).Name(): {
+			Argument: 0,
+		},
+
+		// Footer Max Len Rule
+		(&rule.FooterMaxLenRule{}).Name(): {
+			Argument: -1,
+		},
+
+		// Type Min Len Rule
+		(&rule.TypeMinLenRule{}).Name(): {
+			Argument: 0,
+		},
+
+		// Type Max Len Rule
+		(&rule.TypeMaxLenRule{}).Name(): {
+			Argument: -1,
+		},
+
+		// Scope Min Len Rule
+		(&rule.ScopeMinLenRule{}).Name(): {
+			Argument: 0,
+		},
+
+		// Scope Max Len Rule
+		(&rule.ScopeMaxLenRule{}).Name(): {
+			Argument: -1,
+		},
+
+		// Description Min Len Rule
+		(&rule.DescriptionMinLenRule{}).Name(): {
+			Argument: 0,
+		},
+
+		// Description Max Len Rule
+		(&rule.DescriptionMaxLenRule{}).Name(): {
+			Argument: -1,
+		},
+
+		// Type Charset Rule
+		(&rule.TypeCharsetRule{}).Name(): {
+			Argument: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+		},
+
+		// Scope Charset Rule
+		(&rule.ScopeCharsetRule{}).Name(): {
+			Argument: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/,",
+		},
+
+		// Footer Enum Rule
+		(&rule.FooterEnumRule{}).Name(): {
+			Argument: []interface{}{},
+		},
+	}
+
+	def := &lint.Config{
+		MinVersion: internal.Version(),
+		Formatter:  (&formatter.DefaultFormatter{}).Name(),
+		Rules:      rules,
+		Severity:   severity,
+		Settings:   settings,
 	}
 	return def
 }

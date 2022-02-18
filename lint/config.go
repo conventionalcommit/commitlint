@@ -1,15 +1,15 @@
 package lint
 
-// RuleConfig represent config for a rule
-type RuleConfig struct {
-	Enabled bool `yaml:"enabled"`
+// RuleSetting represent config for a rule
+type RuleSetting struct {
+	Argument interface{}            `yaml:"argument"`
+	Flags    map[string]interface{} `yaml:"flags,omitempty"`
+}
 
-	Severity Severity `yaml:"severity"`
-
-	Argument interface{} `yaml:"argument"`
-
-	// Flags are optional key value pairs
-	Flags map[string]interface{} `yaml:"flags"`
+// SeverityConfig represent severity levels for rules
+type SeverityConfig struct {
+	Default Severity            `yaml:"default"`
+	Rules   map[string]Severity `yaml:"rules,omitempty"`
 }
 
 // Config represent linter config
@@ -21,11 +21,26 @@ type Config struct {
 	// Formatter of the lint result
 	Formatter string `yaml:"formatter"`
 
-	// Rules is rule name to rule config map
-	Rules map[string]RuleConfig `yaml:"rules"`
+	// Enabled Rules
+	Rules []string `yaml:"rules"`
+
+	// Severity
+	Severity SeverityConfig `yaml:"severity"`
+
+	// Settings is rule name to rule settings
+	Settings map[string]RuleSetting `yaml:"settings"`
 }
 
 // GetRule returns RuleConfig for given rule name
-func (c *Config) GetRule(ruleName string) RuleConfig {
-	return c.Rules[ruleName]
+func (c *Config) GetRule(ruleName string) RuleSetting {
+	return c.Settings[ruleName]
+}
+
+// GetSeverity returns Severity for given ruleName
+func (c *Config) GetSeverity(ruleName string) Severity {
+	s, ok := c.Severity.Rules[ruleName]
+	if ok {
+		return s
+	}
+	return c.Severity.Default
 }

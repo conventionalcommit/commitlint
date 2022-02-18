@@ -38,8 +38,8 @@ func (l *Linter) LintCommit(msg *Commit) (*Failure, error) {
 
 	for _, rule := range l.rules {
 		currentRule := rule
-		ruleConf := l.conf.GetRule(currentRule.Name())
-		ruleRes, isValid := l.runRule(currentRule, ruleConf.Severity, msg)
+		severity := l.conf.GetSeverity(currentRule.Name())
+		ruleRes, isValid := l.runRule(currentRule, severity, msg)
 		if !isValid {
 			res.add(ruleRes)
 		}

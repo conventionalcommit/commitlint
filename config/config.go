@@ -62,14 +62,28 @@ func Validate(conf *lint.Config) []error {
 		}
 	}
 
-	for ruleName, r := range conf.Rules {
-		// Check Severity Level of rule config
-		switch r.Severity {
-		case lint.SeverityError, lint.SeverityWarn:
-		default:
-			errs = append(errs, fmt.Errorf("unknown severity level '%s' for rule '%s'", r.Severity, ruleName))
-		}
+	// Check Severity Level
+	if !isSeverityValid(conf.Severity.Default) {
+		errs = append(errs, fmt.Errorf("unknown default severity level '%s'", conf.Severity.Default))
+	}
 
+	for ruleName, sev := range conf.Severity.Rules {
+		// Check Severity Level of rule config
+		if !isSeverityValid(sev) {
+			errs = append(errs, fmt.Errorf("unknown default severity level '%s' for rule '%s'", ruleName, sev))
+		}
+	}
+
+	for _, ruleName := range conf.Rules {
+		// Check if rule is registered
+		_, ok := registry.GetRule(ruleName)
+		if !ok {
+			errs = append(errs, fmt.Errorf("unknown rule '%s'", ruleName))
+			continue
+		}
+	}
+
+	for ruleName, r := range conf.Settings {
 		// Check if rule is registered
 		ruleData, ok := registry.GetRule(ruleName)
 		if !ok {
@@ -132,4 +146,8 @@ func checkIfMinVersion(versionNo string) error {
 		return nil
 	}
 	return fmt.Errorf("min version required is %s. you have %s.\nupgrade commitlint", versionNo, internal.Version())
+}
+
+func isSeverityValid(s lint.Severity) bool {
+	return s == lint.SeverityError || s == lint.SeverityWarn
 }
