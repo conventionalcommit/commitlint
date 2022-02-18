@@ -50,7 +50,7 @@ type Rule interface {
 	// Apply calls with arguments and flags for the rule from config file
 	// if flags or arguments are invalid or not expected return an error
 	// Apply is called before Validate
-	Apply(arg interface{}, flags map[string]interface{}) error
+	Apply(setting RuleSetting) error
 
 	// Validate validates the rule for given commit message
 	// if given commit is valid, return true and messages slice are ignored

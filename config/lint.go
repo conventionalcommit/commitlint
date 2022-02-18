@@ -53,7 +53,7 @@ func GetEnabledRules(conf *lint.Config) ([]lint.Rule, error) {
 			return nil, fmt.Errorf("config error: '%s' rule settings not found", ruleName)
 		}
 
-		err := r.Apply(rConf.Argument, rConf.Flags)
+		err := r.Apply(rConf)
 		if err != nil {
 			return nil, fmt.Errorf("config error: %v", err)
 		}

@@ -26,8 +26,8 @@ func (r *ScopeCharsetRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *ScopeCharsetRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setStringArg(&r.Charset, arg)
+func (r *ScopeCharsetRule) Apply(setting lint.RuleSetting) error {
+	err := setStringArg(&r.Charset, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -53,8 +53,8 @@ func (r *TypeCharsetRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *TypeCharsetRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setStringArg(&r.Charset, arg)
+func (r *TypeCharsetRule) Apply(setting lint.RuleSetting) error {
+	err := setStringArg(&r.Charset, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}

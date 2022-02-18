@@ -20,8 +20,8 @@ func (r *HeadMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *HeadMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *HeadMinLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -42,8 +42,8 @@ func (r *BodyMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *BodyMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *BodyMinLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -64,8 +64,8 @@ func (r *FooterMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *FooterMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *FooterMinLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -86,8 +86,8 @@ func (r *TypeMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *TypeMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *TypeMinLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -108,8 +108,8 @@ func (r *ScopeMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *ScopeMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *ScopeMinLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -130,8 +130,8 @@ func (r *DescriptionMinLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *DescriptionMinLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *DescriptionMinLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}

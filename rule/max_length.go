@@ -20,8 +20,8 @@ func (r *HeadMaxLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *HeadMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *HeadMaxLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -42,8 +42,8 @@ func (r *BodyMaxLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *BodyMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *BodyMaxLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -64,8 +64,8 @@ func (r *FooterMaxLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *FooterMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *FooterMaxLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -86,8 +86,8 @@ func (r *TypeMaxLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *TypeMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *TypeMaxLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -108,8 +108,8 @@ func (r *ScopeMaxLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *ScopeMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *ScopeMaxLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -130,8 +130,8 @@ func (r *DescriptionMaxLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *DescriptionMaxLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *DescriptionMaxLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}

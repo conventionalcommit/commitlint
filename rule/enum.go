@@ -36,13 +36,13 @@ func (r *ScopeEnumRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *ScopeEnumRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setStringArrArg(&r.Scopes, arg)
+func (r *ScopeEnumRule) Apply(setting lint.RuleSetting) error {
+	err := setStringArrArg(&r.Scopes, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
 
-	allowEmpty, ok := flags["allow-empty"]
+	allowEmpty, ok := setting.Flags["allow-empty"]
 	if ok {
 		err := setBoolArg(&r.AllowEmpty, allowEmpty)
 		if err != nil {
@@ -74,8 +74,8 @@ func (r *TypeEnumRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *TypeEnumRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setStringArrArg(&r.Types, arg)
+func (r *TypeEnumRule) Apply(setting lint.RuleSetting) error {
+	err := setStringArrArg(&r.Types, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -111,8 +111,8 @@ func (r *FooterEnumRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *FooterEnumRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setStringArrArg(&r.Tokens, arg)
+func (r *FooterEnumRule) Apply(setting lint.RuleSetting) error {
+	err := setStringArrArg(&r.Tokens, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}

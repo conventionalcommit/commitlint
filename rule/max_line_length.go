@@ -21,8 +21,8 @@ func (r *BodyMaxLineLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *BodyMaxLineLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *BodyMaxLineLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}
@@ -43,8 +43,8 @@ func (r *FooterMaxLineLenRule) Validate(msg *lint.Commit) ([]string, bool) {
 }
 
 // Apply sets the needed argument for the rule
-func (r *FooterMaxLineLenRule) Apply(arg interface{}, flags map[string]interface{}) error {
-	err := setIntArg(&r.CheckLen, arg)
+func (r *FooterMaxLineLenRule) Apply(setting lint.RuleSetting) error {
+	err := setIntArg(&r.CheckLen, setting.Argument)
 	if err != nil {
 		return errInvalidArg(r.Name(), err)
 	}

@@ -83,7 +83,7 @@ func Validate(conf *lint.Config) []error {
 		}
 	}
 
-	for ruleName, r := range conf.Settings {
+	for ruleName, ruleSetting := range conf.Settings {
 		// Check if rule is registered
 		ruleData, ok := registry.GetRule(ruleName)
 		if !ok {
@@ -91,7 +91,7 @@ func Validate(conf *lint.Config) []error {
 			continue
 		}
 
-		err := ruleData.Apply(r.Argument, r.Flags)
+		err := ruleData.Apply(ruleSetting)
 		if err != nil {
 			errs = append(errs, err)
 		}
