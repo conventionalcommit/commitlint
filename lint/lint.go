@@ -1,9 +1,5 @@
 package lint
 
-import (
-	"github.com/conventionalcommit/parser"
-)
-
 // Rule Severity Constants
 const (
 	SeverityWarn  Severity = "warn"
@@ -24,13 +20,28 @@ func (s Severity) String() string {
 	}
 }
 
+// Note represent a footer note
+type Note interface {
+	Token() string
+	Value() string
+}
+
 // Commit represent a commit message
-// for now it is an alias of parser.Commit
-type Commit = parser.Commit
+type Commit interface {
+	Message() string
+	Header() string
+	Body() string
+	Footer() string
+	Type() string
+	Scope() string
+	Description() string
+	Notes() []Note
+	IsBreakingChange() bool
+}
 
 // Parser parses given commit message
 type Parser interface {
-	Parse(msg string) (*Commit, error)
+	Parse(msg string) (Commit, error)
 }
 
 // Formatter represent a lint result formatter
@@ -55,5 +66,5 @@ type Rule interface {
 	// Validate validates the rule for given commit message
 	// if given commit is valid, return true and messages slice are ignored
 	// if invalid, return a error messages with false
-	Validate(msg *Commit) (messages []string, isValid bool)
+	Validate(msg Commit) (messages []string, isValid bool)
 }

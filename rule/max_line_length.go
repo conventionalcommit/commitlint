@@ -16,7 +16,7 @@ type BodyMaxLineLenRule struct {
 func (r *BodyMaxLineLenRule) Name() string { return "body-max-line-length" }
 
 // Validate validates BodyMaxLineLenRule rule
-func (r *BodyMaxLineLenRule) Validate(msg *lint.Commit) ([]string, bool) {
+func (r *BodyMaxLineLenRule) Validate(msg lint.Commit) ([]string, bool) {
 	return checkMaxLineLength(r.CheckLen, msg.Body())
 }
 
@@ -38,7 +38,7 @@ type FooterMaxLineLenRule struct {
 func (r *FooterMaxLineLenRule) Name() string { return "footer-max-line-length" }
 
 // Validate validates FooterMaxLineLenRule rule
-func (r *FooterMaxLineLenRule) Validate(msg *lint.Commit) ([]string, bool) {
+func (r *FooterMaxLineLenRule) Validate(msg lint.Commit) ([]string, bool) {
 	return checkMaxLineLength(r.CheckLen, msg.Footer())
 }
 

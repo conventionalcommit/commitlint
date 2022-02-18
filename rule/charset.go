@@ -16,7 +16,7 @@ type ScopeCharsetRule struct {
 func (r *ScopeCharsetRule) Name() string { return "scope-charset" }
 
 // Validate validates ScopeCharsetRule
-func (r *ScopeCharsetRule) Validate(msg *lint.Commit) ([]string, bool) {
+func (r *ScopeCharsetRule) Validate(msg lint.Commit) ([]string, bool) {
 	invalidChar, isValid := checkCharset(r.Charset, msg.Scope())
 	if !isValid {
 		errMsg := fmt.Sprintf("scope contains invalid char '%s', allowed chars are [%s]", invalidChar, r.Charset)
@@ -43,7 +43,7 @@ type TypeCharsetRule struct {
 func (r *TypeCharsetRule) Name() string { return "type-charset" }
 
 // Validate validates TypeCharsetRule
-func (r *TypeCharsetRule) Validate(msg *lint.Commit) ([]string, bool) {
+func (r *TypeCharsetRule) Validate(msg lint.Commit) ([]string, bool) {
 	invalidChar, isValid := checkCharset(r.Charset, msg.Type())
 	if !isValid {
 		errMsg := fmt.Sprintf("type contains invalid char '%s', allowed chars are [%s]", invalidChar, r.Charset)

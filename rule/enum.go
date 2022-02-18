@@ -18,7 +18,7 @@ type ScopeEnumRule struct {
 func (r *ScopeEnumRule) Name() string { return "scope-enum" }
 
 // Validate validates ScopeEnumRule
-func (r *ScopeEnumRule) Validate(msg *lint.Commit) ([]string, bool) {
+func (r *ScopeEnumRule) Validate(msg lint.Commit) ([]string, bool) {
 	if msg.Scope() == "" {
 		if r.AllowEmpty {
 			return nil, true
@@ -64,7 +64,7 @@ type TypeEnumRule struct {
 func (r *TypeEnumRule) Name() string { return "type-enum" }
 
 // Validate validates TypeEnumRule
-func (r *TypeEnumRule) Validate(msg *lint.Commit) ([]string, bool) {
+func (r *TypeEnumRule) Validate(msg lint.Commit) ([]string, bool) {
 	isFound := search(r.Types, msg.Type())
 	if !isFound {
 		errMsg := fmt.Sprintf("type '%s' is not allowed, you can use one of %v", msg.Type(), r.Types)
@@ -93,7 +93,7 @@ type FooterEnumRule struct {
 func (r *FooterEnumRule) Name() string { return "footer-enum" }
 
 // Validate validates FooterEnumRule
-func (r *FooterEnumRule) Validate(msg *lint.Commit) ([]string, bool) {
+func (r *FooterEnumRule) Validate(msg lint.Commit) ([]string, bool) {
 	msgs := []string{}
 
 	for _, note := range msg.Notes() {
