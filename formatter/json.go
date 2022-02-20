@@ -2,6 +2,7 @@ package formatter
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/conventionalcommit/commitlint/lint"
@@ -14,40 +15,35 @@ type JSONFormatter struct{}
 func (f *JSONFormatter) Name() string { return "json" }
 
 // Format formats the lint.Result
-func (f *JSONFormatter) Format(res *lint.Result) (string, error) {
+func (f *JSONFormatter) Format(result *lint.Result) (string, error) {
 	output := make(map[string]interface{}, 4)
 
-	errs, warns, others := bySeverity(res)
+	output["input"] = result.Input()
+	output["valid"] = result.IsOK()
+	output["issues"] = f.formatIssue(result.Issues())
 
-	output["input"] = res.Input()
-	output["status"] = res.IsOK()
-
-	output["errors"] = f.formRuleFailure(errs, false)
-	output["warnings"] = f.formRuleFailure(warns, false)
-	output["others"] = f.formRuleFailure(others, true)
-
-	msg, err := json.Marshal(output)
+	formatted, err := json.Marshal(output)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("json formatting failed: %w", err)
 	}
-	return strings.Trim(string(msg), "\n"), nil
+	return strings.Trim(string(formatted), "\n"), nil
 }
 
-func (f *JSONFormatter) formRuleFailure(res []*lint.Issue, includeSev bool) []map[string]interface{} {
-	outs := make([]map[string]interface{}, 0, len(res))
+func (f *JSONFormatter) formatIssue(issues []*lint.Issue) []interface{} {
+	formattedIssues := make([]interface{}, 0, len(issues))
 
-	for _, r := range res {
+	for _, issue := range issues {
 		output := make(map[string]interface{})
 
-		output["name"] = r.Name()
-		output["messages"] = r.Message()
+		output["name"] = issue.Name()
+		output["severity"] = issue.Severity()
 
-		if includeSev {
-			output["severity"] = r.Severity()
+		if len(issue.Message()) > 0 {
+			output["messages"] = issue.Message()
 		}
 
-		outs = append(outs, output)
+		formattedIssues = append(formattedIssues, output)
 	}
 
-	return outs
+	return formattedIssues
 }
