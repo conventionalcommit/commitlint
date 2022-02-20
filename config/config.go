@@ -24,7 +24,13 @@ func Parse(confPath string) (*lint.Config, error) {
 		return nil, fmt.Errorf("config file error: %w", err)
 	}
 
-	conf := &lint.Config{}
+	conf := &lint.Config{
+		MinVersion: internal.Version(),
+		Severity: lint.SeverityConfig{
+			Default: lint.SeverityError,
+		},
+	}
+
 	err = yaml.UnmarshalStrict(confBytes, conf)
 	if err != nil {
 		return nil, fmt.Errorf("config file error: %w", err)
