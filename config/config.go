@@ -21,13 +21,13 @@ func Parse(confPath string) (*lint.Config, error) {
 	confPath = filepath.Clean(confPath)
 	confBytes, err := os.ReadFile(confPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("config file error: %w", err)
 	}
 
 	conf := &lint.Config{}
 	err = yaml.UnmarshalStrict(confBytes, conf)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("config file error: %w", err)
 	}
 
 	if conf.Formatter == "" {
