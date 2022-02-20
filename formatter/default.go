@@ -9,6 +9,10 @@ import (
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
+const (
+	truncateSize = 25
+)
+
 // DefaultFormatter represent default formatter
 type DefaultFormatter struct{}
 
@@ -16,69 +20,72 @@ type DefaultFormatter struct{}
 func (f *DefaultFormatter) Name() string { return "default" }
 
 // Format formats the lint.Failure
-func (f *DefaultFormatter) Format(res *lint.Result) (string, error) {
-	return formatFailure(res), nil
+func (f *DefaultFormatter) Format(result *lint.Result) (string, error) {
+	return f.formatFailure(result.Input(), result.Issues()), nil
 }
 
-func formatFailure(res *lint.Result) string {
-	if res.IsOK() {
+func (f *DefaultFormatter) formatFailure(msg string, issues []*lint.Issue) string {
+	if len(issues) == 0 {
 		return " ✔ commit message"
 	}
-	return writeFailure(res)
+	return f.writeFailure(msg, issues)
 }
 
-func writeFailure(res *lint.Result) string {
+func (f *DefaultFormatter) writeFailure(msg string, issues []*lint.Issue) string {
 	str := &strings.Builder{}
 
-	quotedStr := strconv.Quote(truncate(25, res.Input()))
+	quotedStr := strconv.Quote(truncate(truncateSize, msg))
 
 	str.WriteString("commitlint\n")
 	str.WriteString("\n→ input: " + quotedStr)
 
-	errs, warns, others := bySeverity(res)
+	errs, warns, others := f.bySeverity(issues)
 
-	writeRuleFailure(str, "❌", "Errors", errs)
-	writeRuleFailure(str, "!", "Warnings", warns)
-	writeRuleFailure(str, "?", "Other Severities", others)
+	f.writeIssues(str, "❌", "Errors", errs)
+	f.writeIssues(str, "!", "Warnings", warns)
+	f.writeIssues(str, "?", "Other Severities", others)
 
 	fmt.Fprintf(str, "\n\nTotal %d errors, %d warnings, %d other severities", len(errs), len(warns), len(others))
 	return strings.Trim(str.String(), "\n")
 }
 
-func writeRuleFailure(w *strings.Builder, sign, title string, resArr []*lint.Issue) {
-	if len(resArr) == 0 {
+func (f *DefaultFormatter) writeIssues(w *strings.Builder, sign, title string, issues []*lint.Issue) {
+	if len(issues) == 0 {
 		return
 	}
 
 	w.WriteString("\n\n" + title + ":")
-	for _, ruleRes := range resArr {
-		writeMessages(w, ruleRes, sign)
+	for _, issue := range issues {
+		f.writeIssue(w, sign, issue)
 	}
 }
 
-func writeMessages(w *strings.Builder, ruleRes *lint.Issue, sign string) {
-	msgs := ruleRes.Message()
-
-	if len(msgs) == 0 {
-		return
-	}
-
+func (f *DefaultFormatter) writeIssue(w *strings.Builder, sign string, issue *lint.Issue) {
 	space := "  "
-
-	if len(msgs) == 1 {
-		msg := msgs[0]
-		// ❌ rule-name: message
-		fmt.Fprintf(w, "\n%s %s: %s", space+sign, ruleRes.Name(), msg)
-		return
-	}
 
 	// ❌ rule-name:
 	//    - message1
 	//    - message2
-	fmt.Fprintf(w, "\n%s %s:", space+sign, ruleRes.Name())
-	for _, msg := range ruleRes.Message() {
+
+	fmt.Fprintf(w, "\n%s %s:", space+sign, issue.Name())
+	for _, msg := range issue.Message() {
 		fmt.Fprintf(w, "\n%s - %s", space+space, msg)
 	}
+}
+
+// bySeverity returns all messages with given severity
+func (f *DefaultFormatter) bySeverity(issues []*lint.Issue) (errs, warns, others []*lint.Issue) {
+	for _, r := range issues {
+		switch r.Severity() {
+		case lint.SeverityError:
+			errs = append(errs, r)
+		case lint.SeverityWarn:
+			warns = append(warns, r)
+		default:
+			others = append(others, r)
+		}
+	}
+	return errs, warns, others
 }
 
 func truncate(maxSize int, input string) string {
