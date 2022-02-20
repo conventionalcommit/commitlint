@@ -14,7 +14,7 @@ type JSONFormatter struct{}
 func (f *JSONFormatter) Name() string { return "json" }
 
 // Format formats the lint.Result
-func (f *JSONFormatter) Format(res *lint.Failure) (string, error) {
+func (f *JSONFormatter) Format(res *lint.Result) (string, error) {
 	output := make(map[string]interface{}, 4)
 
 	errs, warns, others := bySeverity(res)
@@ -33,7 +33,7 @@ func (f *JSONFormatter) Format(res *lint.Failure) (string, error) {
 	return strings.Trim(string(msg), "\n"), nil
 }
 
-func (f *JSONFormatter) formRuleFailure(res []*lint.RuleFailure, includeSev bool) []map[string]interface{} {
+func (f *JSONFormatter) formRuleFailure(res []*lint.Issue, includeSev bool) []map[string]interface{} {
 	outs := make([]map[string]interface{}, 0, len(res))
 
 	for _, r := range res {

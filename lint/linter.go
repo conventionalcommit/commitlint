@@ -20,7 +20,7 @@ func New(conf *Config, rules []Rule) (*Linter, error) {
 }
 
 // Lint checks the given commitMsg string against rules
-func (l *Linter) Lint(commitMsg string) (*Failure, error) {
+func (l *Linter) Lint(commitMsg string) (*Result, error) {
 	msg, err := l.parser.Parse(commitMsg)
 	if err != nil {
 		return l.parserErrorRule(commitMsg, err)
@@ -29,8 +29,8 @@ func (l *Linter) Lint(commitMsg string) (*Failure, error) {
 }
 
 // LintCommit checks the given Commit against rules
-func (l *Linter) LintCommit(msg Commit) (*Failure, error) {
-	res := newFailure(msg.Message())
+func (l *Linter) LintCommit(msg Commit) (*Result, error) {
+	res := newResult(msg.Message())
 
 	for _, rule := range l.rules {
 		currentRule := rule
@@ -44,21 +44,21 @@ func (l *Linter) LintCommit(msg Commit) (*Failure, error) {
 	return res, nil
 }
 
-func (l *Linter) runRule(rule Rule, severity Severity, msg Commit) (*RuleFailure, bool) {
+func (l *Linter) runRule(rule Rule, severity Severity, msg Commit) (*Issue, bool) {
 	failMsgs, isOK := rule.Validate(msg)
 	if isOK {
 		return nil, true
 	}
-	res := newRuleFailure(rule.Name(), failMsgs, severity)
+	res := newIssue(rule.Name(), failMsgs, severity)
 	return res, false
 }
 
-func (l *Linter) parserErrorRule(commitMsg string, err error) (*Failure, error) {
-	res := newFailure(commitMsg)
+func (l *Linter) parserErrorRule(commitMsg string, err error) (*Result, error) {
+	res := newResult(commitMsg)
 
 	errMsg := err.Error()
 
-	ruleFail := newRuleFailure("parser", []string{errMsg}, SeverityError)
+	ruleFail := newIssue("parser", []string{errMsg}, SeverityError)
 	res.add(ruleFail)
 
 	return res, nil

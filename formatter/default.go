@@ -16,18 +16,18 @@ type DefaultFormatter struct{}
 func (f *DefaultFormatter) Name() string { return "default" }
 
 // Format formats the lint.Failure
-func (f *DefaultFormatter) Format(res *lint.Failure) (string, error) {
+func (f *DefaultFormatter) Format(res *lint.Result) (string, error) {
 	return formatFailure(res), nil
 }
 
-func formatFailure(res *lint.Failure) string {
+func formatFailure(res *lint.Result) string {
 	if res.IsOK() {
 		return " ✔ commit message"
 	}
 	return writeFailure(res)
 }
 
-func writeFailure(res *lint.Failure) string {
+func writeFailure(res *lint.Result) string {
 	str := &strings.Builder{}
 
 	quotedStr := strconv.Quote(truncate(25, res.Input()))
@@ -45,7 +45,7 @@ func writeFailure(res *lint.Failure) string {
 	return strings.Trim(str.String(), "\n")
 }
 
-func writeRuleFailure(w *strings.Builder, sign, title string, resArr []*lint.RuleFailure) {
+func writeRuleFailure(w *strings.Builder, sign, title string, resArr []*lint.Issue) {
 	if len(resArr) == 0 {
 		return
 	}
@@ -56,7 +56,7 @@ func writeRuleFailure(w *strings.Builder, sign, title string, resArr []*lint.Rul
 	}
 }
 
-func writeMessages(w *strings.Builder, ruleRes *lint.RuleFailure, sign string) {
+func writeMessages(w *strings.Builder, ruleRes *lint.Issue, sign string) {
 	msgs := ruleRes.Message()
 
 	if len(msgs) == 0 {

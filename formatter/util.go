@@ -3,8 +3,8 @@ package formatter
 import "github.com/conventionalcommit/commitlint/lint"
 
 // bySeverity returns all messages with given severity
-func bySeverity(res *lint.Failure) (errs, warns, others []*lint.RuleFailure) {
-	for _, r := range res.Failures() {
+func bySeverity(res *lint.Result) (errs, warns, others []*lint.Issue) {
+	for _, r := range res.Issues() {
 		switch r.Severity() {
 		case lint.SeverityError:
 			errs = append(errs, r)

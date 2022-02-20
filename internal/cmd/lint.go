@@ -136,8 +136,8 @@ func readStdInPipe() (string, error) {
 	return strings.TrimSpace(s), nil
 }
 
-func hasErrorSeverity(res *lint.Failure) bool {
-	for _, r := range res.Failures() {
+func hasErrorSeverity(res *lint.Result) bool {
+	for _, r := range res.Issues() {
 		if r.Severity() == lint.SeverityError {
 			return true
 		}

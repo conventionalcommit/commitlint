@@ -1,41 +1,41 @@
 package lint
 
-// Failure holds Failure of linter
-type Failure struct {
+// Result holds Result of linter
+type Result struct {
 	inputMsg string
 
-	failures []*RuleFailure
+	issues []*Issue
 }
 
-func newFailure(inputMsg string) *Failure {
-	return &Failure{
+func newResult(inputMsg string) *Result {
+	return &Result{
 		inputMsg: inputMsg,
 	}
 }
 
 // AddError adds
-func (res *Failure) add(r *RuleFailure) {
-	res.failures = append(res.failures, r)
+func (res *Result) add(r *Issue) {
+	res.issues = append(res.issues, r)
 }
 
 // IsOK returns true if commit message passed all the rules
-func (res *Failure) IsOK() bool { return len(res.failures) == 0 }
+func (res *Result) IsOK() bool { return len(res.issues) == 0 }
 
 // Input returns input commit message
-func (res *Failure) Input() string { return res.inputMsg }
+func (res *Result) Input() string { return res.inputMsg }
 
-// Failures returns rule Failures
-func (res *Failure) Failures() []*RuleFailure { return res.failures }
+// Issues returns rule Issues
+func (res *Result) Issues() []*Issue { return res.issues }
 
-// RuleFailure holds Failure of a linter rule
-type RuleFailure struct {
+// Issue holds Failure of a linter rule
+type Issue struct {
 	name     string
 	severity Severity
 	messages []string
 }
 
-func newRuleFailure(name string, msgs []string, severity Severity) *RuleFailure {
-	return &RuleFailure{
+func newIssue(name string, msgs []string, severity Severity) *Issue {
+	return &Issue{
 		name:     name,
 		messages: msgs,
 		severity: severity,
@@ -43,10 +43,10 @@ func newRuleFailure(name string, msgs []string, severity Severity) *RuleFailure 
 }
 
 // Name returns rule name
-func (r *RuleFailure) Name() string { return r.name }
+func (r *Issue) Name() string { return r.name }
 
 // Severity returns severity of the Rule Failure
-func (r *RuleFailure) Severity() Severity { return r.severity }
+func (r *Issue) Severity() Severity { return r.severity }
 
 // Message returns the error messages of failed rule
-func (r *RuleFailure) Message() []string { return r.messages }
+func (r *Issue) Message() []string { return r.messages }

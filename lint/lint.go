@@ -50,7 +50,7 @@ type Formatter interface {
 	Name() string
 
 	// Format formats the linter result
-	Format(result *Failure) (string, error)
+	Format(result *Result) (string, error)
 }
 
 // Rule represent a linter rule
