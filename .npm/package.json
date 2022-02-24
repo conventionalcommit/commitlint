@@ -1,0 +1,36 @@
+{
+  "name": "@conventionalcommit/commitlint",
+  "version": "0.7.0",
+  "description": "checks if your commit messages meets the conventional commit format",
+  "main": "index.js",
+  "bin": {
+    "commitlint": "./bin/index.js"
+  },
+  "repository": "https://github.com/conventionalcommit/commitlint",
+  "keywords": [
+    "git",
+    "hook",
+    "manager"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/conventionalcommit/commitlint/issues"
+  },
+  "homepage": "https://github.com/conventionalcommit/commitlint#readme",
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "scripts": {
+    "install": "node install.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.2.0",
+    "tar-stream": "^2.2.0"
+  }
+}
