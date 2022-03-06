@@ -189,7 +189,7 @@ func newHookCmd() *cli.Command {
 func newDebugCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "debug",
-		Usage: "prints usable information for debugging",
+		Usage: "prints useful information for debugging",
 		Action: func(ctx *cli.Context) error {
 			return printDebug()
 		},
