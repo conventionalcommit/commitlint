@@ -46,7 +46,7 @@ func runLint(confFilePath, fileInput string) (lintResult string, hasError bool, 
 		return "", false, err
 	}
 
-	result, err := linter.Lint(commitMsg)
+	result, err := linter.ParseAndLint(commitMsg)
 	if err != nil {
 		return "", false, err
 	}

@@ -19,18 +19,18 @@ func New(conf *Config, rules []Rule) (*Linter, error) {
 	return l, nil
 }
 
-// Lint checks the given commitMsg string against rules
-func (l *Linter) Lint(commitMsg string) (*Result, error) {
+// ParseAndLint checks the given commitMsg string against rules
+func (l *Linter) ParseAndLint(commitMsg string) (*Result, error) {
 	msg, err := l.parser.Parse(commitMsg)
 	if err != nil {
 		issues := l.parserErrorRule(commitMsg, err)
 		return newResult(commitMsg, issues...), nil
 	}
-	return l.LintCommit(msg)
+	return l.Lint(msg)
 }
 
-// LintCommit checks the given Commit against rules
-func (l *Linter) LintCommit(msg Commit) (*Result, error) {
+// Lint checks the given Commit against rules
+func (l *Linter) Lint(msg Commit) (*Result, error) {
 	issues := make([]*Issue, 0, len(l.rules))
 
 	for _, rule := range l.rules {
