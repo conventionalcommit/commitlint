@@ -7,7 +7,7 @@ import (
 )
 
 func TestDefaultLint(t *testing.T) {
-	defConf := Default()
+	defConf := NewDefault()
 	_, err := NewLinter(defConf)
 	if err != nil {
 		t.Error("default lint creation failed", err)
@@ -16,7 +16,7 @@ func TestDefaultLint(t *testing.T) {
 }
 
 func TestDefaultSettings(t *testing.T) {
-	defConf := Default()
+	defConf := NewDefault()
 	rules := registry.Rules()
 	settingSize := len(defConf.Settings)
 	if len(rules) != settingSize {

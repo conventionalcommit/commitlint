@@ -38,7 +38,7 @@ func configCreate(fileName string, isReplace bool) (retErr error) {
 		}
 	}()
 
-	defConf := config.Default()
+	defConf := config.NewDefault()
 	return config.WriteTo(w, defConf)
 }
 

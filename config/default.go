@@ -7,8 +7,8 @@ import (
 	"github.com/conventionalcommit/commitlint/rule"
 )
 
-// Default returns default config
-func Default() *lint.Config {
+// NewDefault returns default config
+func NewDefault() *lint.Config {
 	// Enabled Rules
 	rules := []string{
 		(&rule.HeadMinLenRule{}).Name(),

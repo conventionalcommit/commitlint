@@ -116,7 +116,7 @@ func LookupAndParse() (*lint.Config, error) {
 	}
 
 	if confType == internal.DefaultConfig {
-		return Default(), nil
+		return NewDefault(), nil
 	}
 
 	conf, err := Parse(confFilePath)
