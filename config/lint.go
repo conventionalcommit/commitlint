@@ -40,7 +40,14 @@ func GetFormatter(conf *lint.Config) (lint.Formatter, error) {
 func GetEnabledRules(conf *lint.Config) ([]lint.Rule, error) {
 	enabledRules := make([]lint.Rule, 0, len(conf.Rules))
 
+	// To check if duplicate rule is added
+	addedRules := make(map[string]struct{})
+
 	for _, ruleName := range conf.Rules {
+		if _, ok := addedRules[ruleName]; ok {
+			continue
+		}
+
 		// Checking if rule is registered
 		// before checking if rule is enabled
 		r, ok := registry.GetRule(ruleName)
@@ -58,6 +65,7 @@ func GetEnabledRules(conf *lint.Config) ([]lint.Rule, error) {
 			return nil, fmt.Errorf("config error: %v", err)
 		}
 		enabledRules = append(enabledRules, r)
+		addedRules[r.Name()] = struct{}{}
 	}
 
 	return enabledRules, nil
