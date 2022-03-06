@@ -15,11 +15,12 @@ func TestDefaultLint(t *testing.T) {
 	}
 }
 
-func TestDefaultConf(t *testing.T) {
+func TestDefaultSettings(t *testing.T) {
 	defConf := Default()
 	rules := registry.Rules()
-	if len(rules) != len(defConf.Rules) {
-		t.Error("default conf does not have all rules", len(rules), len(defConf.Rules))
+	settingSize := len(defConf.Settings)
+	if len(rules) != settingSize {
+		t.Error("default config does not have all rule settings", len(rules), settingSize)
 		return
 	}
 }
