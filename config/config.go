@@ -39,7 +39,7 @@ func Parse(confPath string) (*lint.Config, error) {
 	}
 
 	if conf.Formatter == "" {
-		return nil, errors.New("conf error: formatter is empty")
+		return nil, errors.New("config error: formatter is empty")
 	}
 
 	err = isValidVersion(conf.MinVersion)
