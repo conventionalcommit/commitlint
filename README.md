@@ -24,14 +24,14 @@ commitlint checks if your commit message meets the [conventional commit format](
   - [Setup](#setup)
     - [Manual](#manual)
   - [Quick Test](#quick-test)
-  - [Usage](#usage)
-    - [Commands](#commands)
-      - [config](#config)
-      - [lint](#lint)
-        - [Precedence](#precedence)
-          - [Config](#config-1)
-          - [Message](#message)
-      - [hook](#hook)
+  - [Commands](#commands)
+    - [config](#config)
+    - [lint](#lint)
+      - [Precedence](#precedence)
+        - [Config](#config-1)
+        - [Message](#message)
+    - [hook](#hook)
+    - [debug](#debug)
     - [Default Config](#default-config)
       - [Commit Types](#commit-types)
   - [Available Rules](#available-rules)
@@ -90,28 +90,26 @@ echo "fear: do not fear for commit message" | commitlint lint
 #   ❌ type-enum: type 'fear' is not allowed, you can use one of [build chore ci docs feat fix merge perf refactor revert style test]
 ```
 
-## Usage
+## Commands
 
-### Commands
-
-#### config
+### config
 
 - To create config file, run `commitlint config create` this will create `commitlint.yaml`
 
 - To validate config file, run `commitlint config check --config=/path/to/conf.yaml`
 
-#### lint
+### lint
 
 To lint a message, you can use any one of the following
 - run `commitlint lint --message=file`
 - run `echo "message" | commitlint lint`
 - run `commitlint lint < file`
 
-##### Precedence
+#### Precedence
 
 `commitlint lint` follows below order for `config` and `message`
 
-###### Config
+##### Config
 
 - config file passed to `--config` command-line argument
 - `COMMITLINT_CONFIG` env variable
@@ -122,53 +120,57 @@ To lint a message, you can use any one of the following
   - commitlint.yaml
 - [default config](#default-config)
 
-###### Message
+##### Message
 
 - `stdin` pipe stream
 - commit message file passed to `--message` command-line argument
 - `.git/COMMIT_EDITMSG` in current directory
 
-#### hook
+### hook
 
 - To create hook files, run `commitlint hook create`
+
+### debug
+
+  To prints useful information for debugging commitlint
+
+  run `commitlint debug`
 
 ### Default Config
 
 ```yaml
-version: v0.7.0
+version: v0.8.0
 formatter: default
 rules:
-    header-min-length:
-        enabled: true
-        severity: error
-        argument: 10
-    header-max-length:
-        enabled: true
-        severity: error
-        argument: 50
-    body-max-line-length:
-        enabled: true
-        severity: error
-        argument: 72
-    footer-max-line-length:
-        enabled: true
-        severity: error
-        argument: 72
-    type-enum:
-        enabled: true
-        severity: error
-        argument:
-            - feat
-            - fix
-            - docs
-            - style
-            - refactor
-            - perf
-            - test
-            - build
-            - ci
-            - chore
-            - revert
+- header-min-length
+- header-max-length
+- body-max-line-length
+- footer-max-line-length
+- type-enum
+severity:
+  default: error
+settings:
+  body-max-line-length:
+    argument: 72
+  footer-max-line-length:
+    argument: 72
+  header-min-length:
+    argument: 10
+  header-max-length:
+    argument: 50
+  type-enum:
+    argument:
+    - feat
+    - fix
+    - docs
+    - style
+    - refactor
+    - perf
+    - test
+    - build
+    - ci
+    - chore
+    - revert
 ```
 
 #### Commit Types
@@ -225,7 +227,7 @@ commitlint
 → input: "fear: do not fear for ..."
 
 Errors:
-  ❌ type-enum: type 'fear' is not allowed, you can use one of [build chore ci docs feat fix merge perf refactor revert style test]
+  ❌ type-enum: type 'fear' is not allowed, you can use one of [build chore ci docs feat fix perf refactor revert style test]
 
 Total 1 errors, 0 warnings, 0 other severities
 ```
@@ -233,7 +235,7 @@ Total 1 errors, 0 warnings, 0 other severities
 - JSON
 
 ```json
-{"errors":[{"messages":["type 'fear' is not allowed, you can use one of [build chore ci docs feat fix merge perf refactor revert style test]"],"name":"type-enum"}],"input":"fear: do not fear for commit message","others":[],"status":false,"warnings":[]}
+{"input":"fear: do not fear for commit message","issues":[{"description":"type 'fear' is not allowed, you can use one of [build chore ci docs feat fix perf refactor revert style test]","name":"type-enum","severity":"error"}]}
 ```
 
 ## Extensibility
