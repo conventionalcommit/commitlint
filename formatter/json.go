@@ -19,7 +19,6 @@ func (f *JSONFormatter) Format(result *lint.Result) (string, error) {
 	output := make(map[string]interface{}, 4)
 
 	output["input"] = result.Input()
-	output["valid"] = result.IsOK()
 	output["issues"] = f.formatIssue(result.Issues())
 
 	formatted, err := json.Marshal(output)
@@ -35,11 +34,12 @@ func (f *JSONFormatter) formatIssue(issues []*lint.Issue) []interface{} {
 	for _, issue := range issues {
 		output := make(map[string]interface{})
 
-		output["name"] = issue.Name()
+		output["name"] = issue.RuleName()
 		output["severity"] = issue.Severity()
+		output["description"] = issue.Description()
 
-		if len(issue.Message()) > 0 {
-			output["messages"] = issue.Message()
+		if len(issue.Infos()) > 0 {
+			output["infos"] = issue.Infos()
 		}
 
 		formattedIssues = append(formattedIssues, output)

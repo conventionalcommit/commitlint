@@ -66,5 +66,5 @@ type Rule interface {
 	// Validate validates the rule for given commit message
 	// if given commit is valid, return true and messages slice are ignored
 	// if invalid, return a error messages with false
-	Validate(msg Commit) (messages []string, isValid bool)
+	Validate(msg Commit) (issue *Issue, isValid bool)
 }

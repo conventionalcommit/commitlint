@@ -1,52 +1,51 @@
 package lint
 
-// Result holds Result of linter
+// Result holds a linter result
 type Result struct {
-	inputMsg string
-
+	input  string
 	issues []*Issue
 }
 
-func newResult(inputMsg string) *Result {
+func newResult(input string, issues ...*Issue) *Result {
 	return &Result{
-		inputMsg: inputMsg,
+		input:  input,
+		issues: issues,
 	}
 }
 
-// AddError adds
-func (res *Result) add(r *Issue) {
-	res.issues = append(res.issues, r)
-}
+// Input returns the input commit message
+func (r *Result) Input() string { return r.input }
 
-// IsOK returns true if commit message passed all the rules
-func (res *Result) IsOK() bool { return len(res.issues) == 0 }
+// Issues returns linter issues
+func (r *Result) Issues() []*Issue { return r.issues }
 
-// Input returns input commit message
-func (res *Result) Input() string { return res.inputMsg }
-
-// Issues returns rule Issues
-func (res *Result) Issues() []*Issue { return res.issues }
-
-// Issue holds Failure of a linter rule
+// Issue holds a rule result
 type Issue struct {
-	name     string
+	ruleName string
+
 	severity Severity
-	messages []string
+
+	description string
+
+	additionalInfos []string
 }
 
-func newIssue(name string, msgs []string, severity Severity) *Issue {
+// NewIssue returns a new issue
+func NewIssue(desc string, infos ...string) *Issue {
 	return &Issue{
-		name:     name,
-		messages: msgs,
-		severity: severity,
+		description:     desc,
+		additionalInfos: infos,
 	}
 }
 
-// Name returns rule name
-func (r *Issue) Name() string { return r.name }
+// RuleName returns rule name
+func (r *Issue) RuleName() string { return r.ruleName }
 
 // Severity returns severity of the Rule Failure
 func (r *Issue) Severity() Severity { return r.severity }
 
-// Message returns the error messages of failed rule
-func (r *Issue) Message() []string { return r.messages }
+// Description returns description of the issue
+func (r *Issue) Description() string { return r.description }
+
+// Infos returns additional infos about the issue
+func (r *Issue) Infos() []string { return r.additionalInfos }

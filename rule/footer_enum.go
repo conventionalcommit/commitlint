@@ -3,6 +3,7 @@ package rule
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/conventionalcommit/commitlint/lint"
 )
@@ -29,20 +30,21 @@ func (r *FooterEnumRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates FooterEnumRule
-func (r *FooterEnumRule) Validate(msg lint.Commit) ([]string, bool) {
-	msgs := []string{}
+func (r *FooterEnumRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	var invalids []string
 
 	for _, note := range msg.Notes() {
 		isFound := search(r.Tokens, note.Token())
 		if !isFound {
-			errMsg := fmt.Sprintf("footer token '%s' is not allowed, you can use one of %v", note.Token(), r.Tokens)
-			msgs = append(msgs, errMsg)
+			invalids = append(invalids, note.Token())
 		}
 	}
 
-	if len(msgs) == 0 {
+	if len(invalids) == 0 {
 		return nil, true
 	}
 
-	return msgs, false
+	desc := fmt.Sprintf("you can use one of %v", r.Tokens)
+	info := fmt.Sprintf("[%s] tokens are not allowed", strings.Join(invalids, ", "))
+	return lint.NewIssue(desc, info), false
 }

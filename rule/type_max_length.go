@@ -22,6 +22,6 @@ func (r *TypeMaxLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates TypeMaxLenRule
-func (r *TypeMaxLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMaxLen(r.CheckLen, msg.Type())
+func (r *TypeMaxLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMaxLen("type", r.CheckLen, msg.Type())
 }

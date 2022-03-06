@@ -22,6 +22,6 @@ func (r *BodyMinLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates BodyMinLenRule
-func (r *BodyMinLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Body())
+func (r *BodyMinLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMinLen("body", r.CheckLen, msg.Body())
 }

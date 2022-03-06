@@ -63,12 +63,12 @@ func (f *DefaultFormatter) writeIssues(w *strings.Builder, sign, title string, i
 func (f *DefaultFormatter) writeIssue(w *strings.Builder, sign string, issue *lint.Issue) {
 	space := "  "
 
-	// ❌ rule-name:
-	//    - message1
-	//    - message2
+	// ❌ rule-name: description
+	//    - info1
+	//    - info2
 
-	fmt.Fprintf(w, "\n%s %s:", space+sign, issue.Name())
-	for _, msg := range issue.Message() {
+	fmt.Fprintf(w, "\n%s %s: %s", space+sign, issue.RuleName(), issue.Description())
+	for _, msg := range issue.Infos() {
 		fmt.Fprintf(w, "\n%s - %s", space+space, msg)
 	}
 }

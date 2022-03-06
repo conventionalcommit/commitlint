@@ -22,6 +22,6 @@ func (r *TypeMinLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates TypeMinLenRule
-func (r *TypeMinLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Type())
+func (r *TypeMinLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMinLen("type", r.CheckLen, msg.Type())
 }

@@ -22,6 +22,6 @@ func (r *FooterMaxLineLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates FooterMaxLineLenRule rule
-func (r *FooterMaxLineLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMaxLineLength(r.CheckLen, msg.Footer())
+func (r *FooterMaxLineLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMaxLineLength("footer", r.CheckLen, msg.Footer())
 }

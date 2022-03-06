@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+
+	"github.com/conventionalcommit/commitlint/lint"
 )
 
 func errInvalidArg(ruleName string, err error) error {
@@ -15,19 +17,16 @@ func errInvalidFlag(ruleName, flagName string, err error) error {
 	return fmt.Errorf("%s: invalid flag '%s': %v", ruleName, flagName, err)
 }
 
-func checkCharset(charset, toCheck string) (string, bool) {
-	invalidRunes := ""
-	for _, ch := range toCheck {
-		if !strings.ContainsRune(charset, ch) {
-			invalidRunes += string(ch)
-		}
-	}
+func formMinLenMsg(typ string, actualLen, expectedLen int) string {
+	return fmt.Sprintf("%s length is %d, should have atleast %d chars", typ, actualLen, expectedLen)
+}
 
-	if invalidRunes == "" {
-		return "", true
-	}
+func formMaxLenDesc(typ string, actualLen, expectedLen int) string {
+	return fmt.Sprintf("%s length is %d, should have less than %d chars", typ, actualLen, expectedLen)
+}
 
-	return invalidRunes, false
+func formMaxLineLenDesc(typ string, expectedLen int) string {
+	return fmt.Sprintf("each %s line should have less than %d chars", typ, expectedLen)
 }
 
 func search(arr []string, toFind string) bool {
@@ -37,27 +36,51 @@ func search(arr []string, toFind string) bool {
 	return ind < len(arr) && arr[ind] == toFind
 }
 
-func checkMaxLen(checkLen int, toCheck string) ([]string, bool) {
-	if checkLen < 0 {
-		return nil, true
+func validateCharset(allowedCharset, toCheck string) (string, bool) {
+	invalidRunes := ""
+	for _, ch := range toCheck {
+		if !strings.ContainsRune(allowedCharset, ch) {
+			invalidRunes += string(ch)
+		}
 	}
 
-	if len(toCheck) <= checkLen {
-		return nil, true
+	if invalidRunes == "" {
+		return "", true
 	}
-
-	errMsg := fmt.Sprintf("length is %d, should have less than %d chars", len(toCheck), checkLen)
-	return []string{errMsg}, false
+	return invalidRunes, false
 }
 
-func checkMaxLineLength(checkLen int, toCheck string) ([]string, bool) {
+func validateMinLen(typ string, expectedLen int, toCheck string) (*lint.Issue, bool) {
+	actualLen := len(toCheck)
+	if actualLen >= expectedLen {
+		return nil, true
+	}
+
+	desc := formMinLenMsg(typ, actualLen, expectedLen)
+	return lint.NewIssue(desc), false
+}
+
+func validateMaxLen(typ string, expectedLen int, toCheck string) (*lint.Issue, bool) {
+	if expectedLen < 0 {
+		return nil, true
+	}
+
+	if len(toCheck) <= expectedLen {
+		return nil, true
+	}
+
+	desc := formMaxLenDesc(typ, len(toCheck), expectedLen)
+	return lint.NewIssue(desc), false
+}
+
+func validateMaxLineLength(typ string, expectedLen int, toCheck string) (*lint.Issue, bool) {
 	lines := strings.Split(toCheck, "\n")
 
 	msgs := []string{}
 	for index, line := range lines {
 		actualLen := len(line)
-		if actualLen > checkLen {
-			errMsg := fmt.Sprintf("in line %d, length is %d, should have less than %d chars", index+1, actualLen, checkLen)
+		if actualLen > expectedLen {
+			errMsg := fmt.Sprintf("in line %d, length is %d", index+1, actualLen)
 			msgs = append(msgs, errMsg)
 		}
 	}
@@ -65,16 +88,9 @@ func checkMaxLineLength(checkLen int, toCheck string) ([]string, bool) {
 	if len(msgs) == 0 {
 		return nil, true
 	}
-	return msgs, false
-}
 
-func checkMinLen(checkLen int, toCheck string) ([]string, bool) {
-	actualLen := len(toCheck)
-	if actualLen >= checkLen {
-		return nil, true
-	}
-	errMsg := fmt.Sprintf("length is %d, should have atleast %d chars", actualLen, checkLen)
-	return []string{errMsg}, false
+	desc := formMaxLineLenDesc(typ, expectedLen)
+	return lint.NewIssue(desc, msgs...), false
 }
 
 func setBoolArg(retVal *bool, arg interface{}) error {
@@ -151,6 +167,7 @@ func toStringArr(arg interface{}) ([]string, error) {
 		return strArr, nil
 	case []string:
 		return argVal, nil
+	default:
+		return nil, fmt.Errorf("expects array of string value, but got %#v", arg)
 	}
-	return nil, fmt.Errorf("expects array of string value, but got %#v", arg)
 }

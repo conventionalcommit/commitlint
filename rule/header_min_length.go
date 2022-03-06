@@ -24,6 +24,6 @@ func (r *HeadMinLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates HeadMinLenRule
-func (r *HeadMinLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Header())
+func (r *HeadMinLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMinLen("header", r.CheckLen, msg.Header())
 }

@@ -22,6 +22,6 @@ func (r *HeadMaxLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates HeadMaxLenRule
-func (r *HeadMaxLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMaxLen(r.CheckLen, msg.Header())
+func (r *HeadMaxLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMaxLen("header", r.CheckLen, msg.Header())
 }

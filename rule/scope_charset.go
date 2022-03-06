@@ -1,8 +1,6 @@
 package rule
 
 import (
-	"fmt"
-
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
@@ -26,12 +24,13 @@ func (r *ScopeCharsetRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates ScopeCharsetRule
-func (r *ScopeCharsetRule) Validate(msg lint.Commit) ([]string, bool) {
-	invalidChars, isValid := checkCharset(r.Charset, msg.Scope())
+func (r *ScopeCharsetRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	invalidChars, isValid := validateCharset(r.Charset, msg.Scope())
 	if isValid {
 		return nil, true
 	}
 
-	errMsg := fmt.Sprintf("scope contains invalid char '%s', allowed chars are [%s]", invalidChars, r.Charset)
-	return []string{errMsg}, false
+	desc := "type can only have these chars [" + r.Charset + "]"
+	err := "invalid characters [" + invalidChars + "]"
+	return lint.NewIssue(desc, err), false
 }

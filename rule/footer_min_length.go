@@ -22,6 +22,6 @@ func (r *FooterMinLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates FooterMinLenRule
-func (r *FooterMinLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Footer())
+func (r *FooterMinLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMinLen("footer", r.CheckLen, msg.Footer())
 }

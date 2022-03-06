@@ -22,6 +22,6 @@ func (r *FooterMaxLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates FooterMaxLenRule
-func (r *FooterMaxLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMaxLen(r.CheckLen, msg.Footer())
+func (r *FooterMaxLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMaxLen("footer", r.CheckLen, msg.Footer())
 }

@@ -22,6 +22,6 @@ func (r *ScopeMinLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates ScopeMinLenRule
-func (r *ScopeMinLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Scope())
+func (r *ScopeMinLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMinLen("scope", r.CheckLen, msg.Scope())
 }

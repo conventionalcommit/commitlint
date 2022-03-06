@@ -22,6 +22,6 @@ func (r *DescriptionMaxLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates DescriptionMaxLenRule
-func (r *DescriptionMaxLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMaxLen(r.CheckLen, msg.Description())
+func (r *DescriptionMaxLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMaxLen("description", r.CheckLen, msg.Description())
 }

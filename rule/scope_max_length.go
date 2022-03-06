@@ -22,6 +22,6 @@ func (r *ScopeMaxLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates ScopeMaxLenRule
-func (r *ScopeMaxLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMaxLen(r.CheckLen, msg.Scope())
+func (r *ScopeMaxLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMaxLen("scope", r.CheckLen, msg.Scope())
 }

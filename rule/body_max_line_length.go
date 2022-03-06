@@ -24,6 +24,6 @@ func (r *BodyMaxLineLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates BodyMaxLineLenRule rule
-func (r *BodyMaxLineLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMaxLineLength(r.CheckLen, msg.Body())
+func (r *BodyMaxLineLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMaxLineLength("body", r.CheckLen, msg.Body())
 }

@@ -29,11 +29,11 @@ func (r *TypeEnumRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates TypeEnumRule
-func (r *TypeEnumRule) Validate(msg lint.Commit) ([]string, bool) {
+func (r *TypeEnumRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
 	isFound := search(r.Types, msg.Type())
-	if !isFound {
-		errMsg := fmt.Sprintf("type '%s' is not allowed, you can use one of %v", msg.Type(), r.Types)
-		return []string{errMsg}, false
+	if isFound {
+		return nil, true
 	}
-	return nil, true
+	desc := fmt.Sprintf("type '%s' is not allowed, you can use one of %v", msg.Type(), r.Types)
+	return lint.NewIssue(desc), false
 }

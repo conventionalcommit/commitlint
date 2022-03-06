@@ -22,6 +22,6 @@ func (r *DescriptionMinLenRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates DescriptionMinLenRule
-func (r *DescriptionMinLenRule) Validate(msg lint.Commit) ([]string, bool) {
-	return checkMinLen(r.CheckLen, msg.Description())
+func (r *DescriptionMinLenRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	return validateMinLen("description", r.CheckLen, msg.Description())
 }

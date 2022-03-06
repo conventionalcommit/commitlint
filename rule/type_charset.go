@@ -1,8 +1,6 @@
 package rule
 
 import (
-	"fmt"
-
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
@@ -26,12 +24,14 @@ func (r *TypeCharsetRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates TypeCharsetRule
-func (r *TypeCharsetRule) Validate(msg lint.Commit) ([]string, bool) {
-	invalidChars, isValid := checkCharset(r.Charset, msg.Type())
+func (r *TypeCharsetRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
+	invalidChars, isValid := validateCharset(r.Charset, msg.Type())
 	if isValid {
 		return nil, true
 	}
 
-	errMsg := fmt.Sprintf("type contains invalid char '%s', allowed chars are [%s]", invalidChars, r.Charset)
-	return []string{errMsg}, false
+	desc := "type can only have chars [" + r.Charset + "]"
+	info := "invalid characters [" + invalidChars + "]"
+
+	return lint.NewIssue(desc, info), false
 }

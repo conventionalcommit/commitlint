@@ -40,19 +40,20 @@ func (r *ScopeEnumRule) Apply(setting lint.RuleSetting) error {
 }
 
 // Validate validates ScopeEnumRule
-func (r *ScopeEnumRule) Validate(msg lint.Commit) ([]string, bool) {
+func (r *ScopeEnumRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
 	if msg.Scope() == "" {
 		if r.AllowEmpty {
 			return nil, true
 		}
 		errMsg := fmt.Sprintf("empty scope is not allowed, you can use one of %v", r.Scopes)
-		return []string{errMsg}, false
+		return lint.NewIssue(errMsg), false
 	}
 
 	isFound := search(r.Scopes, msg.Scope())
-	if !isFound {
-		errMsg := fmt.Sprintf("scope '%s' is not allowed, you can use one of %v", msg.Scope(), r.Scopes)
-		return []string{errMsg}, false
+	if isFound {
+		return nil, true
 	}
-	return nil, true
+
+	errMsg := fmt.Sprintf("scope '%s' is not allowed, you can use one of %v", msg.Scope(), r.Scopes)
+	return lint.NewIssue(errMsg), false
 }

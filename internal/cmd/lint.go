@@ -46,16 +46,16 @@ func runLint(confFilePath, fileInput string) (lintResult string, hasError bool, 
 		return "", false, err
 	}
 
-	res, err := linter.Lint(commitMsg)
+	result, err := linter.Lint(commitMsg)
 	if err != nil {
 		return "", false, err
 	}
 
-	resStr, err := format.Format(res)
+	output, err := format.Format(result)
 	if err != nil {
 		return "", false, err
 	}
-	return resStr, hasErrorSeverity(res), nil
+	return output, hasErrorSeverity(result), nil
 }
 
 func getLinter(confParam string) (*lint.Linter, lint.Formatter, error) {
@@ -136,9 +136,9 @@ func readStdInPipe() (string, error) {
 	return strings.TrimSpace(s), nil
 }
 
-func hasErrorSeverity(res *lint.Result) bool {
-	for _, r := range res.Issues() {
-		if r.Severity() == lint.SeverityError {
+func hasErrorSeverity(result *lint.Result) bool {
+	for _, i := range result.Issues() {
+		if i.Severity() == lint.SeverityError {
 			return true
 		}
 	}
