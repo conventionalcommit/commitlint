@@ -32,8 +32,8 @@ commitlint checks if your commit message meets the [conventional commit format](
         - [Message](#message)
     - [hook](#hook)
     - [debug](#debug)
-    - [Default Config](#default-config)
-      - [Commit Types](#commit-types)
+  - [Default Config](#default-config)
+    - [Commit Types](#commit-types)
   - [Available Rules](#available-rules)
   - [Available Formatters](#available-formatters)
   - [Extensibility](#extensibility)
@@ -136,7 +136,7 @@ To lint a message, you can use any one of the following
 
   run `commitlint debug`
 
-### Default Config
+## Default Config
 
 ```yaml
 version: v0.8.0
@@ -173,7 +173,7 @@ settings:
     - revert
 ```
 
-#### Commit Types
+### Commit Types
 
 Commonly used commit types from [Conventional Commit Types](https://github.com/commitizen/conventional-commit-types)
 
