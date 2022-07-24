@@ -125,6 +125,11 @@ func NewDefault() *lint.Config {
 		(&rule.FooterEnumRule{}).Name(): {
 			Argument: []interface{}{},
 		},
+
+		// Footer Type Enum Rule
+		(&rule.FooterTypeEnumRule{}).Name(): {
+			Argument: []map[interface{}]interface{}{},
+		},
 	}
 
 	def := &lint.Config{

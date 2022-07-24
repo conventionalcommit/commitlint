@@ -3,7 +3,7 @@ package registry
 import "testing"
 
 func TestDefaultRules(t *testing.T) {
-	var m = make(map[string]struct{})
+	m := make(map[string]struct{})
 	for _, r := range globalRegistry.Rules() {
 		_, ok := m[r.Name()]
 		if ok {
@@ -14,7 +14,7 @@ func TestDefaultRules(t *testing.T) {
 }
 
 func TestDefaultFormatters(t *testing.T) {
-	var m = make(map[string]struct{})
+	m := make(map[string]struct{})
 	for _, r := range globalRegistry.Formatters() {
 		_, ok := m[r.Name()]
 		if ok {

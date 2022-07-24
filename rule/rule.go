@@ -13,6 +13,14 @@ func errInvalidArg(ruleName string, err error) error {
 	return fmt.Errorf("%s: invalid argument: %v", ruleName, err)
 }
 
+func errNeedAtleastOneArg(ruleName, msg string) error {
+	return fmt.Errorf("%s: need atleast one argument for %s", ruleName, msg)
+}
+
+func errMissingArg(ruleName, argName string) error {
+	return fmt.Errorf("%s: missing argument: %v", ruleName, argName)
+}
+
 func errInvalidFlag(ruleName, flagName string, err error) error {
 	return fmt.Errorf("%s: invalid flag '%s': %v", ruleName, flagName, err)
 }
@@ -34,6 +42,13 @@ func search(arr []string, toFind string) bool {
 		return arr[i] >= toFind
 	})
 	return ind < len(arr) && arr[ind] == toFind
+}
+
+func searchNote(arr []lint.Note, toFind string) bool {
+	ind := sort.Search(len(arr), func(i int) bool {
+		return arr[i].Token() >= toFind
+	})
+	return ind < len(arr) && arr[ind].Token() == toFind
 }
 
 func validateCharset(allowedCharset, toCheck string) (string, bool) {

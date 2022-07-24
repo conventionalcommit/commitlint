@@ -195,27 +195,28 @@ Commonly used commit types from [Conventional Commit Types](https://github.com/c
 
 The list of available lint rules
 
-| name                   | argument | flags             | description                                   |
-| ---------------------- | -------- | ----------------- | --------------------------------------------- |
-| header-min-length      | int      | n/a               | checks the min length of header (first line)  |
-| header-max-length      | int      | n/a               | checks the max length of header (first line)  |
-| body-max-line-length   | int      | n/a               | checks the max length of each line in body    |
-| footer-max-line-length | int      | n/a               | checks the max length of each line in footer  |
-| type-enum              | []string | n/a               | restrict type to given list of string         |
-| scope-enum             | []string | allow-empty: bool | restrict scope to given list of string        |
-| footer-enum            | []string | n/a               | restrict footer token to given list of string |
-| type-min-length        | int      | n/a               | checks the min length of type                 |
-| type-max-length        | int      | n/a               | checks the max length of type                 |
-| scope-min-length       | int      | n/a               | checks the min length of scope                |
-| scope-max-length       | int      | n/a               | checks the max length of scope                |
-| description-min-length | int      | n/a               | checks the min length of description          |
-| description-max-length | int      | n/a               | checks the max length of description          |
-| body-min-length        | int      | n/a               | checks the min length of body                 |
-| body-max-length        | int      | n/a               | checks the max length of body                 |
-| footer-min-length      | int      | n/a               | checks the min length of footer               |
-| footer-max-length      | int      | n/a               | checks the max length of footer               |
-| type-charset           | string   | n/a               | restricts type to given charset               |
-| scope-charset          | string   | n/a               | restricts scope to given charset              |
+| name                   | argument                 | flags             | description                                   |
+| ---------------------- | ------------------------ | ----------------- | --------------------------------------------- |
+| header-min-length      | int                      | n/a               | checks the min length of header (first line)  |
+| header-max-length      | int                      | n/a               | checks the max length of header (first line)  |
+| body-max-line-length   | int                      | n/a               | checks the max length of each line in body    |
+| footer-max-line-length | int                      | n/a               | checks the max length of each line in footer  |
+| type-enum              | []string                 | n/a               | restrict type to given list of string         |
+| scope-enum             | []string                 | allow-empty: bool | restrict scope to given list of string        |
+| footer-enum            | []string                 | n/a               | restrict footer token to given list of string |
+| type-min-length        | int                      | n/a               | checks the min length of type                 |
+| type-max-length        | int                      | n/a               | checks the max length of type                 |
+| scope-min-length       | int                      | n/a               | checks the min length of scope                |
+| scope-max-length       | int                      | n/a               | checks the max length of scope                |
+| description-min-length | int                      | n/a               | checks the min length of description          |
+| description-max-length | int                      | n/a               | checks the max length of description          |
+| body-min-length        | int                      | n/a               | checks the min length of body                 |
+| body-max-length        | int                      | n/a               | checks the max length of body                 |
+| footer-min-length      | int                      | n/a               | checks the min length of footer               |
+| footer-max-length      | int                      | n/a               | checks the max length of footer               |
+| type-charset           | string                   | n/a               | restricts type to given charset               |
+| scope-charset          | string                   | n/a               | restricts scope to given charset              |
+| footer-type-enum       | []{token, types, values} | n/a               | enforces footer notes for given type          |
 
 ## Available Formatters
 

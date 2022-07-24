@@ -58,6 +58,8 @@ func newRegistry() *registry {
 
 		&rule.TypeMaxLenRule{}, &rule.ScopeMaxLenRule{}, &rule.DescriptionMaxLenRule{},
 		&rule.TypeMinLenRule{}, &rule.ScopeMinLenRule{}, &rule.DescriptionMinLenRule{},
+
+		&rule.FooterTypeEnumRule{},
 	}
 
 	defaultFormatters := []lint.Formatter{
