@@ -12,9 +12,8 @@ builds:
       - darwin
     ldflags:
       - -s -w -X github.com/conventionalcommit/commitlint/internal.version={{.Version}} -X github.com/conventionalcommit/commitlint/internal.commit={{.FullCommit}} -X github.com/conventionalcommit/commitlint/internal.buildTime={{.Date}}
-    ignore:
-      - goos: darwin
-        goarch: arm64
+    flags:
+      - -tags=urfave_cli_no_docs
 
 archives:
   -
