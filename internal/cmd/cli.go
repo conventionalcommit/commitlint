@@ -57,6 +57,7 @@ func newLintCmd() *cli.Command {
 func newInitCmd() *cli.Command {
 	confFlag := newConfFlag()
 	replaceFlag := newReplaceFlag()
+	hooksFlag := newHooksPathFlag()
 
 	globalFlag := &cli.BoolFlag{
 		Name:    "global",
@@ -67,13 +68,14 @@ func newInitCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "init",
 		Usage: "Setup commitlint for git repos",
-		Flags: []cli.Flag{globalFlag, confFlag, replaceFlag},
+		Flags: []cli.Flag{globalFlag, confFlag, replaceFlag, hooksFlag},
 		Action: func(ctx *cli.Context) error {
 			confPath := ctx.String("config")
 			isGlobal := ctx.Bool("global")
 			isReplace := ctx.Bool("replace")
+			hooksPath := ctx.String("hookspath")
 
-			err := initLint(confPath, isGlobal, isReplace)
+			err := initLint(confPath, hooksPath, isGlobal, isReplace)
 			if err != nil {
 				if isHookExists(err) {
 					fmt.Println("commitlint init failed")
@@ -158,14 +160,16 @@ func newConfigCmd() *cli.Command {
 
 func newHookCmd() *cli.Command {
 	replaceFlag := newReplaceFlag()
+	hooksFlag := newHooksPathFlag()
 
 	createCmd := &cli.Command{
 		Name:  "create",
 		Usage: "Creates git hook files in current directory",
-		Flags: []cli.Flag{replaceFlag},
+		Flags: []cli.Flag{replaceFlag, hooksFlag},
 		Action: func(ctx *cli.Context) error {
 			isReplace := ctx.Bool("replace")
-			err := hookCreate(isReplace)
+			hooksPath := ctx.String("hookspath")
+			err := hookCreate(hooksPath, isReplace)
 			if err != nil {
 				if isHookExists(err) {
 					fmt.Println("create failed. hook files already exists")
@@ -202,6 +206,14 @@ func newConfFlag() *cli.StringFlag {
 		Aliases: []string{"c"},
 		Value:   "",
 		Usage:   "Optional config file `conf.yaml` which will be passed to 'commitlint lint'. Check config precedence",
+	}
+}
+
+func newHooksPathFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:  "hookspath",
+		Value: "",
+		Usage: "Optional hookspath to install git hooks",
 	}
 }
 

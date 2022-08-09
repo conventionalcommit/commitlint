@@ -66,9 +66,17 @@ commitlint init
 commitlint init --global
 ```
 
+- to customize hooks destination pass `--hookspath` with desired location
+
+```bash
+commitlint init --hookspath /path/to/hooks
+commitlint init --global --hookspath /path/to/hooks
+```
+
 ### Manual
 
 - run `commitlint hook create` to create `.commitlint/hooks` containing git hooks
+  - pass `--hookspath` to customize the hooks output path
 - To enable in single repo
   - run `git config core.hooksPath /path/to/.commitlint/hooks`
 - To enable globally

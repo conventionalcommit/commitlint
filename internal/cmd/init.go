@@ -6,8 +6,8 @@ import (
 )
 
 // initLint is the callback function for init command
-func initLint(confPath string, isGlobal, isReplace bool) error {
-	hookDir, err := initHooks(confPath, isGlobal, isReplace)
+func initLint(confPath, hooksPath string, isGlobal, isReplace bool) error {
+	hookDir, err := initHooks(confPath, hooksPath, isGlobal, isReplace)
 	if err != nil {
 		return err
 	}
@@ -15,7 +15,7 @@ func initLint(confPath string, isGlobal, isReplace bool) error {
 }
 
 func setGitConf(hookDir string, isGlobal bool) error {
-	var args = []string{"config"}
+	args := []string{"config"}
 	if isGlobal {
 		args = append(args, "--global")
 	}

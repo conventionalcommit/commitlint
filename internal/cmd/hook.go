@@ -11,20 +11,25 @@ import (
 )
 
 const (
-	// hookBaseDir represent default hook directory
-	hookBaseDir = ".commitlint/hooks"
+	defaultHooksPath = ".commitlint/hooks"
 )
 
-var errHooksExist = errors.New("hooks already exists")
-var errConfigExist = errors.New("config file already exists")
+var (
+	errHooksExist  = errors.New("hooks already exists")
+	errConfigExist = errors.New("config file already exists")
+)
 
 // hookCreate is the callback function for create hook command
-func hookCreate(isReplace bool) error {
-	return createHooks(isReplace)
+func hookCreate(hooksPath string, isReplace bool) error {
+	if hooksPath == "" {
+		hooksPath = filepath.Join(".", defaultHooksPath)
+	}
+	hooksPath = filepath.Clean(hooksPath)
+	return createHooks(hooksPath, isReplace)
 }
 
-func initHooks(confPath string, isGlobal, isReplace bool) (string, error) {
-	hookDir, err := getHookDir(hookBaseDir, isGlobal)
+func initHooks(confPath, hookFlag string, isGlobal, isReplace bool) (string, error) {
+	hookDir, err := getHookDir(hookFlag, isGlobal)
 	if err != nil {
 		return "", err
 	}
@@ -36,7 +41,7 @@ func initHooks(confPath string, isGlobal, isReplace bool) (string, error) {
 	return hookDir, nil
 }
 
-func createHooks(isReplace bool) error {
+func createHooks(hookBaseDir string, isReplace bool) error {
 	return writeHooks(hookBaseDir, isReplace)
 }
 
@@ -57,8 +62,12 @@ func writeHooks(hookDir string, isReplace bool) error {
 	return hook.WriteHooks(hookDir)
 }
 
-func getHookDir(baseDir string, isGlobal bool) (string, error) {
-	baseDir = filepath.Clean(baseDir)
+func getHookDir(hookFlag string, isGlobal bool) (string, error) {
+	if hookFlag != "" {
+		return filepath.Abs(hookFlag)
+	}
+
+	hookFlag = defaultHooksPath
 
 	if isGlobal {
 		// get user home dir
@@ -68,7 +77,7 @@ func getHookDir(baseDir string, isGlobal bool) (string, error) {
 		}
 
 		// create hooks dir
-		hookDir := filepath.Join(homeDir, baseDir)
+		hookDir := filepath.Join(homeDir, hookFlag)
 		return hookDir, nil
 	}
 
@@ -76,7 +85,7 @@ func getHookDir(baseDir string, isGlobal bool) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(gitDir, baseDir), nil
+	return filepath.Join(gitDir, hookFlag), nil
 }
 
 func getRepoRootDir() (string, error) {
