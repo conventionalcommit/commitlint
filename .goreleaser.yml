@@ -3,21 +3,19 @@ before:
     - go mod tidy
 
 builds:
-  -
-    env:
+  - env:
       - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - darwin
     ldflags:
-      - -s -w -X github.com/conventionalcommit/commitlint/internal.version={{.Version}} -X github.com/conventionalcommit/commitlint/internal.commit={{.FullCommit}} -X github.com/conventionalcommit/commitlint/internal.buildTime={{.Date}}
+      - -s -w -X github.com/conventionalcommit/commitlint/internal.version=v{{.Major}}.{{.Minor}}.{{.Patch}} -X github.com/conventionalcommit/commitlint/internal.commit={{.FullCommit}} -X github.com/conventionalcommit/commitlint/internal.buildTime={{.Date}}
     flags:
       - -tags=urfave_cli_no_docs
 
 archives:
-  -
-    replacements:
+  - replacements:
       darwin: Darwin
       linux: Linux
       windows: Windows
@@ -38,13 +36,13 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
-      - '^style:'
-      - '^chore:'
-      - '^refactor:'
-      - '^build:'
-      - '^ci:'
+      - "^docs:"
+      - "^test:"
+      - "^style:"
+      - "^chore:"
+      - "^refactor:"
+      - "^build:"
+      - "^ci:"
 
 release:
   draft: true
