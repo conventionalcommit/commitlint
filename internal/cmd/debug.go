@@ -17,22 +17,22 @@ func printDebug() error {
 	w.WriteByte('\n')
 
 	gitVer, err := getGitVersion()
-	if err != nil {
+	if handleError(err, "Failed to get Git version") != nil {
 		return err
 	}
 
 	localConf, err := getGitHookConfig(false)
-	if err != nil {
+	if handleError(err, "Failed to get local Git hook configuration") != nil {
 		return err
 	}
 
 	globalConf, err := getGitHookConfig(true)
-	if err != nil {
+	if handleError(err, "Failed to get global Git hook configuration") != nil {
 		return err
 	}
 
 	confFile, confType, err := internal.LookupConfigPath()
-	if err != nil {
+	if handleError(err, "Failed to lookup configuration path") != nil {
 		return err
 	}
 
@@ -67,7 +67,7 @@ func getGitVersion() (string, error) {
 	cmd.Stdout = b
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
-	if err != nil {
+	if handleError(err, "Failed to execute 'git version' command") != nil {
 		return "", err
 	}
 
@@ -90,7 +90,7 @@ func getGitHookConfig(isGlobal bool) (string, error) {
 	cmd.Stdout = b
 
 	err := cmd.Run()
-	if err != nil {
+	if handleError(err, "Failed to execute 'git config core.hooksPath' command") != nil {
 		return "", err
 	}
 

@@ -4,7 +4,7 @@ package cmd
 import (
 	"fmt"
 
-	cli "github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/conventionalcommit/commitlint/internal"
 )
@@ -49,7 +49,8 @@ func newLintCmd() *cli.Command {
 		Action: func(ctx *cli.Context) error {
 			confFilePath := ctx.String("config")
 			fileInput := ctx.String("message")
-			return lintMsg(confFilePath, fileInput)
+			err := lintMsg(confFilePath, fileInput)
+			return handleError(err, "Failed to run lint command")
 		},
 	}
 }
@@ -76,7 +77,7 @@ func newInitCmd() *cli.Command {
 			hooksPath := ctx.String("hookspath")
 
 			err := initLint(confPath, hooksPath, isGlobal, isReplace)
-			if err != nil {
+			if handleError(err, "Failed to initialize commitlint") != nil {
 				if isHookExists(err) {
 					fmt.Println("commitlint init failed")
 					fmt.Println("run with --replace to replace existing files")
@@ -112,7 +113,7 @@ func newConfigCmd() *cli.Command {
 			isReplace := ctx.Bool("replace")
 			fileName := ctx.String("file")
 			err := configCreate(fileName, isReplace)
-			if err != nil {
+			if handleError(err, "Failed to create config file") != nil {
 				if isConfExists(err) {
 					fmt.Println("config create failed")
 					fmt.Println("run with --replace to replace existing file")
@@ -144,10 +145,10 @@ func newConfigCmd() *cli.Command {
 				return nil
 			}
 			if len(errs) == 1 {
-				return errs[0]
+				return handleError(errs[0], "Config check failed")
 			}
 			merr := multiError(errs)
-			return &merr
+			return handleError(&merr, "Config check failed")
 		},
 	}
 
@@ -170,9 +171,9 @@ func newHookCmd() *cli.Command {
 			isReplace := ctx.Bool("replace")
 			hooksPath := ctx.String("hookspath")
 			err := hookCreate(hooksPath, isReplace)
-			if err != nil {
+			if handleError(err, "Failed to create hooks") != nil {
 				if isHookExists(err) {
-					fmt.Println("create failed. hook files already exists")
+					fmt.Println("create failed. hook files already exist")
 					fmt.Println("run with --replace to replace existing hook files")
 					return nil
 				}
@@ -195,7 +196,7 @@ func newDebugCmd() *cli.Command {
 		Name:  "debug",
 		Usage: "prints useful information for debugging",
 		Action: func(ctx *cli.Context) error {
-			return printDebug()
+			return handleError(printDebug(), "Debugging information failed")
 		},
 	}
 }
