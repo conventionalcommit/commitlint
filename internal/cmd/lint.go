@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode"
 
 	cli "github.com/urfave/cli/v2"
 
@@ -46,7 +47,12 @@ func runLint(confFilePath, fileInput string) (lintResult string, hasError bool, 
 		return "", false, err
 	}
 
-	result, err := linter.ParseAndLint(commitMsg)
+	cleanMsg, err := cleanupMsg(commitMsg)
+	if err != nil {
+		return "", false, err
+	}
+
+	result, err := linter.ParseAndLint(cleanMsg)
 	if err != nil {
 		return "", false, err
 	}
@@ -113,6 +119,56 @@ func getCommitMsg(fileInput string) (string, error) {
 		return "", err
 	}
 	return string(inBytes), nil
+}
+
+func trimRightSpace(s string) string {
+    return strings.TrimRightFunc(s, unicode.IsSpace)
+}
+
+func cleanupMsg(dirtyMsg string) (string, error) {
+	// commit msg cleanup in git is configurable: https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---cleanupltmodegt
+	// For now we do a combination of the "scissors" behavior and the "strip" behavior
+	// * remove the scissors line and everything below
+	// * strip leading and trailing empty lines
+	// * strip commentary (lines stating with commentChar '#')
+	// * strip trailing whitespace
+	// * collapse consecutive empty lines
+	// TODO: check via "git config --get" if any of those two hardcoded constants was reconfigured
+	// TODO: find out if commit messages on windows actually 
+
+	gitCommentChar := "#"
+	scissors := gitCommentChar + " ------------------------ >8 ------------------------"
+
+	cleanMsg := ""
+	lastLine := ""
+	for _, line := range strings.Split(dirtyMsg, "\n") {
+		if line == scissors {
+			// remove everything below scissors (including the scissors line)
+			break
+		}
+		if strings.HasPrefix(line, gitCommentChar) {
+			// strip commentary
+			continue
+		}		
+		line = trimRightSpace(line)
+		// strip trailing whitespace
+		if lastLine == "" && line == "" {
+			// strip leading empty lines
+			// collapse consecutive empty lines
+			continue
+		}
+		if cleanMsg == "" {
+			cleanMsg = line
+		} else {
+			cleanMsg += "\n" + line
+		}
+		lastLine = line
+	}
+	if lastLine == "" {
+		//strip trailing empty line
+		cleanMsg = strings.TrimSuffix(cleanMsg, "\n")
+	}
+	return cleanMsg, nil
 }
 
 func readStdInPipe() (string, error) {
