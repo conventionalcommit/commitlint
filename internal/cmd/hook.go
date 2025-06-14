@@ -25,46 +25,50 @@ func hookCreate(hooksPath string, isReplace bool) error {
 		hooksPath = filepath.Join(".", defaultHooksPath)
 	}
 	hooksPath = filepath.Clean(hooksPath)
-	return createHooks(hooksPath, isReplace)
+	return handleError(createHooks(hooksPath, isReplace), "Failed to create hooks")
 }
 
 func initHooks(confPath, hookFlag string, isGlobal, isReplace bool) (string, error) {
 	hookDir, err := getHookDir(hookFlag, isGlobal)
-	if err != nil {
+	if handleError(err, "Failed to get hook directory") != nil {
 		return "", err
 	}
 
 	err = writeHooks(hookDir, isReplace)
-	if err != nil {
+	if handleError(err, "Failed to write hooks") != nil {
 		return "", err
 	}
 	return hookDir, nil
 }
 
 func createHooks(hookBaseDir string, isReplace bool) error {
-	return writeHooks(hookBaseDir, isReplace)
+	return handleError(writeHooks(hookBaseDir, isReplace), "Failed to write hooks to base directory")
 }
 
 func writeHooks(hookDir string, isReplace bool) error {
 	// if commit-msg already exists skip creating or overwriting it
 	if _, err := os.Stat(hookDir); !os.IsNotExist(err) {
 		if !isReplace {
-			return errHooksExist
+			return handleError(errHooksExist, "Hook already exists and replace option not set")
 		}
 	}
 
 	err := os.MkdirAll(hookDir, os.ModePerm)
-	if err != nil {
+	if handleError(err, "Failed to create hook directory") != nil {
 		return err
 	}
 
 	// create hook file
-	return hook.WriteHooks(hookDir)
+	return handleError(hook.WriteHooks(hookDir), "Failed to write hooks to directory")
 }
 
 func getHookDir(hookFlag string, isGlobal bool) (string, error) {
 	if hookFlag != "" {
-		return filepath.Abs(hookFlag)
+		absPath, err := filepath.Abs(hookFlag)
+		if handleError(err, "Failed to get absolute path for hook directory") != nil {
+			return "", err
+		}
+		return absPath, nil
 	}
 
 	hookFlag = defaultHooksPath
@@ -72,7 +76,7 @@ func getHookDir(hookFlag string, isGlobal bool) (string, error) {
 	if isGlobal {
 		// get user home dir
 		homeDir, err := os.UserHomeDir()
-		if err != nil {
+		if handleError(err, "Failed to get user home directory") != nil {
 			return "", err
 		}
 
@@ -82,7 +86,7 @@ func getHookDir(hookFlag string, isGlobal bool) (string, error) {
 	}
 
 	gitDir, err := getRepoRootDir()
-	if err != nil {
+	if handleError(err, "Failed to get repository root directory") != nil {
 		return "", err
 	}
 	return filepath.Join(gitDir, hookFlag), nil
@@ -96,7 +100,7 @@ func getRepoRootDir() (string, error) {
 	cmd.Stderr = os.Stderr
 
 	err := cmd.Run()
-	if err != nil {
+	if handleError(err, "Failed to get repository root directory with git command") != nil {
 		return "", err
 	}
 
@@ -109,9 +113,9 @@ func getRepoRootDir() (string, error) {
 }
 
 func isHookExists(err error) bool {
-	return err == errHooksExist
+	return errors.Is(err, errHooksExist)
 }
 
 func isConfExists(err error) bool {
-	return err == errConfigExist
+	return errors.Is(err, errConfigExist)
 }

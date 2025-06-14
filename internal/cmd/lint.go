@@ -8,14 +8,13 @@ import (
 	"strings"
 	"unicode"
 
-	cli "github.com/urfave/cli/v2"
-
 	"github.com/conventionalcommit/commitlint/config"
 	"github.com/conventionalcommit/commitlint/lint"
+	"github.com/urfave/cli/v2"
 )
 
 const (
-	// errExitCode represent error exit code
+	// errExitCode represents the error exit code
 	errExitCode = 1
 )
 
@@ -23,8 +22,8 @@ const (
 func lintMsg(confPath, msgPath string) error {
 	// NOTE: lint should return with exit code for error case
 	resStr, hasError, err := runLint(confPath, msgPath)
-	if err != nil {
-		return cli.Exit(err, errExitCode)
+	if handleError(err, "Linting failed") != nil {
+		return err
 	}
 
 	if hasError {
@@ -38,12 +37,12 @@ func lintMsg(confPath, msgPath string) error {
 
 func runLint(confFilePath, fileInput string) (lintResult string, hasError bool, err error) {
 	linter, format, err := getLinter(confFilePath)
-	if err != nil {
+	if handleError(err, "Failed to create linter") != nil {
 		return "", false, err
 	}
 
 	commitMsg, err := getCommitMsg(fileInput)
-	if err != nil {
+	if handleError(err, "Failed to read commit message") != nil {
 		return "", false, err
 	}
 
@@ -53,30 +52,31 @@ func runLint(confFilePath, fileInput string) (lintResult string, hasError bool, 
 	}
 
 	result, err := linter.ParseAndLint(cleanMsg)
-	if err != nil {
+  if handleError(err, "Linting process failed") != nil {
 		return "", false, err
 	}
 
 	output, err := format.Format(result)
-	if err != nil {
+	if handleError(err, "Formatting result failed") != nil {
 		return "", false, err
 	}
+
 	return output, hasErrorSeverity(result), nil
 }
 
 func getLinter(confParam string) (*lint.Linter, lint.Formatter, error) {
 	conf, err := getConfig(confParam)
-	if err != nil {
+	if handleError(err, "Failed to get configuration") != nil {
 		return nil, nil, err
 	}
 
 	format, err := config.GetFormatter(conf)
-	if err != nil {
+	if handleError(err, "Failed to get formatter") != nil {
 		return nil, nil, err
 	}
 
 	linter, err := config.NewLinter(conf)
-	if err != nil {
+	if handleError(err, "Failed to create new linter") != nil {
 		return nil, nil, err
 	}
 
@@ -91,7 +91,7 @@ func getConfig(confParam string) (*lint.Config, error) {
 
 	// If config param is empty, lookup for defaults
 	conf, err := config.LookupAndParse()
-	if err != nil {
+	if handleError(err, "Failed to lookup and parse configuration") != nil {
 		return nil, err
 	}
 
@@ -100,7 +100,7 @@ func getConfig(confParam string) (*lint.Config, error) {
 
 func getCommitMsg(fileInput string) (string, error) {
 	commitMsg, err := readStdInPipe()
-	if err != nil {
+	if handleError(err, "Failed to read commit message from stdin") != nil {
 		return "", err
 	}
 
@@ -115,7 +115,7 @@ func getCommitMsg(fileInput string) (string, error) {
 
 	fileInput = filepath.Clean(fileInput)
 	inBytes, err := os.ReadFile(fileInput)
-	if err != nil {
+	if handleError(err, "Failed to read commit message file") != nil {
 		return "", err
 	}
 	return string(inBytes), nil
@@ -173,7 +173,7 @@ func cleanupMsg(dirtyMsg string) (string, error) {
 
 func readStdInPipe() (string, error) {
 	stat, err := os.Stdin.Stat()
-	if err != nil {
+	if handleError(err, "Failed to read stdin pipe status") != nil {
 		return "", err
 	}
 
@@ -185,7 +185,7 @@ func readStdInPipe() (string, error) {
 
 	// user input from stdin pipe
 	readBytes, err := io.ReadAll(os.Stdin)
-	if err != nil {
+	if handleError(err, "Failed to read from stdin pipe") != nil {
 		return "", err
 	}
 	s := string(readBytes)

@@ -36,6 +36,7 @@ commitlint checks if your commit message meets the [conventional commit format](
     - [Commit Types](#commit-types)
   - [Available Rules](#available-rules)
   - [Available Formatters](#available-formatters)
+  - [Common Installation Issues](#common-installation-issues)
   - [Extensibility](#extensibility)
   - [FAQ](#faq)
   - [License](#license)
@@ -246,6 +247,60 @@ Total 1 errors, 0 warnings, 0 other severities
 ```json
 {"input":"fear: do not fear for commit message","issues":[{"description":"type 'fear' is not allowed, you can use one of [build chore ci docs feat fix perf refactor revert style test]","name":"type-enum","severity":"error"}]}
 ```
+
+## Common Installation Issues
+
+If you encounter the `command not found: commitlint` error after installing `commitlint`, this likely means the binary is not in your system's `PATH`. Follow these steps to resolve this issue:
+
+1. **Ensure `GOPATH/bin` is in your `PATH`**:
+   By default, Go installs binaries to `$GOPATH/bin` or `$HOME/go/bin` if `GOPATH` is not set. Add this directory to your `PATH`:
+
+   ```bash
+   export PATH=$PATH:$GOPATH/bin
+   ```
+
+   Or, if `GOPATH` is not set:
+
+   ```bash
+   export PATH=$PATH:$HOME/go/bin
+   ```
+
+   Add this line to your shell configuration file (e.g., `~/.bashrc`, `~/.zshrc`) to make the change permanent:
+
+   ```bash
+   echo 'export PATH=$PATH:$HOME/go/bin' >> ~/.zshrc
+   source ~/.zshrc
+   ```
+
+2. **Verify the Installation**:
+   Confirm that the `commitlint` binary is in the expected directory:
+
+   ```bash
+   ls $GOPATH/bin/commitlint
+   ```
+
+   Or:
+
+   ```bash
+   ls $HOME/go/bin/commitlint
+   ```
+
+3. **Reinstall if Necessary**:
+   If the binary is missing, reinstall `commitlint`:
+
+   ```bash
+   go install github.com/conventionalcommit/commitlint@latest
+   ```
+
+4. **Post-Verification**:
+   After following these steps, try running `commitlint` again:
+
+   ```bash
+   commitlint init --global
+   ```
+
+This should allow `commitlint` to be recognized as a command in your terminal.
+
 
 ## Extensibility
 
