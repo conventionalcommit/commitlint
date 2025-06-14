@@ -122,7 +122,7 @@ func getCommitMsg(fileInput string) (string, error) {
 }
 
 func trimRightSpace(s string) string {
-    return strings.TrimRightFunc(s, unicode.IsSpace)
+	return strings.TrimRightFunc(s, unicode.IsSpace)
 }
 
 func cleanupMsg(dirtyMsg string) (string, error) {
@@ -134,7 +134,7 @@ func cleanupMsg(dirtyMsg string) (string, error) {
 	// * strip trailing whitespace
 	// * collapse consecutive empty lines
 	// TODO: check via "git config --get" if any of those two hardcoded constants was reconfigured
-	// TODO: find out if commit messages on windows actually 
+	// TODO: find out if commit messages on windows actually
 
 	gitCommentChar := "#"
 	scissors := gitCommentChar + " ------------------------ >8 ------------------------"
@@ -149,7 +149,7 @@ func cleanupMsg(dirtyMsg string) (string, error) {
 		if strings.HasPrefix(line, gitCommentChar) {
 			// strip commentary
 			continue
-		}		
+		}
 		line = trimRightSpace(line)
 		// strip trailing whitespace
 		if lastLine == "" && line == "" {
@@ -165,7 +165,7 @@ func cleanupMsg(dirtyMsg string) (string, error) {
 		lastLine = line
 	}
 	if lastLine == "" {
-		//strip trailing empty line
+		// strip trailing empty line
 		cleanMsg = strings.TrimSuffix(cleanMsg, "\n")
 	}
 	return cleanMsg, nil

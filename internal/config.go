@@ -39,8 +39,8 @@ func (c ConfigType) String() string {
 
 // LookupConfigPath returns config file path following below order
 //  1. env path
-// 	2. commitlint.yaml in current directory
-// 	3. use default config
+//  2. commitlint.yaml in current directory
+//  3. use default config
 func LookupConfigPath() (confPath string, typ ConfigType, err error) {
 	envConf := os.Getenv(CommitlintConfigEnv)
 	if envConf != "" {
