@@ -91,6 +91,16 @@ func Validate(conf *lint.Config) []error {
 		}
 	}
 
+	// Check for duplicate rules
+	ruleSeen := make(map[string]struct{}, len(conf.Rules))
+	for _, ruleName := range conf.Rules {
+		if _, exists := ruleSeen[ruleName]; exists {
+			errs = append(errs, fmt.Errorf("duplicate rule '%s' in rules list", ruleName))
+		} else {
+			ruleSeen[ruleName] = struct{}{}
+		}
+	}
+
 	for ruleName, ruleSetting := range conf.Settings {
 		// Check if rule is registered
 		ruleData, ok := registry.GetRule(ruleName)
