@@ -3,13 +3,13 @@ package lint
 // RuleSetting represent config for a rule
 type RuleSetting struct {
 	Argument interface{}            `yaml:"argument"`
-	Flags    map[string]interface{} `yaml:"flags,omitempty"`
+	Flags    map[string]interface{} `yaml:"flags"`
 }
 
 // SeverityConfig represent severity levels for rules
 type SeverityConfig struct {
 	Default Severity            `yaml:"default"`
-	Rules   map[string]Severity `yaml:"rules,omitempty"`
+	Rules   map[string]Severity `yaml:"rules"`
 }
 
 // Config represent linter config
@@ -36,13 +36,13 @@ type Config struct {
 
 	// DisableDefaultIgnores disables the built-in ignore patterns
 	// (merge, revert, fixup, squash, etc.) when set to true.
-	DisableDefaultIgnores bool `yaml:"disable-default-ignores,omitempty"`
+	DisableDefaultIgnores bool `yaml:"disable-default-ignores"`
 
 	// IgnorePatterns is a list of user-defined regex patterns.
 	// If the first line of the commit message matches any pattern,
 	// linting is skipped. These are added on top of the default
 	// patterns (unless DisableDefaultIgnores is true).
-	IgnorePatterns []string `yaml:"ignores,omitempty"`
+	IgnorePatterns []string `yaml:"ignores"`
 
 	// DefaultIgnorePatterns holds the built-in patterns (set by config package).
 	// Not serialized to YAML - users never set this directly.

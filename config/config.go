@@ -159,7 +159,8 @@ func LookupAndParse() (*lint.Config, error) {
 	return conf, nil
 }
 
-// WriteTo writes config in yaml format to given io.Writer
+// WriteTo writes config in yaml format to given io.Writer, including all
+// settings and every field even if empty or zero-valued.
 func WriteTo(w io.Writer, conf *lint.Config) (retErr error) {
 	enc := yaml.NewEncoder(w)
 	defer func() {
@@ -169,6 +170,30 @@ func WriteTo(w io.Writer, conf *lint.Config) (retErr error) {
 		}
 	}()
 	return enc.Encode(conf)
+}
+
+// WriteCompactTo writes config in yaml format to given io.Writer.
+// Only settings for enabled rules are written, keeping the output compact.
+func WriteCompactTo(w io.Writer, conf *lint.Config) error {
+	// Build a compact copy: only settings for enabled rules
+	compact := *conf
+	if len(compact.Rules) > 0 && len(compact.Settings) > 0 {
+		enabled := make(map[string]struct{}, len(compact.Rules))
+		for _, r := range compact.Rules {
+			enabled[r] = struct{}{}
+		}
+		filtered := make(map[string]lint.RuleSetting, len(compact.Rules))
+		for name, setting := range compact.Settings {
+			if _, ok := enabled[name]; ok {
+				filtered[name] = setting
+			}
+		}
+		compact.Settings = filtered
+	}
+
+	enc := yaml.NewEncoder(w)
+	defer enc.Close()
+	return enc.Encode(&compact)
 }
 
 func isValidVersion(versionNo string) error {

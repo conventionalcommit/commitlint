@@ -121,11 +121,16 @@ func newConfigCmd() *cli.Command {
 				Usage: "Output file name",
 				Value: ".commitlint.yaml",
 			},
+			&cli.BoolFlag{
+				Name:  "all",
+				Usage: "Write all settings (not just enabled rules)",
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			isReplace := ctx.Bool("replace")
 			fileName := ctx.String("file")
-			err := configCreate(fileName, isReplace)
+			all := ctx.Bool("all")
+			err := configCreate(fileName, isReplace, all)
 			if err != nil {
 				if isConfExists(err) {
 					fmt.Println("config file already exists")

@@ -9,7 +9,7 @@ import (
 )
 
 // configCreate is the callback function for create config command
-func configCreate(fileName string, isReplace bool) (retErr error) {
+func configCreate(fileName string, isReplace bool, all bool) (retErr error) {
 	outPath := filepath.Join(".", fileName)
 	// if config file already exists skip creating or overwriting it
 	if _, err := os.Stat(outPath); !os.IsNotExist(err) {
@@ -39,7 +39,10 @@ func configCreate(fileName string, isReplace bool) (retErr error) {
 	}()
 
 	defConf := config.NewDefault()
-	return config.WriteTo(w, defConf)
+	if all {
+		return config.WriteTo(w, defConf)
+	}
+	return config.WriteCompactTo(w, defConf)
 }
 
 // configCheck is the callback function for check/verify command
