@@ -77,17 +77,17 @@ func NewDefault() *lint.Config {
 
 		// Header Max Len Rule
 		(&rule.HeadMaxLenRule{}).Name(): {
-			Argument: 50,
+			Argument: 72,
 		},
 
 		// Body Max Line Rule
 		(&rule.BodyMaxLineLenRule{}).Name(): {
-			Argument: 72,
+			Argument: 100,
 		},
 
 		// Footer Max Line Rule
 		(&rule.FooterMaxLineLenRule{}).Name(): {
-			Argument: 72,
+			Argument: 100,
 		},
 
 		// Types Enum Rule
