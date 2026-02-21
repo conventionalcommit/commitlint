@@ -147,7 +147,7 @@ To lint a message, you can use any one of the following
 ## Default Config
 
 ```yaml
-version: v0.9.0
+min-version: v0.9.0
 formatter: default
 rules:
 - header-min-length

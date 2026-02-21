@@ -16,7 +16,11 @@ type SeverityConfig struct {
 type Config struct {
 	// MinVersion is the minimum version of commitlint required
 	// should be in semver format
-	MinVersion string `yaml:"version"`
+	MinVersion string `yaml:"min-version"`
+
+	// DeprecatedVersion is the old "version" key, kept for backward compatibility.
+	// Use MinVersion ("min-version") in new config files.
+	DeprecatedVersion string `yaml:"version,omitempty"`
 
 	// Formatter of the lint result
 	Formatter string `yaml:"formatter"`

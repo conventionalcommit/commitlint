@@ -26,8 +26,7 @@ func Parse(confPath string) (*lint.Config, error) {
 	}
 
 	conf := &lint.Config{
-		MinVersion: internal.Version(),
-		Formatter:  (&formatter.DefaultFormatter{}).Name(),
+		Formatter: (&formatter.DefaultFormatter{}).Name(),
 		Severity: lint.SeverityConfig{
 			Default: lint.SeverityError,
 		},
@@ -36,6 +35,17 @@ func Parse(confPath string) (*lint.Config, error) {
 	err = yaml.UnmarshalStrict(confBytes, conf)
 	if err != nil {
 		return nil, fmt.Errorf("config file error: %w", err)
+	}
+
+	// Backward compatibility: accept old "version" key
+	if conf.MinVersion == "" && conf.DeprecatedVersion != "" {
+		conf.MinVersion = conf.DeprecatedVersion
+	}
+	conf.DeprecatedVersion = ""
+
+	// Default to current version if neither key was provided
+	if conf.MinVersion == "" {
+		conf.MinVersion = internal.Version()
 	}
 
 	if conf.Formatter == "" {
