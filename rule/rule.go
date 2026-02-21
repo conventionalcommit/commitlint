@@ -14,7 +14,7 @@ func errInvalidArg(ruleName string, err error) error {
 }
 
 func errNeedAtleastOneArg(ruleName, msg string) error {
-	return fmt.Errorf("%s: need atleast one argument for %s", ruleName, msg)
+	return fmt.Errorf("%s: need at least one argument for %s", ruleName, msg)
 }
 
 func errMissingArg(ruleName, argName string) error {
@@ -26,7 +26,7 @@ func errInvalidFlag(ruleName, flagName string, err error) error {
 }
 
 func formMinLenMsg(typ string, actualLen, expectedLen int) string {
-	return fmt.Sprintf("%s length is %d, should have atleast %d chars", typ, actualLen, expectedLen)
+	return fmt.Sprintf("%s length is %d, should have at least %d chars", typ, actualLen, expectedLen)
 }
 
 func formMaxLenDesc(typ string, actualLen, expectedLen int) string {

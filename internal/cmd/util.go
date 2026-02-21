@@ -14,8 +14,8 @@ func (m *multiError) Error() string {
 
 func (m *multiError) Errors() []error {
 	errs := make([]error, len(*m))
-	for _, err := range *m {
-		errs = append(errs, err)
+	for i, err := range *m {
+		errs[i] = err
 	}
 	return errs
 }

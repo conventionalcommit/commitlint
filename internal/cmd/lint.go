@@ -47,10 +47,7 @@ func runLint(confFilePath, fileInput string) (lintResult string, hasError bool, 
 		return "", false, err
 	}
 
-	cleanMsg, err := cleanupMsg(commitMsg)
-	if err != nil {
-		return "", false, err
-	}
+	cleanMsg := cleanupMsg(commitMsg)
 
 	result, err := linter.ParseAndLint(cleanMsg)
 	if err != nil {
@@ -125,7 +122,7 @@ func trimRightSpace(s string) string {
 	return strings.TrimRightFunc(s, unicode.IsSpace)
 }
 
-func cleanupMsg(dirtyMsg string) (string, error) {
+func cleanupMsg(dirtyMsg string) string {
 	// commit msg cleanup in git is configurable: https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---cleanupltmodegt
 	// For now we do a combination of the "scissors" behavior and the "strip" behavior
 	// * remove the scissors line and everything below
@@ -168,7 +165,7 @@ func cleanupMsg(dirtyMsg string) (string, error) {
 		// strip trailing empty line
 		cleanMsg = strings.TrimSuffix(cleanMsg, "\n")
 	}
-	return cleanMsg, nil
+	return cleanMsg
 }
 
 func readStdInPipe() (string, error) {

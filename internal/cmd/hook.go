@@ -109,9 +109,9 @@ func getRepoRootDir() (string, error) {
 }
 
 func isHookExists(err error) bool {
-	return err == errHooksExist
+	return errors.Is(err, errHooksExist)
 }
 
 func isConfExists(err error) bool {
-	return err == errConfigExist
+	return errors.Is(err, errConfigExist)
 }

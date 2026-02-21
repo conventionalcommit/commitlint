@@ -52,7 +52,7 @@ func Parse(confPath string) (*lint.Config, error) {
 // Validate validates given config instance, it checks the following
 // If formatters, rules are registered/known
 // If arguments to rules are valid
-// If version is valid and atleast minimum than commitlint version used
+// If version is valid and at least minimum than commitlint version used
 func Validate(conf *lint.Config) []error {
 	var errs []error
 
@@ -78,7 +78,7 @@ func Validate(conf *lint.Config) []error {
 	for ruleName, sev := range conf.Severity.Rules {
 		// Check Severity Level of rule config
 		if !isSeverityValid(sev) {
-			errs = append(errs, fmt.Errorf("unknown default severity level '%s' for rule '%s'", ruleName, sev))
+			errs = append(errs, fmt.Errorf("unknown severity level '%s' for rule '%s'", sev, ruleName))
 		}
 	}
 

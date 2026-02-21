@@ -9,7 +9,7 @@ import (
 
 var _ lint.Rule = (*ScopeEnumRule)(nil)
 
-// ScopeEnumRule to validate max length of header
+// ScopeEnumRule to validate scope against a list of allowed values
 type ScopeEnumRule struct {
 	Scopes []string
 
