@@ -17,6 +17,7 @@ func Run() error {
 func newCliApp() *cli.App {
 	cmds := []*cli.Command{
 		newInitCmd(),
+		newRemoveCmd(),
 		newLintCmd(),
 		newConfigCmd(),
 		newHookCmd(),
@@ -203,6 +204,25 @@ func newHookCmd() *cli.Command {
 			}
 			fmt.Println("hooks created")
 			return nil
+		},
+	}
+}
+
+func newRemoveCmd() *cli.Command {
+	return &cli.Command{
+		Name:        "remove",
+		Usage:       "Remove commitlint from git config",
+		Description: "Unset git's core.hooksPath so commits are no longer linted.\nHook files are left intact.\nUse --global to remove globally configured hooks.",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:    "global",
+				Aliases: []string{"g"},
+				Usage:   "Remove from global git config",
+			},
+		},
+		Action: func(ctx *cli.Context) error {
+			isGlobal := ctx.Bool("global")
+			return removeLint(isGlobal)
 		},
 	}
 }
