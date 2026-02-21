@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"golang.org/x/mod/semver"
 	yaml "gopkg.in/yaml.v2"
@@ -47,6 +48,9 @@ func Parse(confPath string) (*lint.Config, error) {
 	if conf.MinVersion == "" {
 		conf.MinVersion = internal.Version()
 	}
+
+	// Always set the built-in default patterns
+	conf.DefaultIgnorePatterns = DefaultIgnorePatterns()
 
 	if conf.Formatter == "" {
 		return nil, errors.New("config error: formatter is empty")
@@ -124,6 +128,15 @@ func Validate(conf *lint.Config) []error {
 			errs = append(errs, err)
 		}
 	}
+
+	// Validate ignore patterns (both default and user-defined)
+	for _, pattern := range conf.EffectiveIgnorePatterns() {
+		_, err := regexp.Compile(pattern)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("invalid ignore pattern %q: %w", pattern, err))
+		}
+	}
+
 	return errs
 }
 
