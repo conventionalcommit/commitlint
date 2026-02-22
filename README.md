@@ -28,9 +28,8 @@ commitlint checks if your commit message meets the [conventional commit format](
   - [Commands](#commands)
     - [config](#config)
     - [lint](#lint)
-      - [Precedence](#precedence)
-        - [Config](#config-1)
-        - [Message](#message)
+      - [Config Precedence](#config-precedence)
+      - [Message Precedence](#message-precedence)
     - [hook](#hook)
     - [debug](#debug)
   - [Default Config](#default-config)
@@ -40,6 +39,16 @@ commitlint checks if your commit message meets the [conventional commit format](
     - [Custom Ignore Patterns](#custom-ignore-patterns)
     - [Disabling Default Ignores](#disabling-default-ignores)
   - [Available Rules](#available-rules)
+    - [Length rules](#length-rules)
+    - [Enum / allow-list rules](#enum--allow-list-rules)
+    - [Charset rules](#charset-rules)
+    - [Case rules](#case-rules)
+    - [Empty / presence rules](#empty--presence-rules)
+    - [Full-stop rules](#full-stop-rules)
+    - [Leading-blank rules](#leading-blank-rules)
+    - [Header formatting rules](#header-formatting-rules)
+    - [Trailer / sign-off rules](#trailer--sign-off-rules)
+    - [Breaking change rules](#breaking-change-rules)
   - [Available Formatters](#available-formatters)
   - [Extensibility](#extensibility)
   - [FAQ](#faq)
@@ -136,11 +145,9 @@ To lint a message, you can use any one of the following
 - run `echo "message" | commitlint lint`
 - run `commitlint lint < file`
 
-#### Precedence
-
 `commitlint lint` follows below order for `config` and `message`
 
-##### Config
+#### Config Precedence
 
 - config file passed to `--config` command-line argument
 - `COMMITLINT_CONFIG` env variable
@@ -151,7 +158,7 @@ To lint a message, you can use any one of the following
   - commitlint.yaml
 - [default config](#default-config)
 
-##### Message
+#### Message Precedence
 
 - `stdin` pipe stream
 - commit message file passed to `--message` command-line argument
@@ -219,7 +226,7 @@ ignores: []
 Commonly used commit types from [Conventional Commit Types](https://github.com/commitizen/conventional-commit-types)
 
 | Type     | Description                                                                      |
-| :------- | :------------------------------------------------------------------------------- |
+|:---------|:---------------------------------------------------------------------------------|
 | feat     | A new feature                                                                    |
 | fix      | A bug fix                                                                        |
 | docs     | Documentation only changes                                                       |
@@ -242,21 +249,21 @@ If the **first line** of a commit message matches any ignore pattern, linting is
 The following patterns are enabled by default
 (source: [`config/default.go`](config/default.go)):
 
-| Pattern | Matches |
-| :--- | :--- |
-| `^Merge pull request #\d+` | GitHub pull request merges |
-| `^Merge .+ into .+` | Generic merge (X into Y) |
-| `^Merge branch '.+'` | `git merge` branch |
-| `^Merge tag '.+'` | `git merge` tag |
-| `^Merge remote-tracking branch '.+'` | `git merge` remote-tracking branch |
-| `^Merged .+ (in\|into) .+` | Azure DevOps / Bitbucket merged |
-| `^Merged PR #?\d+` | Azure DevOps pull request |
-| `^(R\|r)evert ` | `git revert` |
-| `^(R\|r)eapply ` | `git reapply` |
-| `^(amend\|fixup\|squash)! ` | `git commit --fixup/--squash/--amend` |
-| `^Automatic merge` | Automatic merges |
-| `^Auto-merged .+ into .+` | Auto-merged branches |
-| `^Initial commit$` | Initial commit (exact match) |
+| Pattern                              | Matches                               |
+|:-------------------------------------|:--------------------------------------|
+| `^Merge pull request #\d+`           | GitHub pull request merges            |
+| `^Merge .+ into .+`                  | Generic merge (X into Y)              |
+| `^Merge branch '.+'`                 | `git merge` branch                    |
+| `^Merge tag '.+'`                    | `git merge` tag                       |
+| `^Merge remote-tracking branch '.+'` | `git merge` remote-tracking branch    |
+| `^Merged .+ (in\|into) .+`           | Azure DevOps / Bitbucket merged       |
+| `^Merged PR #?\d+`                   | Azure DevOps pull request             |
+| `^(R\|r)evert `                      | `git revert`                          |
+| `^(R\|r)eapply `                     | `git reapply`                         |
+| `^(amend\|fixup\|squash)! `          | `git commit --fixup/--squash/--amend` |
+| `^Automatic merge`                   | Automatic merges                      |
+| `^Auto-merged .+ into .+`            | Auto-merged branches                  |
+| `^Initial commit$`                   | Initial commit (exact match)          |
 
 ### Custom Ignore Patterns
 
@@ -281,30 +288,107 @@ ignores:
 
 ## Available Rules
 
-The list of available lint rules
+Rules marked **✅ enabled** are active by default. All others can be opted into via the `rules:` list in your config.
 
-| name                   | argument                 | flags             | description                                   |
-| ---------------------- | ------------------------ | ----------------- | --------------------------------------------- |
-| header-min-length      | int                      | n/a               | checks the min length of header (first line)  |
-| header-max-length      | int                      | n/a               | checks the max length of header (first line)  |
-| body-max-line-length   | int                      | n/a               | checks the max length of each line in body    |
-| footer-max-line-length | int                      | n/a               | checks the max length of each line in footer  |
-| type-enum              | []string                 | n/a               | restrict type to given list of string         |
-| scope-enum             | []string                 | allow-empty: bool | restrict scope to given list of string        |
-| footer-enum            | []string                 | n/a               | restrict footer token to given list of string |
-| type-min-length        | int                      | n/a               | checks the min length of type                 |
-| type-max-length        | int                      | n/a               | checks the max length of type                 |
-| scope-min-length       | int                      | n/a               | checks the min length of scope                |
-| scope-max-length       | int                      | n/a               | checks the max length of scope                |
-| description-min-length | int                      | n/a               | checks the min length of description          |
-| description-max-length | int                      | n/a               | checks the max length of description          |
-| body-min-length        | int                      | n/a               | checks the min length of body                 |
-| body-max-length        | int                      | n/a               | checks the max length of body                 |
-| footer-min-length      | int                      | n/a               | checks the min length of footer               |
-| footer-max-length      | int                      | n/a               | checks the max length of footer               |
-| type-charset           | string                   | n/a               | restricts type to given charset               |
-| scope-charset          | string                   | n/a               | restricts scope to given charset              |
-| footer-type-enum       | []{token, types, values} | n/a               | enforces footer notes for given type          |
+### Length rules
+
+| name                     | argument | flags | description                       | default         |
+|:-------------------------|:---------|:------|:----------------------------------|:----------------|
+| `header-min-length`      | int      | n/a   | min length of header (first line) | ✅ enabled (10)  |
+| `header-max-length`      | int      | n/a   | max length of header (first line) | ✅ enabled (72)  |
+| `body-min-length`        | int      | n/a   | min length of body                | N/A             |
+| `body-max-length`        | int      | n/a   | max length of body                | N/A             |
+| `body-max-line-length`   | int      | n/a   | max length of each line in body   | ✅ enabled (100) |
+| `footer-min-length`      | int      | n/a   | min length of footer              | N/A             |
+| `footer-max-length`      | int      | n/a   | max length of footer              | N/A             |
+| `footer-max-line-length` | int      | n/a   | max length of each line in footer | ✅ enabled (100) |
+| `type-min-length`        | int      | n/a   | min length of type                | N/A             |
+| `type-max-length`        | int      | n/a   | max length of type                | N/A             |
+| `scope-min-length`       | int      | n/a   | min length of scope               | N/A             |
+| `scope-max-length`       | int      | n/a   | max length of scope               | N/A             |
+| `description-min-length` | int      | n/a   | min length of description         | N/A             |
+| `description-max-length` | int      | n/a   | max length of description         | N/A             |
+
+### Enum / allow-list rules
+
+| name               | argument                   | flags               | description                             | default   |
+|:-------------------|:---------------------------|:--------------------|:----------------------------------------|:----------|
+| `type-enum`        | `[]string`                 | n/a                 | restrict type to given list of strings  | ✅ enabled |
+| `scope-enum`       | `[]string`                 | `allow-empty: bool` | restrict scope to given list of strings | N/A       |
+| `footer-enum`      | `[]string`                 | n/a                 | restrict footer token to given list     | N/A       |
+| `footer-type-enum` | `[]{token, types, values}` | n/a                 | enforce footer notes for given type     | N/A       |
+
+### Charset rules
+
+| name            | argument | flags | description                     | default |
+|:----------------|:---------|:------|:--------------------------------|:--------|
+| `type-charset`  | string   | n/a   | restrict type to given charset  | N/A     |
+| `scope-charset` | string   | n/a   | restrict scope to given charset | N/A     |
+
+### Case rules
+
+All case rules accept one of: `lower-case`, `upper-case`, `camel-case`, `kebab-case`, `pascal-case`, `sentence-case`, `snake-case`, `start-case`.
+
+| name               | argument | flags | description                                | default |
+|:-------------------|:---------|:------|:-------------------------------------------|:--------|
+| `type-case`        | string   | n/a   | enforce case format on type                | N/A     |
+| `scope-case`       | string   | n/a   | enforce case format on scope (skips empty) | N/A     |
+| `description-case` | string   | n/a   | enforce case format on description         | N/A     |
+| `body-case`        | string   | n/a   | enforce case format on entire body         | N/A     |
+| `header-case`      | string   | n/a   | enforce case format on full header         | N/A     |
+
+### Empty / presence rules
+
+These rules enforce that a field is **not empty**.
+
+| name                | argument | flags | description                   | default |
+|:--------------------|:---------|:------|:------------------------------|:--------|
+| `type-empty`        | n/a      | n/a   | type must not be empty        | N/A     |
+| `scope-empty`       | n/a      | n/a   | scope must not be empty       | N/A     |
+| `body-empty`        | n/a      | n/a   | body must not be empty        | N/A     |
+| `footer-empty`      | n/a      | n/a   | footer must not be empty      | N/A     |
+| `description-empty` | n/a      | n/a   | description must not be empty | N/A     |
+
+### Full-stop rules
+
+Check that a field does **not** end with a given character (default `"."`).
+
+| name                    | argument | flags | description                                      | default |
+|:------------------------|:---------|:------|:-------------------------------------------------|:--------|
+| `header-full-stop`      | string   | n/a   | header must not end with given char (e.g. `"."`) | N/A     |
+| `body-full-stop`        | string   | n/a   | body must not end with given char                | N/A     |
+| `description-full-stop` | string   | n/a   | description must not end with given char         | N/A     |
+
+### Leading-blank rules
+
+Enforce that a blank line separates commit sections (conventional commits spec).
+
+| name                   | argument | flags | description                             | default |
+|:-----------------------|:---------|:------|:----------------------------------------|:--------|
+| `body-leading-blank`   | n/a      | n/a   | body must be preceded by a blank line   | N/A     |
+| `footer-leading-blank` | n/a      | n/a   | footer must be preceded by a blank line | N/A     |
+
+### Header formatting rules
+
+| name          | argument | flags | description                                         | default |
+|:--------------|:---------|:------|:----------------------------------------------------|:--------|
+| `header-trim` | n/a      | n/a   | header must not have leading or trailing whitespace | N/A     |
+
+### Trailer / sign-off rules
+
+The argument is the trailer token. A trailing `:` is accepted and stripped automatically,
+so `"Signed-off-by"` and `"Signed-off-by:"` are equivalent.
+
+| name             | argument | flags | description                                                          | default |
+|:-----------------|:---------|:------|:---------------------------------------------------------------------|:--------|
+| `signed-off-by`  | string   | n/a   | commit must have a footer note whose token matches (e.g. `"Signed-off-by"`) | N/A     |
+| `trailer-exists` | string   | n/a   | commit must have a footer note whose token matches (e.g. `"Co-authored-by"`) | N/A     |
+
+### Breaking change rules
+
+| name                               | argument | flags | description                                                                                                    | default |
+|:-----------------------------------|:---------|:------|:---------------------------------------------------------------------------------------------------------------|:--------|
+| `breaking-change-exclamation-mark` | n/a      | n/a   | XNOR: either both `!` in header and `BREAKING CHANGE` in footer are present, or neither N/A not just one alone | N/A     |
 
 ## Available Formatters
 
