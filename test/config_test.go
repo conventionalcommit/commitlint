@@ -161,7 +161,7 @@ func TestConfig_Validate_ValidIgnorePattern(t *testing.T) {
 	}
 }
 
-func TestConfig_WriteTo(t *testing.T) {
+func TestConfig_WriteCompactTo(t *testing.T) {
 	conf := config.NewDefault()
 	var buf bytes.Buffer
 	err := config.WriteCompactTo(&buf, conf)
@@ -170,7 +170,7 @@ func TestConfig_WriteTo(t *testing.T) {
 	}
 	output := buf.String()
 	if output == "" {
-		t.Error("expected non-empty output from WriteTo")
+		t.Error("expected non-empty output from WriteCompactTo")
 	}
 
 	// Should only contain settings for the 5 enabled rules, not all 20
@@ -186,7 +186,7 @@ func TestConfig_WriteTo(t *testing.T) {
 	}
 }
 
-func TestConfig_WriteTo_WithUserIgnores(t *testing.T) {
+func TestConfig_WriteCompactTo_WithUserIgnores(t *testing.T) {
 	conf := config.NewDefault()
 	conf.IgnorePatterns = []string{`^WIP `}
 	var buf bytes.Buffer
