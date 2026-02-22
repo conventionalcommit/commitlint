@@ -14,8 +14,8 @@ import (
 
 	"github.com/conventionalcommit/commitlint/formatter"
 	"github.com/conventionalcommit/commitlint/internal"
-	"github.com/conventionalcommit/commitlint/internal/registry"
 	"github.com/conventionalcommit/commitlint/lint"
+	"github.com/conventionalcommit/commitlint/registry"
 )
 
 // Parse parse given file in confPath, and return Config instance, error if any

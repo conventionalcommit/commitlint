@@ -1,4 +1,6 @@
-// Package registry contains registered rules and formatters
+// Package registry holds the global registry of rules and formatters.
+// External packages can call RegisterRule and RegisterFormatter to extend
+// commitlint with custom rules or formatters before building a linter.
 package registry
 
 import (
@@ -12,31 +14,36 @@ import (
 
 var globalRegistry = newRegistry()
 
-// RegisterRule registers a custom rule
-// if rule already exists, returns error
+// RegisterRule registers a custom rule.
+// Returns an error if a rule with the same name is already registered.
 func RegisterRule(r lint.Rule) error {
 	return globalRegistry.RegisterRule(r)
 }
 
-// RegisterFormatter registers a custom formatter
-// if formatter already exists, returns error
+// RegisterFormatter registers a custom formatter.
+// Returns an error if a formatter with the same name is already registered.
 func RegisterFormatter(format lint.Formatter) error {
 	return globalRegistry.RegisterFormatter(format)
 }
 
-// GetRule returns Rule with given name
+// GetRule returns the Rule registered under name, and whether it was found.
 func GetRule(name string) (lint.Rule, bool) {
 	return globalRegistry.GetRule(name)
 }
 
-// GetFormatter returns Formatter with given name
+// GetFormatter returns the Formatter registered under name, and whether it was found.
 func GetFormatter(name string) (lint.Formatter, bool) {
 	return globalRegistry.GetFormatter(name)
 }
 
-// Rules returns all registered rules
+// Rules returns all registered rules.
 func Rules() []lint.Rule {
 	return globalRegistry.Rules()
+}
+
+// Formatters returns all registered formatters.
+func Formatters() []lint.Formatter {
+	return globalRegistry.Formatters()
 }
 
 type registry struct {
