@@ -172,6 +172,59 @@ func NewDefault() *lint.Config {
 		(&rule.FooterTypeEnumRule{}).Name(): {
 			Argument: []interface{}{},
 		},
+
+		// Case Rules
+		(&rule.TypeCaseRule{}).Name(): {
+			Argument: "lower-case",
+		},
+		(&rule.ScopeCaseRule{}).Name(): {
+			Argument: "lower-case",
+		},
+		(&rule.DescriptionCaseRule{}).Name(): {
+			Argument: "lower-case",
+		},
+		(&rule.BodyCaseRule{}).Name(): {
+			Argument: "lower-case",
+		},
+		(&rule.HeaderCaseRule{}).Name(): {
+			Argument: "lower-case",
+		},
+
+		// Full-stop Rules
+		(&rule.HeaderFullStopRule{}).Name(): {
+			Argument: ".",
+		},
+		(&rule.BodyFullStopRule{}).Name(): {
+			Argument: ".",
+		},
+		(&rule.DescriptionFullStopRule{}).Name(): {
+			Argument: ".",
+		},
+
+		// Trailer / Signed-off-by
+		(&rule.SignedOffByRule{}).Name(): {
+			Argument: "Signed-off-by",
+		},
+		(&rule.TrailerExistsRule{}).Name(): {
+			Argument: "Signed-off-by",
+		},
+
+		// Empty rules (no argument needed)
+		(&rule.TypeEmptyRule{}).Name():        {},
+		(&rule.ScopeEmptyRule{}).Name():       {},
+		(&rule.BodyEmptyRule{}).Name():        {},
+		(&rule.FooterEmptyRule{}).Name():      {},
+		(&rule.DescriptionEmptyRule{}).Name(): {},
+
+		// Leading-blank rules (no argument needed)
+		(&rule.BodyLeadingBlankRule{}).Name():   {},
+		(&rule.FooterLeadingBlankRule{}).Name(): {},
+
+		// Header trim (no argument needed)
+		(&rule.HeaderTrimRule{}).Name(): {},
+
+		// Breaking change (no argument needed)
+		(&rule.BreakingChangeExclamationMarkRule{}).Name(): {},
 	}
 
 	def := &lint.Config{

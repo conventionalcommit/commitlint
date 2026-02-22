@@ -3,6 +3,7 @@ package test
 import (
 	"testing"
 
+	"github.com/conventionalcommit/commitlint/internal/casing"
 	"github.com/conventionalcommit/commitlint/lint"
 	"github.com/conventionalcommit/commitlint/rule"
 )
@@ -550,5 +551,799 @@ func TestIssue_NoInfos(t *testing.T) {
 	issue := lint.NewIssue("desc only")
 	if len(issue.Infos()) != 0 {
 		t.Errorf("expected 0 infos, got %d", len(issue.Infos()))
+	}
+}
+
+// ============================================================
+// Case rules
+// ============================================================
+
+func TestTypeCaseRule_LowerPass(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "feat"})
+	if !ok {
+		t.Error("lowercase type should pass lower-case rule")
+	}
+}
+
+func TestTypeCaseRule_LowerFail(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "Feat"})
+	if ok {
+		t.Error("mixed-case type should fail lower-case rule")
+	}
+}
+
+func TestTypeCaseRule_UpperPass(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Upper}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "FEAT"})
+	if !ok {
+		t.Error("uppercase type should pass upper-case rule")
+	}
+}
+
+func TestTypeCaseRule_UpperFail(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Upper}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "feat"})
+	if ok {
+		t.Error("lowercase type should fail upper-case rule")
+	}
+}
+
+func TestTypeCaseRule_CamelPass(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Camel}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "myType"})
+	if !ok {
+		t.Error("camelCase type should pass")
+	}
+}
+
+func TestTypeCaseRule_PascalPass(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Pascal}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "MyType"})
+	if !ok {
+		t.Error("PascalCase type should pass")
+	}
+}
+
+func TestTypeCaseRule_KebabPass(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Kebab}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "my-type"})
+	if !ok {
+		t.Error("kebab-case type should pass")
+	}
+}
+
+func TestTypeCaseRule_SnakePass(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Snake}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "my_type"})
+	if !ok {
+		t.Error("snake_case type should pass")
+	}
+}
+
+func TestTypeCaseRule_SentencePass(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Sentence}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "Feat"})
+	if !ok {
+		t.Error("Sentence case type should pass")
+	}
+}
+
+func TestTypeCaseRule_StartPass(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Start}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "My Type"})
+	if !ok {
+		t.Error("Start Case type should pass")
+	}
+}
+
+func TestTypeCaseRule_BadCaseArg(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "unknown-case"}); err == nil {
+		t.Error("unknown case should return error")
+	}
+}
+
+func TestTypeCaseRule_BadArgType(t *testing.T) {
+	r := &rule.TypeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: 42}); err == nil {
+		t.Error("non-string arg should return error")
+	}
+}
+
+func TestScopeCaseRule_LowerPass(t *testing.T) {
+	r := &rule.ScopeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{scope: "auth"})
+	if !ok {
+		t.Error("lowercase scope should pass")
+	}
+}
+
+func TestScopeCaseRule_EmptyScopeAlwaysPasses(t *testing.T) {
+	r := &rule.ScopeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{scope: ""})
+	if !ok {
+		t.Error("empty scope should always pass scope-case")
+	}
+}
+
+func TestScopeCaseRule_Fail(t *testing.T) {
+	r := &rule.ScopeCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{scope: "Auth"})
+	if ok {
+		t.Error("uppercase scope should fail lower-case rule")
+	}
+}
+
+func TestDescriptionCaseRule_LowerPass(t *testing.T) {
+	r := &rule.DescriptionCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{description: "add new feature"})
+	if !ok {
+		t.Error("lowercase description should pass")
+	}
+}
+
+func TestDescriptionCaseRule_Fail(t *testing.T) {
+	r := &rule.DescriptionCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{description: "Add new feature"})
+	if ok {
+		t.Error("capitalized description should fail lower-case rule")
+	}
+}
+
+func TestBodyCaseRule_LowerPass(t *testing.T) {
+	r := &rule.BodyCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{body: "this is the body"})
+	if !ok {
+		t.Error("lowercase body should pass")
+	}
+}
+
+func TestBodyCaseRule_EmptyBodyAlwaysPasses(t *testing.T) {
+	r := &rule.BodyCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{body: ""})
+	if !ok {
+		t.Error("empty body should pass body-case")
+	}
+}
+
+func TestBodyCaseRule_Fail(t *testing.T) {
+	r := &rule.BodyCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{body: "This is the body"})
+	if ok {
+		t.Error("capitalized body should fail lower-case rule")
+	}
+}
+
+func TestBodyCaseRule_MultiLine_AllFail(t *testing.T) {
+	r := &rule.BodyCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	// Entire body fails lower-case (uppercase letters present)
+	_, ok := r.Validate(&mockCommit{body: "First line capitalized\nSecond line capitalized"})
+	if ok {
+		t.Error("body with uppercase letters should fail lower-case rule")
+	}
+}
+
+func TestBodyCaseRule_MultiLine_SomeFail(t *testing.T) {
+	r := &rule.BodyCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	// Whole body contains uppercase, so the entire body fails
+	_, ok := r.Validate(&mockCommit{body: "first line is good\nSecond line is bad"})
+	if ok {
+		t.Error("body containing an uppercase letter should fail lower-case rule")
+	}
+}
+
+func TestBodyCaseRule_MultiLine_BlankLineSkipped(t *testing.T) {
+	r := &rule.BodyCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	// All non-empty content is lowercase; blank line is fine
+	_, ok := r.Validate(&mockCommit{body: "first line\n\nsecond line"})
+	if !ok {
+		t.Error("all-lowercase body with blank separator should pass lower-case rule")
+	}
+}
+
+func TestHeaderCaseRule_LowerPass(t *testing.T) {
+	r := &rule.HeaderCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{header: "feat: add feature"})
+	if !ok {
+		t.Error("lowercase header should pass")
+	}
+}
+
+func TestHeaderCaseRule_Fail(t *testing.T) {
+	r := &rule.HeaderCaseRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: casing.Lower}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{header: "Feat: Add feature"})
+	if ok {
+		t.Error("capitalized header should fail lower-case rule")
+	}
+}
+
+// ============================================================
+// Empty rules
+// ============================================================
+
+func TestTypeEmptyRule_NonEmptyPasses(t *testing.T) {
+	r := &rule.TypeEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{typ: "feat"})
+	if !ok {
+		t.Error("non-empty type should pass type-empty rule")
+	}
+}
+
+func TestTypeEmptyRule_EmptyFails(t *testing.T) {
+	r := &rule.TypeEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	issue, ok := r.Validate(&mockCommit{typ: ""})
+	if ok {
+		t.Error("empty type should fail type-empty rule")
+	}
+	if issue == nil {
+		t.Error("expected non-nil issue")
+	}
+}
+
+func TestScopeEmptyRule_NonEmptyPasses(t *testing.T) {
+	r := &rule.ScopeEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{scope: "auth"})
+	if !ok {
+		t.Error("non-empty scope should pass scope-empty rule")
+	}
+}
+
+func TestScopeEmptyRule_EmptyFails(t *testing.T) {
+	r := &rule.ScopeEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{scope: ""})
+	if ok {
+		t.Error("empty scope should fail scope-empty rule")
+	}
+}
+
+func TestBodyEmptyRule_NonEmptyPasses(t *testing.T) {
+	r := &rule.BodyEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{body: "some body"})
+	if !ok {
+		t.Error("non-empty body should pass body-empty rule")
+	}
+}
+
+func TestBodyEmptyRule_EmptyFails(t *testing.T) {
+	r := &rule.BodyEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{body: ""})
+	if ok {
+		t.Error("empty body should fail body-empty rule")
+	}
+}
+
+func TestFooterEmptyRule_NonEmptyPasses(t *testing.T) {
+	r := &rule.FooterEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{footer: "Fixes: #123"})
+	if !ok {
+		t.Error("non-empty footer should pass footer-empty rule")
+	}
+}
+
+func TestFooterEmptyRule_EmptyFails(t *testing.T) {
+	r := &rule.FooterEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{footer: ""})
+	if ok {
+		t.Error("empty footer should fail footer-empty rule")
+	}
+}
+
+func TestDescriptionEmptyRule_NonEmptyPasses(t *testing.T) {
+	r := &rule.DescriptionEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{description: "add new feature"})
+	if !ok {
+		t.Error("non-empty description should pass description-empty rule")
+	}
+}
+
+func TestDescriptionEmptyRule_EmptyFails(t *testing.T) {
+	r := &rule.DescriptionEmptyRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{description: ""})
+	if ok {
+		t.Error("empty description should fail description-empty rule")
+	}
+}
+
+// ============================================================
+// Full-stop rules
+// ============================================================
+
+func TestHeaderFullStop_NoStop_Pass(t *testing.T) {
+	r := &rule.HeaderFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "."}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{header: "feat: add new feature"})
+	if !ok {
+		t.Error("header not ending with '.' should pass")
+	}
+}
+
+func TestHeaderFullStop_WithStop_Fail(t *testing.T) {
+	r := &rule.HeaderFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "."}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{header: "feat: add new feature."})
+	if ok {
+		t.Error("header ending with '.' should fail")
+	}
+}
+
+func TestHeaderFullStop_CustomChar(t *testing.T) {
+	r := &rule.HeaderFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "!"}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{header: "feat: urgent!"})
+	if ok {
+		t.Error("header ending with '!' should fail")
+	}
+	_, ok2 := r.Validate(&mockCommit{header: "feat: normal"})
+	if !ok2 {
+		t.Error("header not ending with '!' should pass")
+	}
+}
+
+func TestHeaderFullStop_BadArg(t *testing.T) {
+	r := &rule.HeaderFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: 99}); err == nil {
+		t.Error("non-string arg should return error")
+	}
+}
+
+func TestBodyFullStop_NoStop_Pass(t *testing.T) {
+	r := &rule.BodyFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "."}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{body: "This is the body"})
+	if !ok {
+		t.Error("body not ending with '.' should pass")
+	}
+}
+
+func TestBodyFullStop_WithStop_Fail(t *testing.T) {
+	r := &rule.BodyFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "."}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{body: "This is the body."})
+	if ok {
+		t.Error("body ending with '.' should fail")
+	}
+}
+
+func TestBodyFullStop_EmptyBody_Pass(t *testing.T) {
+	r := &rule.BodyFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "."}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{body: ""})
+	if !ok {
+		t.Error("empty body should pass body-full-stop")
+	}
+}
+
+func TestDescriptionFullStop_NoStop_Pass(t *testing.T) {
+	r := &rule.DescriptionFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "."}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{description: "add new feature"})
+	if !ok {
+		t.Error("description not ending with '.' should pass")
+	}
+}
+
+func TestDescriptionFullStop_WithStop_Fail(t *testing.T) {
+	r := &rule.DescriptionFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "."}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{description: "add new feature."})
+	if ok {
+		t.Error("description ending with '.' should fail")
+	}
+}
+
+func TestDescriptionFullStop_EmptyDescription_Pass(t *testing.T) {
+	r := &rule.DescriptionFullStopRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "."}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{description: ""})
+	if !ok {
+		t.Error("empty description should pass description-full-stop")
+	}
+}
+
+// ============================================================
+// Leading-blank rules
+// ============================================================
+
+func TestBodyLeadingBlank_WithBlank_Pass(t *testing.T) {
+	r := &rule.BodyLeadingBlankRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	// message: header + blank line + body
+	msg := &mockCommit{
+		message: "feat: add feature\n\nThis is the body",
+		body:    "This is the body",
+	}
+	_, ok := r.Validate(msg)
+	if !ok {
+		t.Error("body with leading blank line should pass")
+	}
+}
+
+func TestBodyLeadingBlank_WithoutBlank_Fail(t *testing.T) {
+	r := &rule.BodyLeadingBlankRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	msg := &mockCommit{
+		message: "feat: add feature\nThis is the body",
+		body:    "This is the body",
+	}
+	_, ok := r.Validate(msg)
+	if ok {
+		t.Error("body without leading blank line should fail")
+	}
+}
+
+func TestBodyLeadingBlank_EmptyBody_Pass(t *testing.T) {
+	r := &rule.BodyLeadingBlankRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{body: ""})
+	if !ok {
+		t.Error("empty body should pass body-leading-blank")
+	}
+}
+
+func TestFooterLeadingBlank_WithBlank_Pass(t *testing.T) {
+	r := &rule.FooterLeadingBlankRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	msg := &mockCommit{
+		message: "feat: add feature\n\nbody text\n\nFixes: #123",
+		footer:  "Fixes: #123",
+	}
+	_, ok := r.Validate(msg)
+	if !ok {
+		t.Error("footer with leading blank should pass")
+	}
+}
+
+func TestFooterLeadingBlank_WithoutBlank_Fail(t *testing.T) {
+	r := &rule.FooterLeadingBlankRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	msg := &mockCommit{
+		message: "feat: add feature\nbody text\nFixes: #123",
+		footer:  "Fixes: #123",
+	}
+	_, ok := r.Validate(msg)
+	if ok {
+		t.Error("footer without leading blank should fail")
+	}
+}
+
+func TestFooterLeadingBlank_EmptyFooter_Pass(t *testing.T) {
+	r := &rule.FooterLeadingBlankRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{footer: ""})
+	if !ok {
+		t.Error("empty footer should pass footer-leading-blank")
+	}
+}
+
+// ============================================================
+// Header-trim rule
+// ============================================================
+
+func TestHeaderTrim_Clean_Pass(t *testing.T) {
+	r := &rule.HeaderTrimRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{header: "feat: add feature"})
+	if !ok {
+		t.Error("clean header should pass header-trim")
+	}
+}
+
+func TestHeaderTrim_LeadingSpace_Fail(t *testing.T) {
+	r := &rule.HeaderTrimRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{header: " feat: add feature"})
+	if ok {
+		t.Error("header with leading space should fail header-trim")
+	}
+}
+
+func TestHeaderTrim_TrailingSpace_Fail(t *testing.T) {
+	r := &rule.HeaderTrimRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{header: "feat: add feature "})
+	if ok {
+		t.Error("header with trailing space should fail header-trim")
+	}
+}
+
+func TestHeaderTrim_BothSpaces_Fail(t *testing.T) {
+	r := &rule.HeaderTrimRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{header: "  feat: add feature  "})
+	if ok {
+		t.Error("header with both-sides whitespace should fail header-trim")
+	}
+}
+
+// ============================================================
+// Signed-off-by and trailer-exists rules
+// ============================================================
+
+func TestSignedOffBy_Present_Pass(t *testing.T) {
+	r := &rule.SignedOffByRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "Signed-off-by:"}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{notes: []lint.Note{&mockNote{token: "Signed-off-by", value: "Jane Doe <jane@example.com>"}}})
+	if !ok {
+		t.Error("message with Signed-off-by should pass")
+	}
+}
+
+func TestSignedOffBy_NoColon_Present_Pass(t *testing.T) {
+	r := &rule.SignedOffByRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "Signed-off-by"}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{notes: []lint.Note{&mockNote{token: "Signed-off-by", value: "Jane Doe <jane@example.com>"}}})
+	if !ok {
+		t.Error("message with Signed-off-by should pass")
+	}
+}
+
+func TestSignedOffBy_Missing_Fail(t *testing.T) {
+	r := &rule.SignedOffByRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "Signed-off-by:"}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{})
+	if ok {
+		t.Error("commit without Signed-off-by note should fail")
+	}
+}
+
+func TestSignedOffBy_NoColon_Missing_Fail(t *testing.T) {
+	r := &rule.SignedOffByRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "Signed-off-by"}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{})
+	if ok {
+		t.Error("commit without Signed-off-by note should fail")
+	}
+}
+
+func TestSignedOffBy_BadArg(t *testing.T) {
+	r := &rule.SignedOffByRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: 99}); err == nil {
+		t.Error("non-string arg should return error")
+	}
+}
+
+func TestTrailerExists_Present_Pass(t *testing.T) {
+	r := &rule.TrailerExistsRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "Co-authored-by:"}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{notes: []lint.Note{&mockNote{token: "Co-authored-by", value: "Bob <bob@example.com>"}}})
+	if !ok {
+		t.Error("commit with Co-authored-by note should pass")
+	}
+}
+
+func TestTrailerExists_Missing_Fail(t *testing.T) {
+	r := &rule.TrailerExistsRule{}
+	if err := r.Apply(lint.RuleSetting{Argument: "Co-authored-by:"}); err != nil {
+		t.Fatal(err)
+	}
+	_, ok := r.Validate(&mockCommit{})
+	if ok {
+		t.Error("commit without Co-authored-by note should fail")
+	}
+}
+
+// ============================================================
+// Breaking-change-exclamation-mark rule
+// ============================================================
+
+func TestBreakingChangeExclamation_BothPresent_Pass(t *testing.T) {
+	r := &rule.BreakingChangeExclamationMarkRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	msg := &mockCommit{
+		breaking: true,
+		notes:    []lint.Note{&mockNote{token: "BREAKING CHANGE", value: "removed old endpoint"}},
+	}
+	_, ok := r.Validate(msg)
+	if !ok {
+		t.Error("both '!' in header AND BREAKING CHANGE in footer should pass")
+	}
+}
+
+func TestBreakingChangeExclamation_NeitherPresent_Pass(t *testing.T) {
+	r := &rule.BreakingChangeExclamationMarkRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	msg := &mockCommit{
+		breaking: false,
+	}
+	_, ok := r.Validate(msg)
+	if !ok {
+		t.Error("neither '!' nor BREAKING CHANGE should pass (XNOR)")
+	}
+}
+
+func TestBreakingChangeExclamation_OnlyExclamation_Fail(t *testing.T) {
+	r := &rule.BreakingChangeExclamationMarkRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	msg := &mockCommit{
+		breaking: true,
+	}
+	_, ok := r.Validate(msg)
+	if ok {
+		t.Error("'!' in header without BREAKING CHANGE in footer should fail")
+	}
+}
+
+func TestBreakingChangeExclamation_OnlyFooter_Fail(t *testing.T) {
+	r := &rule.BreakingChangeExclamationMarkRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	msg := &mockCommit{
+		breaking: false,
+		notes:    []lint.Note{&mockNote{token: "BREAKING CHANGE", value: "some change"}},
+	}
+	_, ok := r.Validate(msg)
+	if ok {
+		t.Error("BREAKING CHANGE in footer without '!' in header should fail")
+	}
+}
+
+func TestBreakingChangeExclamation_BreakingDashChange_Pass(t *testing.T) {
+	r := &rule.BreakingChangeExclamationMarkRule{}
+	if err := r.Apply(lint.RuleSetting{}); err != nil {
+		t.Fatal(err)
+	}
+	msg := &mockCommit{
+		breaking: true,
+		notes:    []lint.Note{&mockNote{token: "BREAKING-CHANGE", value: "some change"}},
+	}
+	_, ok := r.Validate(msg)
+	if !ok {
+		t.Error("BREAKING-CHANGE (with dash) in footer with '!' should pass")
 	}
 }

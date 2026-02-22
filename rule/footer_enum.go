@@ -8,6 +8,7 @@ import (
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
+// Compile-time interface checks
 var _ lint.Rule = (*FooterEnumRule)(nil)
 
 // FooterEnumRule to validate footer tokens

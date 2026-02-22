@@ -48,18 +48,43 @@ type registry struct {
 
 func newRegistry() *registry {
 	defaultRules := []lint.Rule{
+		// Length rules
 		&rule.BodyMinLenRule{}, &rule.BodyMaxLenRule{},
 		&rule.FooterMinLenRule{}, &rule.FooterMaxLenRule{},
 		&rule.HeadMaxLenRule{}, &rule.HeadMinLenRule{},
 		&rule.BodyMaxLineLenRule{}, &rule.FooterMaxLineLenRule{},
-
-		&rule.TypeEnumRule{}, &rule.ScopeEnumRule{}, &rule.FooterEnumRule{},
-		&rule.TypeCharsetRule{}, &rule.ScopeCharsetRule{},
-
 		&rule.TypeMaxLenRule{}, &rule.ScopeMaxLenRule{}, &rule.DescriptionMaxLenRule{},
 		&rule.TypeMinLenRule{}, &rule.ScopeMinLenRule{}, &rule.DescriptionMinLenRule{},
 
+		// Enum rules
+		&rule.TypeEnumRule{}, &rule.ScopeEnumRule{}, &rule.FooterEnumRule{},
 		&rule.FooterTypeEnumRule{},
+
+		// Charset rules
+		&rule.TypeCharsetRule{}, &rule.ScopeCharsetRule{},
+
+		// Case rules
+		&rule.TypeCaseRule{}, &rule.ScopeCaseRule{},
+		&rule.DescriptionCaseRule{}, &rule.BodyCaseRule{}, &rule.HeaderCaseRule{},
+
+		// Empty rules
+		&rule.TypeEmptyRule{}, &rule.ScopeEmptyRule{},
+		&rule.BodyEmptyRule{}, &rule.FooterEmptyRule{}, &rule.DescriptionEmptyRule{},
+
+		// Full-stop rules
+		&rule.HeaderFullStopRule{}, &rule.BodyFullStopRule{}, &rule.DescriptionFullStopRule{},
+
+		// Leading-blank rules
+		&rule.BodyLeadingBlankRule{}, &rule.FooterLeadingBlankRule{},
+
+		// Header trim
+		&rule.HeaderTrimRule{},
+
+		// Trailer / signed-off-by rules
+		&rule.SignedOffByRule{}, &rule.TrailerExistsRule{},
+
+		// Breaking change
+		&rule.BreakingChangeExclamationMarkRule{},
 	}
 
 	defaultFormatters := []lint.Formatter{
