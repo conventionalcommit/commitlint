@@ -1,3 +1,5 @@
+version: 2
+
 before:
   hooks:
     - go mod tidy
@@ -15,12 +17,7 @@ builds:
       - -tags=urfave_cli_no_docs
 
 archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+  - name_template: "{{ .ProjectName }}_v{{.Major}}.{{.Minor}}.{{.Patch}}_{{ .Os }}_{{ .Arch }}"
     files:
       - LICENSE.md
       - README.md
@@ -30,7 +27,7 @@ checksum:
   algorithm: sha256
 
 snapshot:
-  name_template: "{{ .Tag }}"
+  version_template: "{{ .Tag }}"
 
 changelog:
   sort: asc
