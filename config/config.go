@@ -12,9 +12,9 @@ import (
 	"golang.org/x/mod/semver"
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/conventionalcommit/commitlint/formatter"
 	"github.com/conventionalcommit/commitlint/internal"
 	"github.com/conventionalcommit/commitlint/lint"
+	"github.com/conventionalcommit/commitlint/lint/formatter"
 	"github.com/conventionalcommit/commitlint/registry"
 )
 

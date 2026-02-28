@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/conventionalcommit/commitlint/formatter"
 	"github.com/conventionalcommit/commitlint/lint"
-	"github.com/conventionalcommit/commitlint/rule"
+	"github.com/conventionalcommit/commitlint/lint/formatter"
+	"github.com/conventionalcommit/commitlint/lint/rule"
 )
 
 var globalRegistry = newRegistry()

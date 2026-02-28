@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/conventionalcommit/commitlint/formatter"
+	"github.com/conventionalcommit/commitlint/lint/formatter"
 )
 
 func TestDefaultFormatter_Name(t *testing.T) {

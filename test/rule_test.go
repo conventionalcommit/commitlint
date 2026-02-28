@@ -5,7 +5,7 @@ import (
 
 	"github.com/conventionalcommit/commitlint/internal/casing"
 	"github.com/conventionalcommit/commitlint/lint"
-	"github.com/conventionalcommit/commitlint/rule"
+	"github.com/conventionalcommit/commitlint/lint/rule"
 )
 
 // --- Header length rules ---
