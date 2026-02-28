@@ -1,4 +1,4 @@
-// Package config contains helpers, defaults for linter
+// Package config contains helpers, defaults for linter and changelog
 package config
 
 import (
@@ -7,142 +7,126 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"regexp"
 
-	"golang.org/x/mod/semver"
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/conventionalcommit/commitlint/changelog"
 	"github.com/conventionalcommit/commitlint/internal"
 	"github.com/conventionalcommit/commitlint/lint"
-	"github.com/conventionalcommit/commitlint/lint/formatter"
-	"github.com/conventionalcommit/commitlint/registry"
 )
 
-// Parse parse given file in confPath, and return Config instance, error if any
-func Parse(confPath string) (*lint.Config, error) {
+// Config is the top-level configuration that bundles lint and changelog config.
+type Config struct {
+	Lint      *lint.Config      `yaml:"lint"`
+	Changelog *changelog.Config `yaml:"changelog"`
+}
+
+// Parse parses the given config file and returns a Config instance.
+func Parse(confPath string) (*Config, error) {
 	confPath = filepath.Clean(confPath)
 	confBytes, err := os.ReadFile(confPath)
 	if err != nil {
 		return nil, fmt.Errorf("config file error: %w", err)
 	}
 
-	conf := &lint.Config{
-		Formatter: (&formatter.DefaultFormatter{}).Name(),
-		Severity: lint.SeverityConfig{
-			Default: lint.SeverityError,
+	conf := &Config{
+		Lint: &lint.Config{
+			Formatter: defaultLintFormatter,
+			Severity: lint.SeverityConfig{
+				Default: lint.SeverityError,
+			},
 		},
+		Changelog: NewDefaultChangelog(),
 	}
 
 	err = yaml.UnmarshalStrict(confBytes, conf)
 	if err != nil {
+		// Detect old flat config format (pre-v0.12.0) that lacks the top-level "lint:" key.
+		if isOldConfigFormat(confBytes) {
+			return nil, fmt.Errorf(
+				"config file error: this looks like a pre-v0.12.0 config (flat format without 'lint:' key).\n"+
+					"Please migrate to the new format. See: https://github.com/conventionalcommit/commitlint/blob/main/docs/migration.md\n"+
+					"Original error: %w", err,
+			)
+		}
 		return nil, fmt.Errorf("config file error: %w", err)
 	}
 
+	// --- Apply lint defaults ---
+
 	// Backward compatibility: accept old "version" key
-	if conf.MinVersion == "" && conf.DeprecatedVersion != "" {
-		conf.MinVersion = conf.DeprecatedVersion
+	if conf.Lint.MinVersion == "" && conf.Lint.DeprecatedVersion != "" {
+		conf.Lint.MinVersion = conf.Lint.DeprecatedVersion
 	}
-	conf.DeprecatedVersion = ""
+	conf.Lint.DeprecatedVersion = ""
 
 	// Default to current version if neither key was provided
-	if conf.MinVersion == "" {
-		conf.MinVersion = internal.Version()
+	if conf.Lint.MinVersion == "" {
+		conf.Lint.MinVersion = internal.Version()
 	}
 
 	// Always set the built-in default patterns
-	conf.DefaultIgnorePatterns = DefaultIgnorePatterns()
+	conf.Lint.DefaultIgnorePatterns = DefaultIgnorePatterns()
 
-	if conf.Formatter == "" {
-		return nil, errors.New("config error: formatter is empty")
+	// --- Apply changelog defaults ---
+	if conf.Changelog == nil {
+		conf.Changelog = NewDefaultChangelog()
+	} else {
+		defaults := NewDefaultChangelog()
+		cl := conf.Changelog
+
+		if cl.Formatter == "" {
+			cl.Formatter = defaults.Formatter
+		}
+		if cl.Header == "" {
+			cl.Header = defaults.Header
+		}
+		if len(cl.IssuePrefixes) == 0 {
+			cl.IssuePrefixes = defaults.IssuePrefixes
+		}
+		if len(cl.Types) == 0 {
+			cl.Types = defaults.Types
+		}
 	}
 
-	err = isValidVersion(conf.MinVersion)
+	// --- Validate essentials ---
+
+	if conf.Lint.Formatter == "" {
+		return nil, errors.New("config error: lint formatter is empty")
+	}
+
+	err = isValidVersion(conf.Lint.MinVersion)
 	if err != nil {
 		return nil, err
 	}
 	return conf, nil
 }
 
-// Validate validates given config instance, it checks the following
-// If formatters, rules are registered/known
-// If arguments to rules are valid
-// If version is valid and at least minimum than commitlint version used
-func Validate(conf *lint.Config) []error {
-	var errs []error
-
-	err := isValidVersion(conf.MinVersion)
-	if err != nil {
-		errs = append(errs, err)
+// isOldConfigFormat checks if the YAML bytes look like the old flat config
+// (pre-v0.12.0) that had top-level keys like "formatter:", "rules:", "settings:"
+// instead of being nested under "lint:".
+func isOldConfigFormat(data []byte) bool {
+	// Quick heuristic: try to unmarshal into a map and check for old top-level keys
+	var raw map[string]interface{}
+	if err := yaml.Unmarshal(data, &raw); err != nil {
+		return false
 	}
-
-	if conf.Formatter == "" {
-		errs = append(errs, errors.New("formatter is empty"))
-	} else {
-		_, ok := registry.GetFormatter(conf.Formatter)
-		if !ok {
-			errs = append(errs, fmt.Errorf("unknown formatter '%s'", conf.Formatter))
+	// Old format had these at the top level
+	oldKeys := []string{"formatter", "rules", "settings", "severity"}
+	matches := 0
+	for _, k := range oldKeys {
+		if _, ok := raw[k]; ok {
+			matches++
 		}
 	}
-
-	// Check Severity Level
-	if !isSeverityValid(conf.Severity.Default) {
-		errs = append(errs, fmt.Errorf("unknown default severity level '%s'", conf.Severity.Default))
-	}
-
-	for ruleName, sev := range conf.Severity.Rules {
-		// Check Severity Level of rule config
-		if !isSeverityValid(sev) {
-			errs = append(errs, fmt.Errorf("unknown severity level '%s' for rule '%s'", sev, ruleName))
-		}
-	}
-
-	for _, ruleName := range conf.Rules {
-		// Check if rule is registered
-		_, ok := registry.GetRule(ruleName)
-		if !ok {
-			errs = append(errs, fmt.Errorf("unknown rule '%s'", ruleName))
-			continue
-		}
-	}
-
-	// Check for duplicate rules
-	ruleSeen := make(map[string]struct{}, len(conf.Rules))
-	for _, ruleName := range conf.Rules {
-		if _, exists := ruleSeen[ruleName]; exists {
-			errs = append(errs, fmt.Errorf("duplicate rule '%s' in rules list", ruleName))
-		} else {
-			ruleSeen[ruleName] = struct{}{}
-		}
-	}
-
-	for ruleName, ruleSetting := range conf.Settings {
-		// Check if rule is registered
-		ruleData, ok := registry.GetRule(ruleName)
-		if !ok {
-			errs = append(errs, fmt.Errorf("unknown rule '%s'", ruleName))
-			continue
-		}
-
-		err := ruleData.Apply(ruleSetting)
-		if err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	// Validate ignore patterns (both default and user-defined)
-	for _, pattern := range conf.EffectiveIgnorePatterns() {
-		_, err := regexp.Compile(pattern)
-		if err != nil {
-			errs = append(errs, fmt.Errorf("invalid ignore pattern %q: %w", pattern, err))
-		}
-	}
-
-	return errs
+	// If the file has "lint:" key, it's the new format (even if malformed)
+	_, hasLint := raw["lint"]
+	return !hasLint && matches >= 2
 }
 
-// LookupAndParse gets the config path according to the precedence
-// if exists, parses the config file and returns config instance
-func LookupAndParse() (*lint.Config, error) {
+// LookupAndParse gets the config path according to the precedence,
+// parses the config file if found, and returns a Config instance.
+func LookupAndParse() (*Config, error) {
 	confFilePath, confType, err := internal.LookupConfigPath()
 	if err != nil {
 		return nil, err
@@ -161,7 +145,8 @@ func LookupAndParse() (*lint.Config, error) {
 
 // WriteTo writes config in yaml format to given io.Writer, including all
 // settings and every field even if empty or zero-valued.
-func WriteTo(w io.Writer, conf *lint.Config) (retErr error) {
+func WriteTo(w io.Writer, conf *Config) (retErr error) {
+	out := prepareForWrite(conf)
 	enc := yaml.NewEncoder(w)
 	defer func() {
 		err := enc.Close()
@@ -169,51 +154,72 @@ func WriteTo(w io.Writer, conf *lint.Config) (retErr error) {
 			retErr = err
 		}
 	}()
-	return enc.Encode(conf)
+	return enc.Encode(out)
 }
 
 // WriteCompactTo writes config in yaml format to given io.Writer.
-// Only settings for enabled rules are written, keeping the output compact.
-func WriteCompactTo(w io.Writer, conf *lint.Config) error {
-	// Build a compact copy: only settings for enabled rules
-	compact := *conf
-	if len(compact.Rules) > 0 && len(compact.Settings) > 0 {
-		enabled := make(map[string]struct{}, len(compact.Rules))
-		for _, r := range compact.Rules {
+// Only settings for enabled rules and non-hidden changelog types are written,
+// keeping the output compact.
+func WriteCompactTo(w io.Writer, conf *Config) error {
+	out := prepareForWrite(conf)
+
+	// Only settings for enabled lint rules
+	if out.Lint != nil && len(out.Lint.Rules) > 0 && len(out.Lint.Settings) > 0 {
+		enabled := make(map[string]struct{}, len(out.Lint.Rules))
+		for _, r := range out.Lint.Rules {
 			enabled[r] = struct{}{}
 		}
-		filtered := make(map[string]lint.RuleSetting, len(compact.Rules))
-		for name, setting := range compact.Settings {
+		filtered := make(map[string]lint.RuleSetting, len(out.Lint.Rules))
+		for name, setting := range out.Lint.Settings {
 			if _, ok := enabled[name]; ok {
 				filtered[name] = setting
 			}
 		}
-		compact.Settings = filtered
+		out.Lint.Settings = filtered
+	}
+
+	// Only non-hidden changelog types
+	if out.Changelog != nil && len(out.Changelog.Types) > 0 {
+		visible := make([]changelog.TypeConfig, 0, len(out.Changelog.Types))
+		for _, tc := range out.Changelog.Types {
+			if !tc.Hidden {
+				visible = append(visible, tc)
+			}
+		}
+		// Shallow-copy to avoid mutating the caller's config
+		clCopy := *out.Changelog
+		clCopy.Types = visible
+		out.Changelog = &clCopy
 	}
 
 	enc := yaml.NewEncoder(w)
 	defer enc.Close()
-	return enc.Encode(&compact)
+	return enc.Encode(out)
 }
 
-func isValidVersion(versionNo string) error {
-	if versionNo == "" {
-		return errors.New("version is empty")
+// prepareForWrite returns a copy with nil pointers filled with defaults.
+func prepareForWrite(conf *Config) *Config {
+	out := *conf
+	if out.Lint == nil {
+		out.Lint = NewDefaultLint()
 	}
-	if !semver.IsValid(versionNo) {
-		return errors.New("invalid version should be in semver format")
+	if out.Changelog == nil {
+		out.Changelog = NewDefaultChangelog()
 	}
-	return nil
+	return &out
 }
 
-func checkIfMinVersion(versionNo string) error {
-	cmp := semver.Compare(internal.Version(), versionNo)
-	if cmp != -1 {
-		return nil
+func Validate(conf *Config) []error {
+	var errs []error
+	if conf.Lint != nil {
+		errs = append(errs, ValidateLint(conf.Lint)...)
+	} else {
+		errs = append(errs, errors.New("lint config is nil"))
 	}
-	return fmt.Errorf("min version required is %s. you have %s.\nupgrade commitlint", versionNo, internal.Version())
-}
-
-func isSeverityValid(s lint.Severity) bool {
-	return s == lint.SeverityError || s == lint.SeverityWarn
+	if conf.Changelog != nil {
+		errs = append(errs, ValidateChangelog(conf.Changelog)...)
+	} else {
+		errs = append(errs, errors.New("changelog config is nil"))
+	}
+	return errs
 }

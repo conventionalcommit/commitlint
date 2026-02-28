@@ -165,7 +165,7 @@ func TestIgnore_NotIgnored(t *testing.T) {
 }
 
 func TestIgnore_EmptyPatterns_NoSkip(t *testing.T) {
-	conf := config.NewDefault()
+	conf := config.NewDefault().Lint
 	conf.DisableDefaultIgnores = true
 	conf.IgnorePatterns = []string{}
 
@@ -188,7 +188,7 @@ func TestIgnore_EmptyPatterns_NoSkip(t *testing.T) {
 }
 
 func TestIgnore_CustomPatternsAdditive(t *testing.T) {
-	conf := config.NewDefault()
+	conf := config.NewDefault().Lint
 	conf.IgnorePatterns = []string{`^CUSTOM-\d+`, `^WIP `}
 
 	rules, err := config.GetEnabledRules(conf)
@@ -229,7 +229,7 @@ func TestIgnore_CustomPatternsAdditive(t *testing.T) {
 }
 
 func TestIgnore_CustomPatternsOnlyWhenDefaultsDisabled(t *testing.T) {
-	conf := config.NewDefault()
+	conf := config.NewDefault().Lint
 	conf.DisableDefaultIgnores = true
 	conf.IgnorePatterns = []string{`^CUSTOM-\d+`}
 
@@ -262,7 +262,7 @@ func TestIgnore_CustomPatternsOnlyWhenDefaultsDisabled(t *testing.T) {
 }
 
 func TestIgnore_InvalidPattern_LinterCreationFails(t *testing.T) {
-	conf := config.NewDefault()
+	conf := config.NewDefault().Lint
 	conf.IgnorePatterns = []string{`^valid`, `[invalid`}
 
 	rules, err := config.GetEnabledRules(conf)
@@ -277,10 +277,10 @@ func TestIgnore_InvalidPattern_LinterCreationFails(t *testing.T) {
 }
 
 func TestIgnore_ValidationCatchesInvalidPattern(t *testing.T) {
-	conf := config.NewDefault()
+	conf := config.NewDefault().Lint
 	conf.IgnorePatterns = []string{`[invalid`}
 
-	errs := config.Validate(conf)
+	errs := config.ValidateLint(conf)
 	found := false
 	for _, e := range errs {
 		if e != nil {
@@ -301,13 +301,13 @@ func TestIgnore_DefaultPatternsExist(t *testing.T) {
 
 func TestIgnore_DefaultConfigHasPatterns(t *testing.T) {
 	conf := config.NewDefault()
-	if len(conf.DefaultIgnorePatterns) == 0 {
+	if len(conf.Lint.DefaultIgnorePatterns) == 0 {
 		t.Fatal("expected default config to have default ignore patterns")
 	}
 }
 
 func TestIgnore_EffectiveIgnorePatterns(t *testing.T) {
-	conf := config.NewDefault()
+	conf := config.NewDefault().Lint
 
 	// Default: no user patterns, defaults enabled
 	effective := conf.EffectiveIgnorePatterns()

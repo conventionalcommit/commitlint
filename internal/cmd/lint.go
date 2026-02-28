@@ -83,7 +83,11 @@ func getLinter(confParam string) (*lint.Linter, lint.Formatter, error) {
 func getConfig(confParam string) (*lint.Config, error) {
 	if confParam != "" {
 		confParam = filepath.Clean(confParam)
-		return config.Parse(confParam)
+		conf, err := config.Parse(confParam)
+		if err != nil {
+			return nil, err
+		}
+		return conf.Lint, nil
 	}
 
 	// If config param is empty, lookup for defaults
@@ -92,7 +96,7 @@ func getConfig(confParam string) (*lint.Config, error) {
 		return nil, err
 	}
 
-	return conf, nil
+	return conf.Lint, nil
 }
 
 func getCommitMsg(fileInput string) (string, error) {

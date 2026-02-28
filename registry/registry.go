@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/conventionalcommit/commitlint/changelog"
+	chgfmt "github.com/conventionalcommit/commitlint/changelog/formatter"
 	"github.com/conventionalcommit/commitlint/lint"
-	"github.com/conventionalcommit/commitlint/lint/formatter"
+	lintfmt "github.com/conventionalcommit/commitlint/lint/formatter"
 	"github.com/conventionalcommit/commitlint/lint/rule"
 )
 
@@ -46,11 +48,28 @@ func Formatters() []lint.Formatter {
 	return globalRegistry.Formatters()
 }
 
+// RegisterChangelogFormatter registers a custom changelog formatter.
+// Returns an error if a formatter with the same name is already registered.
+func RegisterChangelogFormatter(format changelog.Formatter) error {
+	return globalRegistry.RegisterChangelogFormatter(format)
+}
+
+// GetChangelogFormatter returns the changelog Formatter registered under name, and whether it was found.
+func GetChangelogFormatter(name string) (changelog.Formatter, bool) {
+	return globalRegistry.GetChangelogFormatter(name)
+}
+
+// ChangelogFormatters returns all registered changelog formatters.
+func ChangelogFormatters() []changelog.Formatter {
+	return globalRegistry.ChangelogFormatters()
+}
+
 type registry struct {
 	mut *sync.Mutex
 
-	allRules      map[string]lint.Rule
-	allFormatters map[string]lint.Formatter
+	allRules               map[string]lint.Rule
+	allFormatters          map[string]lint.Formatter
+	allChangelogFormatters map[string]changelog.Formatter
 }
 
 func newRegistry() *registry {
@@ -95,15 +114,21 @@ func newRegistry() *registry {
 	}
 
 	defaultFormatters := []lint.Formatter{
-		&formatter.DefaultFormatter{},
-		&formatter.JSONFormatter{},
+		&lintfmt.DefaultFormatter{},
+		&lintfmt.JSONFormatter{},
+	}
+
+	defaultChangelogFormatters := []changelog.Formatter{
+		&chgfmt.MarkdownFormatter{},
+		&chgfmt.JSONFormatter{},
 	}
 
 	reg := &registry{
 		mut: &sync.Mutex{},
 
-		allRules:      make(map[string]lint.Rule),
-		allFormatters: make(map[string]lint.Formatter),
+		allRules:               make(map[string]lint.Rule),
+		allFormatters:          make(map[string]lint.Formatter),
+		allChangelogFormatters: make(map[string]changelog.Formatter),
 	}
 
 	// Register Default Rules
@@ -120,6 +145,14 @@ func newRegistry() *registry {
 		err := reg.RegisterFormatter(format)
 		if err != nil {
 			// default formatters should not throw error
+			panic(err)
+		}
+	}
+
+	// Register Default Changelog Formatters
+	for _, format := range defaultChangelogFormatters {
+		err := reg.RegisterChangelogFormatter(format)
+		if err != nil {
 			panic(err)
 		}
 	}
@@ -177,6 +210,39 @@ func (reg *registry) Formatters() []lint.Formatter {
 
 	allFormats := make([]lint.Formatter, 0, len(reg.allFormatters))
 	for _, f := range reg.allFormatters {
+		allFormats = append(allFormats, f)
+	}
+	return allFormats
+}
+
+func (reg *registry) RegisterChangelogFormatter(format changelog.Formatter) error {
+	reg.mut.Lock()
+	defer reg.mut.Unlock()
+
+	_, ok := reg.allChangelogFormatters[format.Name()]
+	if ok {
+		return fmt.Errorf("'%s' changelog formatter already registered", format.Name())
+	}
+
+	reg.allChangelogFormatters[format.Name()] = format
+
+	return nil
+}
+
+func (reg *registry) GetChangelogFormatter(name string) (changelog.Formatter, bool) {
+	reg.mut.Lock()
+	defer reg.mut.Unlock()
+
+	format, ok := reg.allChangelogFormatters[name]
+	return format, ok
+}
+
+func (reg *registry) ChangelogFormatters() []changelog.Formatter {
+	reg.mut.Lock()
+	defer reg.mut.Unlock()
+
+	allFormats := make([]changelog.Formatter, 0, len(reg.allChangelogFormatters))
+	for _, f := range reg.allChangelogFormatters {
 		allFormats = append(allFormats, f)
 	}
 	return allFormats

@@ -207,7 +207,7 @@ func TestLint_DefaultSeverityIsError(t *testing.T) {
 }
 
 func TestLint_CustomWarningSeverity(t *testing.T) {
-	conf := config.NewDefault()
+	conf := config.NewDefault().Lint
 	conf.Severity.Rules = map[string]lint.Severity{
 		"type-enum": lint.SeverityWarn,
 	}
@@ -232,7 +232,7 @@ func TestLint_CustomWarningSeverity(t *testing.T) {
 }
 
 func TestLint_ParserErrorAlwaysError(t *testing.T) {
-	conf := config.NewDefault()
+	conf := config.NewDefault().Lint
 	// Even with all rules set to warn, parser errors should be SeverityError
 	conf.Severity.Default = lint.SeverityWarn
 	rules, err := config.GetEnabledRules(conf)

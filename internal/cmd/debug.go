@@ -57,6 +57,10 @@ func printDebug() error {
 	}
 
 	fmt.Println(w.String())
+
+	// Print changelog debug info
+	_ = printChangelogDebug()
+
 	return nil
 }
 
@@ -79,7 +83,7 @@ func getGitVersion() (string, error) {
 func getGitHookConfig(isGlobal bool) (string, error) {
 	b := &bytes.Buffer{}
 
-	var args = []string{"config"}
+	args := []string{"config"}
 	if isGlobal {
 		args = append(args, "--global")
 	}

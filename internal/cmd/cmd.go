@@ -19,6 +19,7 @@ func newCliApp() *cli.App {
 		newInitCmd(),
 		newRemoveCmd(),
 		newLintCmd(),
+		newChangelogCmd(),
 		newConfigCmd(),
 		newHookCmd(),
 		newDebugCmd(),

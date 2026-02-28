@@ -42,7 +42,7 @@ func (n *mockNote) Value() string { return n.value }
 // newDefaultLinter creates a linter with default config for testing
 func newDefaultLinter(t *testing.T) *lint.Linter {
 	t.Helper()
-	conf := config.NewDefault()
+	conf := config.NewDefault().Lint
 	rules, err := config.GetEnabledRules(conf)
 	if err != nil {
 		t.Fatalf("failed to get enabled rules: %v", err)
