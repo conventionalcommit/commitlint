@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/conventionalcommit/commitlint/commit"
 )
 
 // Linter is linter for commit message
@@ -26,7 +28,7 @@ func New(conf *Config, rules []Rule) (*Linter, error) {
 	l := &Linter{
 		conf:           conf,
 		rules:          rules,
-		parser:         newParser(),
+		parser:         commit.NewParser(),
 		ignorePatterns: compiled,
 	}
 	return l, nil

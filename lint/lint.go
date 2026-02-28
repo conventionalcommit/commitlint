@@ -1,5 +1,16 @@
 package lint
 
+import "github.com/conventionalcommit/commitlint/commit"
+
+// Type aliases for backward compatibility.
+// External packages that depend on lint.Commit, lint.Note, or lint.Parser
+// continue to work without changes.
+type (
+	Commit = commit.Commit
+	Note   = commit.Note
+	Parser = commit.Parser
+)
+
 // Rule Severity Constants
 const (
 	SeverityWarn  Severity = "warn"
@@ -18,30 +29,6 @@ func (s Severity) String() string {
 	default:
 		return "Severity(" + string(s) + ")"
 	}
-}
-
-// Note represent a footer note
-type Note interface {
-	Token() string
-	Value() string
-}
-
-// Commit represent a commit message
-type Commit interface {
-	Message() string
-	Header() string
-	Body() string
-	Footer() string
-	Type() string
-	Scope() string
-	Description() string
-	Notes() []Note
-	IsBreakingChange() bool
-}
-
-// Parser parses given commit message
-type Parser interface {
-	Parse(msg string) (Commit, error)
 }
 
 // Formatter represent a lint result formatter

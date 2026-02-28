@@ -1,4 +1,4 @@
-package lint
+package commit
 
 import "github.com/conventionalcommit/parser"
 
@@ -6,13 +6,14 @@ type defaultParser struct {
 	p *parser.Parser
 }
 
-func newParser() *defaultParser {
+// NewParser returns a new Parser that wraps the conventional commit parser
+func NewParser() Parser {
 	return &defaultParser{
 		p: parser.New(),
 	}
 }
 
-func (p defaultParser) Parse(input string) (Commit, error) {
+func (p *defaultParser) Parse(input string) (Commit, error) {
 	c, err := p.p.Parse(input)
 	if err != nil {
 		return nil, err
