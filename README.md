@@ -30,32 +30,21 @@ commitlint checks if your commit message meets the [conventional commit format](
     - [lint](#lint)
       - [Config Precedence](#config-precedence)
       - [Message Precedence](#message-precedence)
+    - [changelog](#changelog)
     - [hook](#hook)
     - [debug](#debug)
   - [Default Config](#default-config)
     - [Commit Types](#commit-types)
+  - [Changelog Configuration](#changelog-configuration)
+    - [Changelog Types](#changelog-types)
   - [Ignore Patterns](#ignore-patterns)
     - [Default Ignore Patterns](#default-ignore-patterns)
     - [Custom Ignore Patterns](#custom-ignore-patterns)
     - [Disabling Default Ignores](#disabling-default-ignores)
   - [Available Rules](#available-rules)
-    - [Length rules](#length-rules)
-    - [Enum / allow-list rules](#enum--allow-list-rules)
-    - [Charset rules](#charset-rules)
-    - [Case rules](#case-rules)
-    - [Empty / presence rules](#empty--presence-rules)
-    - [Full-stop rules](#full-stop-rules)
-    - [Leading-blank rules](#leading-blank-rules)
-    - [Header formatting rules](#header-formatting-rules)
-    - [Trailer / sign-off rules](#trailer--sign-off-rules)
-    - [Breaking change rules](#breaking-change-rules)
   - [Available Formatters](#available-formatters)
   - [Programmatic Usage](#programmatic-usage)
-    - [One-liner with default config](#one-liner-with-default-config)
-    - [Full control with default config](#full-control-with-default-config)
-    - [Lint with a config file](#lint-with-a-config-file)
-    - [Custom rules](#custom-rules)
-    - [Custom formatters](#custom-formatters)
+  - [Migration](#migration)
   - [FAQ](#faq)
   - [License](#license)
 
@@ -169,6 +158,29 @@ To lint a message, you can use any one of the following
 - commit message file passed to `--message` command-line argument
 - `.git/COMMIT_EDITMSG` in current directory
 
+### changelog
+
+Generate a changelog from conventional commits:
+
+```bash
+# Generate full changelog (all tags) to stdout
+commitlint changelog
+
+# Generate changelog and write to file
+commitlint changelog --output CHANGELOG.md
+
+# Generate changelog for a specific range
+commitlint changelog --from v1.0.0 --to v2.0.0
+
+# Generate changelog in JSON format
+commitlint changelog --format json
+
+# Use a specific config file
+commitlint changelog --config .commitlint.yaml
+```
+
+The changelog groups commits by type (Features, Bug Fixes, etc.), links to commits and comparisons on GitHub/GitLab/Bitbucket/Azure DevOps, and extracts issue references.
+
 ### hook
 
 - To create hook files, run `commitlint hook`
@@ -243,6 +255,79 @@ Commonly used commit types
 | ci       | Changes to our CI configuration files and scripts                                |
 | chore    | Other changes that don't modify src or test files                                |
 | revert   | Reverts a previous commit                                                        |
+
+## Changelog Configuration
+
+The changelog is configured via the `changelog:` section in your `.commitlint.yaml` config file:
+
+```yaml
+changelog:
+  formatter: markdown
+  header: "# Changelog"
+  issue-prefixes:
+    - "#"
+  include-other: false
+  include-breaking: true
+  skip-merge-commits: true
+  repository:
+    url: ""
+    commit-url: ""
+    compare-url: ""
+  types:
+    - type: feat
+      header: Features
+    - type: fix
+      header: Bug Fixes
+    - type: perf
+      header: Performance Improvements
+    - type: revert
+      header: Reverts
+    - type: docs
+      header: Documentation
+    - type: style
+      header: Styles
+    - type: refactor
+      header: Code Refactoring
+    - type: test
+      header: Tests
+    - type: build
+      header: Build System
+    - type: ci
+      header: CI
+    - type: chore
+      header: Chores
+      hidden: true
+```
+
+| Key                   | Description                                            | Default       |
+|:----------------------|:-------------------------------------------------------|:--------------|
+| `formatter`           | Output format (`markdown` or `json`)                   | `markdown`    |
+| `header`              | Header text for the full changelog                     | `# Changelog` |
+| `issue-prefixes`      | Prefixes to detect issue references (e.g. `#`, `JIRA-`)| `["#"]`      |
+| `include-other`       | Include commits with unrecognized types                | `false`       |
+| `include-breaking`    | Include a breaking changes section                     | `true`        |
+| `skip-merge-commits`  | Skip merge commits                                     | `true`        |
+| `repository.url`      | Override auto-detected remote URL                      | auto-detected |
+| `repository.commit-url`| Custom commit URL template (`{{hash}}`)               | auto-inferred |
+| `repository.compare-url`| Custom compare URL template (`{{from}}`, `{{to}}`)   | auto-inferred |
+| `types`               | List of types to include in changelog                  | see below     |
+| `types[].hidden`      | Hide a type from the changelog                         | `false`       |
+
+### Changelog Types
+
+| Type     | Header                   | Hidden  |
+|:---------|:-------------------------|:--------|
+| feat     | Features                 | no      |
+| fix      | Bug Fixes                | no      |
+| perf     | Performance Improvements | no      |
+| revert   | Reverts                  | no      |
+| docs     | Documentation            | no      |
+| style    | Styles                   | no      |
+| refactor | Code Refactoring         | no      |
+| test     | Tests                    | no      |
+| build    | Build System             | no      |
+| ci       | CI                       | no      |
+| chore    | Chores                   | yes     |
 
 ## Ignore Patterns
 
@@ -418,229 +503,27 @@ Total 1 errors, 0 warnings, 0 other severities
 
 ## Programmatic Usage
 
-All public packages are importable. The module path is `github.com/conventionalcommit/commitlint`.
+All public packages are importable — lint, generate changelogs, register custom rules and formatters.
 
 ```bash
 go get github.com/conventionalcommit/commitlint@latest
 ```
 
-Key packages:
-
-| Package | Purpose |
-|:--------|:--------|
-| `config` | Parse config files, build a `Linter`, access defaults |
-| `lint` | Core types: `Linter`, `Rule`, `Formatter`, `Config`, `Result`, `Issue` |
-| `registry` | Register and look up custom rules / formatters |
-| `rule` | Built-in rule implementations |
-| `formatter` | Built-in formatters (`default`, `json`) |
-
-### One-liner with default config
-
-The simplest entry point — no config file required:
+Quick example:
 
 ```go
-package main
-
-import (
-    "fmt"
-    "github.com/conventionalcommit/commitlint/config"
-)
-
-func main() {
-    result, err := config.LintMessage("feat: add login page")
-    if err != nil {
-        panic(err)
-    }
-
-    for _, issue := range result.Issues() {
-        fmt.Printf("%s: %s: %s\n", issue.Severity(), issue.RuleName(), issue.Description())
-    }
-
-    if len(result.Issues()) == 0 {
-        fmt.Println("commit message is valid")
-    }
-}
+result, err := config.LintMessage("feat: add login page")
 ```
 
-### Full control with default config
+See **[docs/programmatic-usage.md](docs/programmatic-usage.md)** for full examples including custom rules, custom formatters, and changelog generation.
 
-Build the linter yourself for more control (e.g. to swap the formatter):
+## Migration
 
-```go
-package main
+If you are upgrading from **v0.12.0 or earlier**, the config file format has changed from a flat structure to a nested format with `lint:` and `changelog:` top-level keys.
 
-import (
-    "fmt"
-    "github.com/conventionalcommit/commitlint/config"
-    "github.com/conventionalcommit/commitlint/formatter"
-)
+commitlint will detect old-format config files and display a helpful error message.
 
-func main() {
-    conf := config.NewDefault()
-    // optionally customise conf here
-
-    linter, err := config.NewLinter(conf)
-    if err != nil {
-        panic(err)
-    }
-
-    result, err := linter.ParseAndLint("feat: add login page")
-    if err != nil {
-        panic(err)
-    }
-
-    out, err := (&formatter.JSONFormatter{}).Format(result)
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println(out)
-}
-```
-
-### Lint with a config file
-
-Load a `.commitlint.yaml` and lint against it:
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/conventionalcommit/commitlint/config"
-)
-
-func main() {
-    conf, err := config.Parse(".commitlint.yaml")
-    if err != nil {
-        panic(err)
-    }
-
-    linter, err := config.NewLinter(conf)
-    if err != nil {
-        panic(err)
-    }
-
-    result, err := linter.ParseAndLint("feat: add login page")
-    if err != nil {
-        panic(err)
-    }
-
-    for _, issue := range result.Issues() {
-        fmt.Printf("%s: %s\n", issue.RuleName(), issue.Description())
-    }
-}
-```
-
-### Custom rules
-
-Implement the `lint.Rule` interface and register it before building a linter:
-
-```go
-package main
-
-import (
-    "fmt"
-    "github.com/conventionalcommit/commitlint/config"
-    "github.com/conventionalcommit/commitlint/lint"
-    "github.com/conventionalcommit/commitlint/registry"
-)
-
-// NoWIPRule rejects commit messages whose description starts with "WIP".
-type NoWIPRule struct{}
-
-func (r *NoWIPRule) Name() string { return "no-wip" }
-func (r *NoWIPRule) Apply(setting lint.RuleSetting) error { return nil }
-func (r *NoWIPRule) Validate(commit lint.Commit) (*lint.Issue, error) {
-    if len(commit.Description()) >= 3 && commit.Description()[:3] == "WIP" {
-        return lint.NewIssue("description must not start with WIP"), nil
-    }
-    return nil, nil
-}
-
-func main() {
-    if err := registry.RegisterRule(&NoWIPRule{}); err != nil {
-        panic(err)
-    }
-
-    conf := config.NewDefault()
-    conf.Rules = append(conf.Rules, "no-wip")
-    conf.Settings["no-wip"] = lint.RuleSetting{}
-
-    linter, err := config.NewLinter(conf)
-    if err != nil {
-        panic(err)
-    }
-
-    result, err := linter.ParseAndLint("feat: WIP do not merge")
-    if err != nil {
-        panic(err)
-    }
-
-    for _, issue := range result.Issues() {
-        fmt.Printf("%s: %s\n", issue.RuleName(), issue.Description())
-    }
-}
-```
-
-### Custom formatters
-
-Implement `lint.Formatter` and register it:
-
-```go
-package main
-
-import (
-    "fmt"
-    "strings"
-    "github.com/conventionalcommit/commitlint/config"
-    "github.com/conventionalcommit/commitlint/lint"
-    "github.com/conventionalcommit/commitlint/registry"
-)
-
-type SimpleFormatter struct{}
-
-func (f *SimpleFormatter) Name() string { return "simple" }
-func (f *SimpleFormatter) Format(result *lint.Result) (string, error) {
-    if len(result.Issues()) == 0 {
-        return "ok", nil
-    }
-    var sb strings.Builder
-    for _, issue := range result.Issues() {
-        fmt.Fprintf(&sb, "[%s] %s: %s\n", issue.Severity(), issue.RuleName(), issue.Description())
-    }
-    return sb.String(), nil
-}
-
-func main() {
-    if err := registry.RegisterFormatter(&SimpleFormatter{}); err != nil {
-        panic(err)
-    }
-
-    conf := config.NewDefault()
-    conf.Formatter = "simple"
-
-    format, err := config.GetFormatter(conf)
-    if err != nil {
-        panic(err)
-    }
-
-    linter, err := config.NewLinter(conf)
-    if err != nil {
-        panic(err)
-    }
-
-    result, err := linter.ParseAndLint("bad message")
-    if err != nil {
-        panic(err)
-    }
-
-    out, err := format.Format(result)
-    if err != nil {
-        panic(err)
-    }
-    fmt.Print(out)
-}
-```
+See **[docs/migration.md](docs/migration.md)** for step-by-step instructions.
 
 ## FAQ
 
