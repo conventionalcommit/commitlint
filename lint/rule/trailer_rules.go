@@ -28,10 +28,8 @@ func (r *SignedOffByRule) Apply(s lint.RuleSetting) error {
 }
 
 func (r *SignedOffByRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
-	for _, note := range msg.Notes() {
-		if note.Token() == r.Value {
-			return nil, true
-		}
+	if hasTrailer(msg, r.Value) {
+		return nil, true
 	}
 	return lint.NewIssue("message must contain trailer " + r.Value), false
 }
@@ -55,10 +53,17 @@ func (r *TrailerExistsRule) Apply(s lint.RuleSetting) error {
 }
 
 func (r *TrailerExistsRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
-	for _, note := range msg.Notes() {
-		if note.Token() == r.Value {
-			return nil, true
-		}
+	if hasTrailer(msg, r.Value) {
+		return nil, true
 	}
 	return lint.NewIssue("message must contain trailer " + r.Value), false
+}
+
+func hasTrailer(msg lint.Commit, token string) bool {
+	for i := 0; i < msg.NoteCount(); i++ {
+		if msg.NoteAt(i).Token() == token {
+			return true
+		}
+	}
+	return false
 }

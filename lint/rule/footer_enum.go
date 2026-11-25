@@ -34,10 +34,10 @@ func (r *FooterEnumRule) Apply(setting lint.RuleSetting) error {
 func (r *FooterEnumRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
 	var invalids []string
 
-	for _, note := range msg.Notes() {
-		isFound := search(r.Tokens, note.Token())
-		if !isFound {
-			invalids = append(invalids, note.Token())
+	for i := 0; i < msg.NoteCount(); i++ {
+		token := msg.NoteAt(i).Token()
+		if !search(r.Tokens, token) {
+			invalids = append(invalids, token)
 		}
 	}
 

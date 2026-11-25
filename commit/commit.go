@@ -1,15 +1,14 @@
 // Package commit provides core interfaces for parsed conventional commits.
-// It wraps the external parser package and is the single import point for it.
-// Both the lint and changelog packages depend on these interfaces.
+// Consumers depend on these interfaces independently of the backing parser.
 package commit
 
-// Note represent a footer note
+// Note represents a footer note.
 type Note interface {
 	Token() string
 	Value() string
 }
 
-// Commit represent a parsed conventional commit message
+// Commit represents a parsed conventional commit message.
 type Commit interface {
 	Message() string
 	Header() string
@@ -20,9 +19,16 @@ type Commit interface {
 	Description() string
 	Notes() []Note
 	IsBreakingChange() bool
+
+	HasHeaderBang() bool
+	HasBreakingFooter() bool
+	BodyBlankLines() int
+	FooterBlankLines() int
+	NoteCount() int
+	NoteAt(index int) Note
 }
 
-// Parser parses a commit message into a Commit
+// Parser parses a commit message into a Commit.
 type Parser interface {
 	Parse(msg string) (Commit, error)
 }

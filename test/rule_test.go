@@ -1281,6 +1281,7 @@ func TestBreakingChangeExclamation_BothPresent_Pass(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg := &mockCommit{
+		header:   "feat!: expose records",
 		breaking: true,
 		notes:    []lint.Note{&mockNote{token: "BREAKING CHANGE", value: "removed old endpoint"}},
 	}
@@ -1296,6 +1297,7 @@ func TestBreakingChangeExclamation_NeitherPresent_Pass(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg := &mockCommit{
+		header:   "feat: expose records",
 		breaking: false,
 	}
 	_, ok := r.Validate(msg)
@@ -1310,6 +1312,7 @@ func TestBreakingChangeExclamation_OnlyExclamation_Fail(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg := &mockCommit{
+		header:   "feat!: expose records",
 		breaking: true,
 	}
 	_, ok := r.Validate(msg)
@@ -1324,7 +1327,8 @@ func TestBreakingChangeExclamation_OnlyFooter_Fail(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg := &mockCommit{
-		breaking: false,
+		header:   "feat: expose records",
+		breaking: true,
 		notes:    []lint.Note{&mockNote{token: "BREAKING CHANGE", value: "some change"}},
 	}
 	_, ok := r.Validate(msg)
@@ -1339,6 +1343,7 @@ func TestBreakingChangeExclamation_BreakingDashChange_Pass(t *testing.T) {
 		t.Fatal(err)
 	}
 	msg := &mockCommit{
+		header:   "feat!: expose records",
 		breaking: true,
 		notes:    []lint.Note{&mockNote{token: "BREAKING-CHANGE", value: "some change"}},
 	}

@@ -3,23 +3,37 @@ package config
 import (
 	"fmt"
 
+	"github.com/conventionalcommit/commitlint/commit"
 	"github.com/conventionalcommit/commitlint/lint"
 	"github.com/conventionalcommit/commitlint/registry"
 )
 
-// NewLinter returns Linter for given confFilePath
+// NewLinter returns Linter for given conf using the default parser
 func NewLinter(conf *lint.Config) (*lint.Linter, error) {
-	err := checkIfMinVersion(conf.MinVersion)
-	if err != nil {
-		return nil, err
-	}
-
-	rules, err := GetEnabledRules(conf)
+	rules, err := initLinterRules(conf)
 	if err != nil {
 		return nil, err
 	}
 
 	return lint.New(conf, rules)
+}
+
+// NewLinterWithParser returns Linter for given conf and custom parser
+func NewLinterWithParser(conf *lint.Config, parser commit.Parser) (*lint.Linter, error) {
+	rules, err := initLinterRules(conf)
+	if err != nil {
+		return nil, err
+	}
+
+	return lint.NewWithParser(conf, rules, parser)
+}
+
+func initLinterRules(conf *lint.Config) ([]lint.Rule, error) {
+	if err := checkIfMinVersion(conf.MinVersion); err != nil {
+		return nil, err
+	}
+
+	return GetEnabledRules(conf)
 }
 
 // GetFormatter returns the formatter as defined in conf

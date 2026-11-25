@@ -115,43 +115,18 @@ func (r *FooterTypeEnumRule) Validate(msg lint.Commit) (*lint.Issue, bool) {
 
 	// find missing footer notes
 	for _, param := range r.Params {
-		isType := search(param.Types, msg.Type())
-		if !isType {
+		if !search(param.Types, msg.Type()) {
 			continue
 		}
-
-		isNote := searchNote(msg.Notes(), param.Token)
-		if !isNote {
+		if !hasTrailer(msg, param.Token) {
 			a := fmt.Sprintf("'%s' should exist for type '%s'", param.Token, msg.Type())
 			invalids = append(invalids, a)
 		}
 	}
 
-outer:
-	for _, note := range msg.Notes() {
-		for _, param := range r.Params {
-			isType := search(param.Types, msg.Type())
-			if !isType {
-				// not applicable for current type
-				continue
-			}
-
-			if note.Token() != param.Token {
-				// not applicable for current token
-				continue
-			}
-
-			for _, val := range param.Values {
-				if strings.HasPrefix(note.Value(), val) {
-					// has valid prefix, check next footer note
-					continue outer
-				}
-			}
-
-			// invalid - matches non of the mentioned prefix
-			a := fmt.Sprintf("'%s' should have one of prefix [%s]", note.Token(), strings.Join(param.Values, ", "))
-			invalids = append(invalids, a)
-		}
+	for i := 0; i < msg.NoteCount(); i++ {
+		note := msg.NoteAt(i)
+		checkFooterValuePrefixes(&invalids, msg.Type(), note.Token(), note.Value(), r.Params)
 	}
 
 	if len(invalids) == 0 {
@@ -160,4 +135,24 @@ outer:
 
 	desc := "footer token is invalid"
 	return lint.NewIssue(desc, invalids...), false
+}
+
+func checkFooterValuePrefixes(invalids *[]string, typ, token, value string, params []*FooterTypeEnumParam) {
+	for _, param := range params {
+		if !search(param.Types, typ) || token != param.Token {
+			continue
+		}
+		matched := false
+		for _, val := range param.Values {
+			if strings.HasPrefix(value, val) {
+				matched = true
+				break
+			}
+		}
+		if matched {
+			return
+		}
+		a := fmt.Sprintf("'%s' should have one of prefix [%s]", token, strings.Join(param.Values, ", "))
+		*invalids = append(*invalids, a)
+	}
 }

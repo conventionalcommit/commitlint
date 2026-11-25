@@ -1,13 +1,14 @@
 package test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/conventionalcommit/commitlint/config"
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
-// mockCommit implements lint.Commit for testing
+// mockCommit implements lint.Commit for testing without depending on any parser package.
 type mockCommit struct {
 	message     string
 	header      string
@@ -29,6 +30,56 @@ func (m *mockCommit) Scope() string          { return m.scope }
 func (m *mockCommit) Description() string    { return m.description }
 func (m *mockCommit) Notes() []lint.Note     { return m.notes }
 func (m *mockCommit) IsBreakingChange() bool { return m.breaking }
+
+func (m *mockCommit) HasHeaderBang() bool {
+	colon := strings.IndexByte(m.header, ':')
+	return colon > 0 && m.header[colon-1] == '!'
+}
+
+func (m *mockCommit) HasBreakingFooter() bool {
+	for _, n := range m.notes {
+		if t := n.Token(); t == "BREAKING CHANGE" || t == "BREAKING-CHANGE" {
+			return true
+		}
+	}
+	return false
+}
+
+func (m *mockCommit) BodyBlankLines() int {
+	if m.body == "" {
+		return 0
+	}
+	idx := strings.IndexByte(m.message, '\n')
+	if idx < 0 {
+		return 0
+	}
+	rest := m.message[idx+1:]
+	if strings.HasPrefix(rest, "\n") || strings.HasPrefix(rest, "\r\n") {
+		return 1
+	}
+	return 0
+}
+
+func (m *mockCommit) FooterBlankLines() int {
+	if m.footer == "" {
+		return 0
+	}
+	idx := strings.LastIndex(m.message, m.footer)
+	if idx <= 0 || m.message[idx-1] != '\n' {
+		return 0
+	}
+	prev := idx - 1
+	if prev > 0 && m.message[prev-1] == '\r' {
+		prev--
+	}
+	if prev > 0 && m.message[prev-1] == '\n' {
+		return 1
+	}
+	return 0
+}
+
+func (m *mockCommit) NoteCount() int         { return len(m.notes) }
+func (m *mockCommit) NoteAt(i int) lint.Note { return m.notes[i] }
 
 // mockNote implements lint.Note for testing
 type mockNote struct {

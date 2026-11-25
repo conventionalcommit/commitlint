@@ -2,36 +2,48 @@
 package lint
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/conventionalcommit/commitlint/commit"
 )
 
 // Linter is linter for commit message
 type Linter struct {
-	conf  *Config
-	rules []Rule
+	conf   *Config
+	rules  []Rule
+	parser commit.Parser
 
-	parser         Parser
 	ignorePatterns []*regexp.Regexp
 }
 
-// New returns a new Linter instance with given config and rules
+// New returns a new Linter instance with given config and rules using the
+// default inspection parser.
 func New(conf *Config, rules []Rule) (*Linter, error) {
+	return newLinter(conf, rules, nil)
+}
+
+// NewWithParser returns a new Linter instance using parser for ParseAndLint.
+func NewWithParser(conf *Config, rules []Rule, parser commit.Parser) (*Linter, error) {
+	if parser == nil {
+		return nil, errors.New("parser cannot be nil")
+	}
+	return newLinter(conf, rules, parser)
+}
+
+func newLinter(conf *Config, rules []Rule, parser commit.Parser) (*Linter, error) {
 	compiled, err := compilePatterns(conf.EffectiveIgnorePatterns())
 	if err != nil {
 		return nil, err
 	}
 
-	l := &Linter{
+	return &Linter{
 		conf:           conf,
 		rules:          rules,
-		parser:         commit.NewParser(),
+		parser:         parser,
 		ignorePatterns: compiled,
-	}
-	return l, nil
+	}, nil
 }
 
 // ParseAndLint checks the given commitMsg string against rules
@@ -40,12 +52,38 @@ func (l *Linter) ParseAndLint(commitMsg string) (*Result, error) {
 		return newResult(commitMsg), nil
 	}
 
-	msg, err := l.parser.Parse(commitMsg)
-	if err != nil {
-		issues := l.parserErrorRule(commitMsg, err)
+	var (
+		msg         Commit
+		diagnostics []error
+	)
+	if l.parser != nil {
+		var err error
+		msg, err = l.parser.Parse(commitMsg)
+		if err != nil {
+			diagnostics = []error{err}
+		}
+	} else {
+		msg, diagnostics = commit.Inspect(commitMsg)
+	}
+
+	if msg != nil && len(diagnostics) == 0 {
+		return l.Lint(msg)
+	}
+
+	var issues []*Issue
+	for _, diagnostic := range diagnostics {
+		issues = append(issues, l.parserErrorRule(commitMsg, diagnostic)...)
+	}
+	if msg == nil {
 		return newResult(commitMsg, issues...), nil
 	}
-	return l.Lint(msg)
+
+	result, err := l.Lint(msg)
+	if err != nil {
+		return nil, err
+	}
+	result.issues = append(issues, result.issues...)
+	return result, nil
 }
 
 // isIgnored checks if the first line of the commit message
@@ -55,7 +93,7 @@ func (l *Linter) isIgnored(commitMsg string) bool {
 		return false
 	}
 
-	firstLine := strings.Split(commitMsg, "\n")[0]
+	firstLine := commit.FirstLine(commitMsg)
 	for _, re := range l.ignorePatterns {
 		if re.MatchString(firstLine) {
 			return true
@@ -104,7 +142,11 @@ func (l *Linter) runRule(rule Rule, severity Severity, msg Commit) (*Issue, bool
 }
 
 func (l *Linter) parserErrorRule(commitMsg string, err error) []*Issue {
-	issue := NewIssue(err.Error())
+	var infos []string
+	if line, col, ok := commit.DiagnosticPosition(commitMsg, err); ok {
+		infos = []string{fmt.Sprintf("line %d, column %d", line, col)}
+	}
+	issue := NewIssue(err.Error(), infos...)
 	issue.ruleName = "parser"
 	issue.severity = SeverityError
 	return []*Issue{issue}

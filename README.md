@@ -550,11 +550,11 @@ type NoWIPRule struct{}
 
 func (r *NoWIPRule) Name() string { return "no-wip" }
 func (r *NoWIPRule) Apply(setting lint.RuleSetting) error { return nil }
-func (r *NoWIPRule) Validate(commit lint.Commit) (*lint.Issue, error) {
+func (r *NoWIPRule) Validate(commit lint.Commit) (*lint.Issue, bool) {
     if len(commit.Description()) >= 3 && commit.Description()[:3] == "WIP" {
-        return lint.NewIssue("description must not start with WIP"), nil
+        return lint.NewIssue("description must not start with WIP"), false
     }
-    return nil, nil
+    return nil, true
 }
 
 func main() {

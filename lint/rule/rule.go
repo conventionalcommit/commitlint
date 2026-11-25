@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/conventionalcommit/commitlint/commit"
 	"github.com/conventionalcommit/commitlint/lint"
 )
 
@@ -42,13 +43,6 @@ func search(arr []string, toFind string) bool {
 		return arr[i] >= toFind
 	})
 	return ind < len(arr) && arr[ind] == toFind
-}
-
-func searchNote(arr []lint.Note, toFind string) bool {
-	ind := sort.Search(len(arr), func(i int) bool {
-		return arr[i].Token() >= toFind
-	})
-	return ind < len(arr) && arr[ind].Token() == toFind
 }
 
 func validateCharset(allowedCharset, toCheck string) (string, bool) {
@@ -89,16 +83,19 @@ func validateMaxLen(typ string, expectedLen int, toCheck string) (*lint.Issue, b
 }
 
 func validateMaxLineLength(typ string, expectedLen int, toCheck string) (*lint.Issue, bool) {
-	lines := strings.Split(toCheck, "\n")
-
-	msgs := []string{}
-	for index, line := range lines {
-		actualLen := len(line)
-		if actualLen > expectedLen {
-			errMsg := fmt.Sprintf("in line %d, length is %d", index+1, actualLen)
-			msgs = append(msgs, errMsg)
-		}
+	if expectedLen < 0 || toCheck == "" {
+		return nil, true
 	}
+
+	var msgs []string
+	index := 0
+	commit.ForEachLine(toCheck, func(line string) bool {
+		index++
+		if actualLen := len(line); actualLen > expectedLen {
+			msgs = append(msgs, fmt.Sprintf("in line %d, length is %d", index, actualLen))
+		}
+		return true
+	})
 
 	if len(msgs) == 0 {
 		return nil, true
